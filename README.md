@@ -90,7 +90,7 @@ kubectl get pods -n kubeflow
 kubectl get pods -n kubeflow-user-example-com
 ```
 
-Run `kubctl port-forward` to access the Kubeflow dashboard
+Run `kubectl port-forward` to access the Kubeflow dashboard
 
 ```
 kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
