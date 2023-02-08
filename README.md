@@ -1,14 +1,122 @@
-# Project
+# Kubeflow on AKS
+In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview). You will then install Kubeflow using Kustomize and create a jupyter notebook server you can easily access on your browser.
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Requirements
 
-As the maintainer of this project, please make a few updates:
+- An **Azure Subscription** (e.g. [Free](https://aka.ms/azure-free-account) or [Student](https://aka.ms/azure-student-account) account)
+- The [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- Bash shell (e.g. macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about), [Multipass](https://multipass.run/), [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart), [GitHub Codespaces](https://github.com/features/codespaces), etc)
+- A [GitHub Account](https://github.com)
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Instructions
+
+Use the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application.
+
+Login to the Azure CLI.
+
+```bash
+az login
+```
+
+Install kubectl using the Azure CLI, if required.
+
+```bash
+az aks install-cli
+```
+
+Clone the AKS construction repo
+
+```bash
+git clone https://github.com/Azure/AKS-Construction
+```
+
+## Deployment
+Get the signed in user id so that you can get admin access to the cluster you create
+```bash
+SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
+RGNAME=kubeflow
+```
+
+Create deployment
+```bash
+az group create -n $RGNAME -l EastUs
+DEP=$(az deployment group create -g $RGNAME  --parameters signedinuser=$SIGNEDINUSER  -f main.bicep -o json)
+```
+	> :bulb: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`
+
+KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
+AKSCLUSTER=$(echo $DEP | jq -r '.properties.outputs.aksClusterName.value')
+TENANTID=$(az account show --query tenantId -o tsv)
+ACRNAME=$(az acr list -g $RGNAME --query [0].name  -o tsv)
+
+
+```bash
+az aks get-credentials --resource-group $RESOURCE_GROUP \
+  --name $AKSCLUSTER
+```
+
+## Install kustomize
+
+Next install kustomize using the [installation instruction](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
+
+## Deploy Kubeflow
+
+First download the manifests from [kubeflow/manifests](https://github.com/kubeflow/manifests)
+
+```
+git clone https://github.com/kubeflow/manifests.git -b v1.6.1
+
+cd manifests/
+```
+
+Install all of the components via a single command
+
+```
+while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+```
+
+Once the command has completed, check the pods are ready
+
+```
+kubectl get pods -n cert-manager
+kubectl get pods -n istio-system
+kubectl get pods -n auth
+kubectl get pods -n knative-eventing
+kubectl get pods -n knative-serving
+kubectl get pods -n kubeflow
+kubectl get pods -n kubeflow-user-example-com
+```
+
+Run `kubctl port-forward` to access the Kubeflow dashboard
+
+```
+kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+```
+
+Finally, open [http://localhost:8080](http://localhost:8080/) and login with the default user's credentials. The default email address is `user@example.com` and the default password is `12341234`
+
+You can test that the deployments worked by creating a new Notebook server using the GUI.
+1. Click on "Create a new Notebook server"
+    ![creating a new Notebook server](./media/create-new-notebook-server.png)
+1. Click on "+ New Notebook" in the top right corner of the resulting page
+1. Enter a name for the server
+1. Leave the "jupyterlab" option selected
+1. Feel free to pick one of the images available, in this case we choose the default
+1. Set Requested CPU to 0.5 and requested memory in Gi to 1
+1. Under Data Volumes click on "+ Add new volume"
+1. Expand the resulting section
+1. Set the name to datavol-1. The default name provided would not work because it has characters that are not allowed
+1. Set the size in Gi to 1
+1. Uncheck "Use default class"
+1. Choose a class from the provided options. In this case I will choose "azurefile-premium"
+1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
+    ![data volume config](./media/data-volume-config.png)
+1. Click on "Launch" at the bottom of the page then give kubeflow a couple of minutes to provision your server. A successful deployment should have a green checkmark under status
+    ![deployment successful](./media/server-provisioned-successfully.png)
+1. Click on "Connect" to access your jupyter lab
+1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
+
+:arrow_forward: [Secure your kubeflow cluster using TLS](./still-in-the-works.md)
 
 ## Contributing
 
