@@ -42,7 +42,7 @@ Create deployment
 az group create -n $RGNAME -l EastUs
 DEP=$(az deployment group create -g $RGNAME  --parameters signedinuser=$SIGNEDINUSER  -f main.bicep -o json)
 ```
-	> :bulb: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`
+> :bulb: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`
 
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
 AKSCLUSTER=$(echo $DEP | jq -r '.properties.outputs.aksClusterName.value')
