@@ -119,7 +119,7 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
-:arrow_forward: [Secure your kubeflow cluster using TLS](./still-in-the-works.md)
+:arrow_forward: [Secure your kubeflow cluster using TLS (Coming soon)](./still-in-the-works.md)
 
 ## Contributing
 
