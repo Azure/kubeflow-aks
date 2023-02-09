@@ -114,7 +114,7 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Choose a class from the provided options. In this case I will choose "azurefile-premium"
 1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
     ![data volume config](./media/data-volume-config.png)
-1. Click on "Launch" at the bottom of the page then give kubeflow a couple of minutes to provision your server. A successful deployment should have a green checkmark under status
+1. Click on "Launch" at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
     ![deployment successful](./media/server-provisioned-successfully.png)
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
