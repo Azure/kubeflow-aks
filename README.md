@@ -48,7 +48,7 @@ DEP=$(az deployment group create -g $RGNAME  --parameters signedinuser=$SIGNEDIN
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
 AKSCLUSTER=$(echo $DEP | jq -r '.properties.outputs.aksClusterName.value')
 TENANTID=$(az account show --query tenantId -o tsv)
-ACRNAME=$(az acr list -g $RGNAME --query [0].name  -o tsv)
+ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
 ```
 
 
