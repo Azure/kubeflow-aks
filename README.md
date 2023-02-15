@@ -54,7 +54,7 @@ ACRNAME=$(az acr list -g $RGNAME --query [0].name  -o tsv)
 
 
 ```bash
-az aks get-credentials --resource-group $RESOURCE_GROUP \
+az aks get-credentials --resource-group $RGNAME \
   --name $AKSCLUSTER
 ```
 
