@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param signedinuser string
 
 //---------Kubernetes Construction---------
-module aksconst 'aks-construction/bicep/main.bicep' = {
+module aksconst './AKS-Construction/bicep/main.bicep' = {
   name: 'aksconstruction'
   params: {
     location: location
@@ -36,7 +36,7 @@ output aksOidcIssuerUrl string = aksconst.outputs.aksOidcIssuerUrl
 output aksClusterName string = aksconst.outputs.aksClusterName
 
 // deploy keyvault
-module keyVault 'aks-construction/bicep/keyvault.bicep' = {
+module keyVault './AKS-Construction/bicep/keyvault.bicep' = {
   name: 'kv${nameseed}'
   params: {
     resourceName: 'app${nameseed}'
@@ -64,7 +64,7 @@ resource kubeflowidentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022
 output kubeflowidentityClientId string = kubeflowidentity.properties.clientId
 output kubeflowidentityId string = kubeflowidentity.id
 
-module kvSuperappRbac 'KVRBAC.bicep' = {
+module kvSuperappRbac './KVRBAC.bicep' = {
   name: 'kubeflowKvRbac'
   params: {
     appclientId: kubeflowidentity.properties.principalId
