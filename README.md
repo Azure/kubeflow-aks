@@ -9,6 +9,8 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 - Bash shell (e.g. macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart), [GitHub Codespaces](https://github.com/features/codespaces), etc)
 - A [GitHub Account](https://github.com)
 
+> :bulb: If you have access to [GitHub Codespaces](https://docs.github.com/en/codespaces/overview) or [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your local machine, it is highly recommended that you deploy this using a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) as it includes all the tools you need. The configuration for the devcontainer can be found [here](./.devcontainer)
+
 ## Instructions
 
 Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application. We will be using the [AKS construction](https://github.com/Azure/AKS-Construction) project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the [AKS construction helper](https://azure.github.io/AKS-Construction/) for more details about AKS construction.
@@ -74,6 +76,8 @@ kubelogin convert-kubeconfig -l azurecli
 ## Install kustomize
 
 Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
+
+> :bulb: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).
 
 ## Deploy Kubeflow
 
