@@ -38,7 +38,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     ```bash
     IP=$(kubectl -n istio-system get service istio-ingressgateway --output jsonpath={.status.loadBalancer.ingress[0].ip})
     ```
-    Replace the IP address in the tls-manifest\certificate.yaml file with the IP address of the istio gateway using the sed command below 
+    Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below 
     > :warning: If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `. 
     
     > :bulb: If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.
