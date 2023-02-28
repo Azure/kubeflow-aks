@@ -100,7 +100,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     kubectl get pods -n kubeflow-user-example-com
     ```
 1. Restart dex to ensure dex is using the updated password
-    > :warning: It is important that you restart the dex pod by running the command below. If you don't the default password 12341234 will be used from the time the Service is exposed via `LoadBalancer` until the time this command is run or the dex is otherwise restarted.
+    > :warning: It is important that you restart the dex pod by running the command below. If you don't any previous password (including the default password 12341234 if not changed) will be used from the time the Service is exposed via `LoadBalancer` until the time this command is run or the dex is otherwise restarted.
     ```bash
     kubectl rollout restart deployment dex -n auth
     ```
