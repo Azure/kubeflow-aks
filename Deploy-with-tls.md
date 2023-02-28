@@ -147,8 +147,9 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
-## Destroy the resources when you are done testing 
-    ```bash
-    az group delete -n $RGNAME
-    ```
+## Destroy the resources
+Run the command below to destroy the resources you just created after you are done testing
 
+```azurecli
+az group delete -n $RGNAME
+```
