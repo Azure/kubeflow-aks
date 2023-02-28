@@ -46,7 +46,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     cd ..
     sed -i  "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml 
     ```
-1. Please note that instead of providing the IP address like we did above, you could give the LB an Azure sub-domain and use that too. Deploy the certificate manifest file.
+1. Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in tls-manifest/manifests/common/istio-1-14/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.
     ```bash
     cd ..
     kubectl apply -f  tls-manifest/certificate.yaml 
