@@ -2,7 +2,7 @@
 It is assumed you have completed the steps in the main [README](./README.md) file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
 
     > :warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.
-1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://www.geeksforgeeks.org/hashing-passwords-in-python-with-bcrypt/). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plane text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
+1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
     ![Generate password](./media/brypt-password-generation.png)
 1. Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array.
 1. Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way
@@ -39,7 +39,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     ```bash
     IP=$(kubectl -n istio-system get service istio-ingressgateway --output jsonpath={.status.loadBalancer.ingress[0].ip})
     ```
-    Replace the IP address in the tls-manifest\certificate.yaml file with the IP address of the istio gateway using the sed command below 
+    Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below 
     > :warning: If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `. 
     
     > :bulb: If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.
@@ -47,7 +47,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     cd ..
     sed -i  "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml 
     ```
-1. Please note that instead of providing the IP address like we did above, you could give the LB an Azure sub-domain and use that too. Deploy the certificate manifest file.
+1. Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in tls-manifest/manifests/common/istio-1-14/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.
     ```bash
     cd ..
     kubectl apply -f  tls-manifest/certificate.yaml 
