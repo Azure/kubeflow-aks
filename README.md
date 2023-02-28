@@ -81,7 +81,7 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 ## Deploy Kubeflow without TLS using Default Password
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
-   > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
+   > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
 
 From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.6-branch`.
 
@@ -139,7 +139,7 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
-:arrow_forward: [Secure your kubeflow cluster using TLS (Coming soon)](./Deploy-with-tls.md)
+:arrow_forward: [Secure your kubeflow cluster using TLS and stronger Password](./Deploy-with-tls.md)
 
 ## Contributing
 
