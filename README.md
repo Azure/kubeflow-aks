@@ -78,9 +78,9 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 
 > :bulb: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).
 
-## Deploy Kubeflow without TLS
+## Deploy Kubeflow without TLS using Default Password
 
-This deployment option is for testing only. To deploy with TLS, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
    > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
 
 From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.6-branch`.
