@@ -1,6 +1,7 @@
 ## Install kubelogin with TLS and Unique Password
 It is assumed you have completed the steps in the main [README](./README.md) file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
 
+    > :warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.
 1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://www.geeksforgeeks.org/hashing-passwords-in-python-with-bcrypt/). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plane text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
     ![Generate password](./media/brypt-password-generation.png)
 1. Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array.
@@ -45,11 +46,12 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     cd ..
     sed -i  "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml 
     ```
-1. Please note that instead of providing the IP address like we did above, you could give the LB an Azure sub-domain and use that too. Deploy the certificate manifest file. 
+1. Please note that instead of providing the IP address like we did above, you could give the LB an Azure sub-domain and use that too. Deploy the certificate manifest file.
+    ```bash
     cd ..
     kubectl apply -f  tls-manifest/certificate.yaml 
     ```
-1. You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to test view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
+1. You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
     ![Generate password](./media/logged-in-with-tls.png)
 
 ## Testing the deployment with a Notebook server
@@ -71,7 +73,12 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
     ![data volume config](./media/data-volume-config.png)
 1. Click on "Launch" at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
-    ![deployment successful](./media/server-provisioned-successfully.png)
+    ![deployment successful](./media/server-provisioned-successfully-tls.png)
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
+
+## Destroy the resources when you are done testing 
+    ```bash
+    az group delete -f $RGNAME
+    ```
 
