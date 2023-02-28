@@ -11,7 +11,10 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 
 > :bulb: If you have access to [GitHub Codespaces](https://docs.github.com/en/codespaces/overview) or [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your local machine, it is highly recommended that you deploy this using a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) as it includes all the tools you need. The configuration for the devcontainer can be found [here](./.devcontainer)
 
-## Instructions
+# Instructions for Basic Deployment without TLS and with Default Password
+
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+   > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
 
 Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application. We will be using the [AKS construction](https://github.com/Azure/AKS-Construction) project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the [AKS construction helper](https://azure.github.io/AKS-Construction/) for more details about AKS construction.
 
@@ -37,7 +40,7 @@ Clone this repo which includes the [Azure/AKS-Construction](https://github.com/A
 git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
 ```
 
-## Deployment
+## Deployment steps
 
 Get the signed in user id so that you can get admin access to the cluster you create
 
@@ -63,7 +66,6 @@ ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
 ```
 
 ## Install kubelogin
-
 Next install kubelogin using the [installation instructions](https://github.com/Azure/kubelogin) appropriate for your computer. From there, you'll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.
 
 ```bash
@@ -79,7 +81,10 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 
 > :bulb: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).
 
-## Deploy Kubeflow
+## Deploy Kubeflow without TLS using Default Password
+
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+   > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
 
 From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.6-branch`.
 
@@ -114,6 +119,7 @@ kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 
 Finally, open [http://localhost:8080](http://localhost:8080/) and login with the default user's credentials. The default email address is `user@example.com` and the default password is `12341234`
 
+## Testing the deployment with a Notebook server
 You can test that the deployments worked by creating a new Notebook server using the GUI.
 
 1. Click on "Create a new Notebook server"
@@ -136,7 +142,7 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
-:arrow_forward: [Secure your kubeflow cluster using TLS (Coming soon)](./still-in-the-works.md)
+:arrow_forward: [Secure your kubeflow cluster using TLS and stronger Password](./Deploy-with-tls.md)
 
 ## Contributing
 
