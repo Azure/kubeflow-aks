@@ -11,7 +11,7 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 
 > :bulb: If you have access to [GitHub Codespaces](https://docs.github.com/en/codespaces/overview) or [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your local machine, it is highly recommended that you deploy this using a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) as it includes all the tools you need. The configuration for the devcontainer can be found [here](./.devcontainer)
 
-# Instructions for Basic Deployment without TLS and with Default Password
+## Instructions for Basic Deployment without TLS and with Default Password
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
    > :warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](./Deploy-with-tls.md) option.
