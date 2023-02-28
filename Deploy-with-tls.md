@@ -150,6 +150,6 @@ You can test that the deployments worked by creating a new Notebook server using
 ## Destroy the resources
 Run the command below to destroy the resources you just created after you are done testing
 
-    ```bash
+    ```azurecli
     az group delete -n $RGNAME
     ```
