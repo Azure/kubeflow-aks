@@ -2,6 +2,8 @@ name: github pages
 
 on:
   push:
+    # paths:
+    #   - website/**
     branches:
       - main  # Set a branch that will trigger a deployment
   pull_request:
@@ -19,14 +21,17 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
-          # extended: true
+          extended: true
 
-      - name: Build
-        run: hugo --minify
-
+      - name: Run a multi-line script
+        run: |
+          cd $GITHUB_WORKSPACE/website
+          npm install postcss-cli@8.3.0
+          hugo
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./website/public
+          destination_dir: ${{ steps.extract_branch.outputs.branch }}
+          keep_files: true  
