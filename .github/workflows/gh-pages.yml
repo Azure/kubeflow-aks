@@ -10,23 +10,28 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          submodules: recursive  # Fetch Hugo themes (true OR recursive)
+          # fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: 'latest'
+          hugo-version: '0.93.0'
           extended: true
-
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Run a multi-line script
         run: |
           cd $GITHUB_WORKSPACE/website
           npm install postcss-cli@8.3.0
+          base_url="baseURL = \"https://$GITHUB_REPOSITORY_OWNER.github.io/kubeflow-aks/$(git branch --show-current)\""
+          sed -i "1s#.*#$base_url#" config.toml
           hugo
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
