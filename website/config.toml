@@ -13,7 +13,7 @@ enableMissingTranslationPlaceholders = true
 ###############################################################################
 [menu]
   [[menu.main]]
-    name = "Documentation"
+    name = "Documentation" 
     weight = -101
     pre = "<i class='fas fa-book pr-2'></i>"
     url = "./docs/"
