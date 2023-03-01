@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Run a multi-line script
+      - name: Run a multi-line script 
         run: |
           cd $GITHUB_WORKSPACE/website
           npm install postcss-cli@8.3.0
