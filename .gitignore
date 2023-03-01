@@ -2,3 +2,4 @@ test.json
 ./AKS-Construction
 ./manifests
 auth.md
+private-registry/privateRegistry.log
