@@ -19,10 +19,7 @@ Login to the Azure CLI.
 ```bash
 az login
 ```
-
-> :bulb: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription:
->
-> `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`
+{{< alert color="orange" title="Note">}}If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}} 
 
 Install kubectl using the Azure CLI, if required.
 
@@ -51,8 +48,7 @@ Create deployment
 az group create -n $RGNAME -l eastus
 DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
 ```
-
-> :bulb: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`
+{{< alert color="orange" title="Note">}}The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
 
 ```bash
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
@@ -75,7 +71,7 @@ kubelogin convert-kubeconfig -l azurecli
 
 Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
 
-> :bulb: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).
+{{< alert color="orange" title="Note">}}In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}} 
 
 ## Install kubelogin with TLS and Unique Password
 It is assumed you have completed the steps in the main [README](./README.md) file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
@@ -120,9 +116,8 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     IP=$(kubectl -n istio-system get service istio-ingressgateway --output jsonpath={.status.loadBalancer.ingress[0].ip})
     ```
     Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below 
-    > :warning: If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `. 
-    
-    > :bulb: If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.
+    {{< alert color="warning">}} If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `.{{< /alert >}} 
+    {{< alert color="orange" title="Note">}} If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.{{< /alert >}} 
     ```bash
     cd ..
     sed -i  "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml 
