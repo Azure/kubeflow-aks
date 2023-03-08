@@ -8,10 +8,6 @@ description: >
   Deploy kubeflow into an AKS cluster using default settings.
 ---
 
-{{% pageinfo %}}
-This is a placeholder page that shows you how to use this template site.
-{{% /pageinfo %}}
-
 # Kubeflow on AKS
 
 In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). You will then install Kubeflow using Kustomize and create a jupyter notebook server you can easily access on your browser.
