@@ -16,7 +16,7 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
 
-{{< alert color="warning" title="Warning" >}}This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](../custom-password-tls/index.md) option.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS](../custom-password-tls/index.md) option.{{< /alert >}}
 
 Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application. We will be using the [AKS construction](https://github.com/Azure/AKS-Construction) project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the [AKS construction helper](https://azure.github.io/AKS-Construction/) for more details about AKS construction.
 
@@ -26,7 +26,7 @@ Login to the Azure CLI.
 az login
 ```
 
-{{< alert color="primary" title="Note">}}If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}} 
 
 Install kubectl using the Azure CLI, if required.
 
@@ -56,7 +56,7 @@ az group create -n $RGNAME -l eastus
 DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
 ```
 
-{{< alert color="primary" title="Note">}}The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
 
 ```bash
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
@@ -79,7 +79,7 @@ kubelogin convert-kubeconfig -l azurecli
 
 Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
 
-{{< alert color="primary" title="Note">}}In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}} 
 
 ## Deploy Kubeflow without TLS using Default Password
 
@@ -143,4 +143,4 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
 ## Next steps
-[Secure your kubeflow cluster using TLS and stronger Password]({{< ref "/deployment/custom-password-tls/index" >}}) deployment option. 
+[Secure your kubeflow cluster using TLS and stronger Password]({{< ref "/deployment/custom-password-tls" >}}) deployment option. 
