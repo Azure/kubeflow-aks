@@ -143,4 +143,4 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
 ## Next steps
-[Secure your kubeflow cluster using TLS and stronger Password](../custom-password-tls/index.md)
+[Secure your kubeflow cluster using TLS and stronger Password]({{< ref "/docs/deployment/custom-password-tls/index.md" >}}) deployment option. 
