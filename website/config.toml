@@ -21,9 +21,9 @@ enableMissingTranslationPlaceholders = true
     name = "GitHub"
     weight = -99
     pre = "<i class='fab fa-github pr-2'></i>"
-    url = "https://github.com/azure/kubeflow-aks" 
+    url = "https://github.com/azure/kubeflow-aks"
 
-enableRobotsTXT = true 
+enableRobotsTXT = true
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
