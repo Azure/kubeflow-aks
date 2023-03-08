@@ -21,8 +21,6 @@ For all Kubeflow on AKS deployment options, you will need the following
     - [kubelogin](https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip)
     - git
     - [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
-    - [jq](https://stedolan.github.io/jq/download/), 
-    - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/),
+    - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/)
     - [sed](https://gnuwin32.sourceforge.net/packages/sed.htm) (optional)
-    - [node and npm](https://nodejs.org/en/download/) for the Bridge to Kubernetes step
 {{< alert color="primary" title="Note">}}If you have access to [GitHub Codespaces](https://docs.github.com/en/codespaces/overview) or [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your local machine, it is highly recommended that you deploy this using a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) as it includes all the tools you need. The configuration for the devcontainer can be found [here](https://github.com/azure/kubeflow-aks/tree/main/.devcontainer).{{< /alert >}}
