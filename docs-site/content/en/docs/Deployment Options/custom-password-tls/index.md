@@ -52,7 +52,7 @@ Create deployment
 az group create -n $RGNAME -l eastus
 DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
 ```
-{{< alert color="primary" title="Note">}}The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
 
 ```bash
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
@@ -80,7 +80,7 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 ## Install kubelogin with TLS and Unique Password
 It is assumed you have completed the steps in the main [README](./README.md) file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
 
-{{< alert color="warning" title="Warning" >}}For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ Warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
 
 1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
     ![Generate password](./images/brypt-password-generation.png)
@@ -111,7 +111,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     kubectl get pods -n kubeflow-user-example-com
     ```
 1. Restart dex to ensure dex is using the updated password
-    {{< alert color="warning" title="Warning" >}}It is important that you restart the dex pod by running the command below. If you don't any previous password (including the default password 12341234 if not changed) will be used from the time the Service is exposed via `LoadBalancer` until the time this command is run or the dex is otherwise restarted.{{< /alert >}}
+    {{< alert color="warning" >}}⚠️ Warning: It is important that you restart the dex pod by running the command below. If you don't any previous password (including the default password 12341234 if not changed) will be used from the time the Service is exposed via `LoadBalancer` until the time this command is run or the dex is otherwise restarted.{{< /alert >}}
     ```bash
     kubectl rollout restart deployment dex -n auth
     ```
@@ -120,8 +120,8 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     IP=$(kubectl -n istio-system get service istio-ingressgateway --output jsonpath={.status.loadBalancer.ingress[0].ip})
     ```
     Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below 
-    {{< alert color="warning">}} If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `.{{< /alert >}} 
-    {{< alert color="primary" title="Note">}} If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.{{< /alert >}} 
+    {{< alert color="warning" >}}⚠️ Warning: If you are using a mac you will need to change the command to `sed -i '' "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml `.{{< /alert >}} 
+    {{< alert color="primary" >}}💡Note: If these sed commands don't work for any reason or if you don't have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.{{< /alert >}} 
     ```bash
     cd ..
     sed -i  "s/192.168.0.5/$IP/" tls-manifest/certificate.yaml 
