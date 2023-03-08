@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on git push to a branch where this workflow file exists 
   push:
     paths:
-      - docs-site/**
+      - website/**
     branches:
       - main
       - 'release-v**'
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run a multi-line script
         run: |
-          cd $GITHUB_WORKSPACE/docs-site
+          cd $GITHUB_WORKSPACE/website
           npm install postcss-cli@8.3.0
           base_url="baseURL = \"https://$GITHUB_REPOSITORY_OWNER.github.io/kubeflow-aks/$(git branch --show-current)\""
           sed -i "1s#.*#$base_url#" config.toml
@@ -42,6 +42,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs-site/public
+          publish_dir: ./website/public
           destination_dir: ${{ steps.extract_branch.outputs.branch }}
           keep_files: true          
