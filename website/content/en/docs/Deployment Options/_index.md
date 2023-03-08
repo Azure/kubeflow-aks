@@ -1,7 +1,8 @@
+---
 categories: ["prerequisites"]
 tags: ["docs"]
 title: "Prerequisties"
-linkTitle: "prerequisites"
+linkTitle: "Prerequisites"
 date: 2023-03-07
 description: >
   Set up your environment for deploying Kubeflow for AKS
