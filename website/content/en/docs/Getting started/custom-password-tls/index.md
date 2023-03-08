@@ -82,7 +82,7 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
 
     > :warning: For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.
 1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
-    ![Generate password](./media/brypt-password-generation.png)
+    ![Generate password](./images/brypt-password-generation.png)
 1. Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array.
 1. Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way
 1. Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.
@@ -132,13 +132,13 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     kubectl apply -f  tls-manifest/certificate.yaml 
     ```
 1. You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
-    ![Generate password](./media/logged-in-with-tls.png)
+    ![Generate password](./images/logged-in-with-tls.png)
 
 ## Testing the deployment with a Notebook server
 You can test that the deployments worked by creating a new Notebook server using the GUI.
 
 1. Click on "Create a new Notebook server"
-    ![creating a new Notebook server](./media/create-new-notebook-server.png)
+    ![creating a new Notebook server](./images/create-new-notebook-server.png)
 1. Click on "+ New Notebook" in the top right corner of the resulting page
 1. Enter a name for the server
 1. Leave the "jupyterlab" option selected
@@ -151,9 +151,9 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Uncheck "Use default class"
 1. Choose a class from the provided options. In this case I will choose "azurefile-premium"
 1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
-    ![data volume config](./media/data-volume-config.png)
+    ![data volume config](./images/data-volume-config.png)
 1. Click on "Launch" at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
-    ![deployment successful](./media/server-provisioned-successfully-tls.png)
+    ![deployment successful](./images/server-provisioned-successfully-tls.png)
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
