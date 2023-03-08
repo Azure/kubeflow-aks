@@ -1,5 +1,5 @@
 ---
-categories: ["quickstart"]
+categories: ["Examples"]
 tags: ["test", "sample", "docs"]
 title: "Deploy Kubeflow with default settings"
 linkTitle: "Deploy Kubeflow with default settings"
