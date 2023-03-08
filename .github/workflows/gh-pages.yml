@@ -3,8 +3,8 @@ name: hugo-build-push-folder
 on:
   # Trigger the workflow on git push to a branch where this workflow file exists 
   push:
-    # paths:
-    #   - docs-site/**
+    paths:
+      - docs-site/**
     branches:
       - main
       - 'release-v**'
@@ -44,4 +44,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-site/public
           destination_dir: ${{ steps.extract_branch.outputs.branch }}
-          # keep_files: true          
+          keep_files: true          
