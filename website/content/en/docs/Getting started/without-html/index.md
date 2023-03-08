@@ -1,17 +1,21 @@
 ---
-categories: ["quickstart"]
+categories: ["Examples", "Placeholders"]
 tags: ["test","docs"] 
 title: "Getting Started"
 linkTitle: "Getting Started"
 weight: 2
 description: >
-  Installing Kubeflow without TLS using default password
+  Installing Kubeflow without TLS
 resources:
 - src: "create-new-notebook-server.png"
   title: "Image #:1"
 - src: "feat"
   title: "sunny"
 ---
+
+{{% pageinfo %}}
+This is a placeholder page that shows you how to use this template site.
+{{% /pageinfo %}}
 
 # Kubeflow on AKS
 
