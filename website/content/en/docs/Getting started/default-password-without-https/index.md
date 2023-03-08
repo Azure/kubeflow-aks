@@ -5,16 +5,10 @@ title: "Getting Started"
 linkTitle: "Getting Started"
 weight: 2
 description: >
-  Installing Kubeflow without TLS using default password
-resources:
-- src: "create-new-notebook-server.png"
-  title: "Image #:1"
-- src: "feat"
-  title: "sunny"
+  Installing Kubeflow without TLS using default password 
 ---
 
 # Kubeflow on AKS
-
 
 In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). You will then install Kubeflow using Kustomize and create a jupyter notebook server you can easily access on your browser.
 
