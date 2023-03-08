@@ -44,4 +44,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/public
           # destination_dir: ${{ steps.extract_branch.outputs.branch }}
+          destination_dir: ./
           # keep_files: true          
