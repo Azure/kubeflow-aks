@@ -8,7 +8,7 @@ description: >
   Deploy Kubeflow into AKS
 ---
 
-Start by checking out the [prerequisites]({{< ref "/docs/Deployment Options/prerequisites" >}}) page
+
 If you want to deploy Kubeflow with minimal changes on AKS, then consider the [vanilla]({{< ref "/docs/Deployment Options/vanilla-installation" >}}) deployment option. The Kubeflow control plane is installed on Azure Kubernetes Service (AKS), which is a managed container service used to run and scale Kubernetes applications in the cloud.
 
 For a more secure deployment option that is has minimum baseline security, then consider the [deploy with custom password and TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}) deployment option. 
