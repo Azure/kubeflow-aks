@@ -13,6 +13,7 @@ description: >
 In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). You will then install Kubeflow after creating custom Password. This deployment option will also make use of TLS with a self-signed certificate and an ingress controller. Swap out this self signed certificate with your own CA certs for production workloads.
 
 ## Deploy Kubeflow with Password, Ingress and TLS
+{{< alert color="warning" >}}⚠️ Warning: In order to complete this deployment, you will need to have either  `User Access Admin` **and** `Contributor` or `Owner` access to the subscription you are deploying into.{{< /alert >}}
 
 Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application. We will be using the [AKS construction](https://github.com/Azure/AKS-Construction) project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the [AKS construction helper](https://azure.github.io/AKS-Construction/) for more details about AKS construction.
 
@@ -36,6 +37,11 @@ Clone this repo which includes the [Azure/AKS-Construction](https://github.com/A
 ```bash
 git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
 ```
+
+Change directory into the newly cloned directory
+```bash
+cd kubeflow-aks
+``` 
 
 ## Deployment steps
 

@@ -40,7 +40,14 @@ Clone this repo which includes the [Azure/AKS-Construction](https://github.com/A
 git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
 ```
 
+Change directory into the newly cloned directory
+```bash
+cd kubeflow-aks
+``` 
+
 ## Deployment steps
+
+{{< alert color="warning" >}}⚠️ Warning: In order to complete this deployment, you will need to have either  `User Access Admin` **and** `Contributor` or `Owner` access to the subscription you are deploying into.{{< /alert >}}
 
 Get the signed in user id so that you can get admin access to the cluster you create
 

@@ -13,6 +13,7 @@ description: >
 For all Kubeflow on AKS deployment options, you will need the following
 
 - An **Azure Subscription** (e.g. [Free](https://aka.ms/azure-free-account) or [Student](https://aka.ms/azure-student-account) account)
+    - {{< alert color="warning" >}}⚠️ Warning: In order to complete the deployments, you will need to have either  `User Access Admin` **and** `Contributor` or `Owner` access to the subscription you are deploying into.{{< /alert >}}
 - The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - - A [GitHub Account](https://github.com)
 - Bash shell (e.g. macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart), [GitHub Codespaces](https://github.com/features/codespaces), [devcontainers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the **correct** version of kustomize
