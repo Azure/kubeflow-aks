@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Functions
+replace_repo () {
+  sed -i "s|$registry|$ACRURL/$image_name|g" $file
+  printf "%s\n" "[$(date)] [INFO] $registry updated to $ACRURL/$image_name in $file" | tee -a $LOGFILE
+}
+
 ## Set the name of the log file
 LOGFILE="./private-registry/privateRegistry.log"
 truncate -s 0 $LOGFILE
@@ -13,8 +19,6 @@ ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
 
 #Set the directory to search for kustomization.yaml files 
 DIR="manifests"
-
-
 
 # Set the ACR url
 ACRURL=$(az acr list -g $RGNAME --query "[0].loginServer" -o tsv)
@@ -56,10 +60,24 @@ find "$DIR" -type f -name "kustomization.yaml" | while read file; do
         # If exit code is 0, echo a message that the ACR repository was found and does not need to be imported
         if [ $exit_code -eq 0 ]; then
           printf "%s\n" "[$(date)] [INFO] $image_name already exists on ACR and does not need to be imported" | tee -a "$LOGFILE"
+          
+          # Update the kustomization.yaml file with the new image name
+          replace_repo
+
         else
         # Import the image from another container registry to Azure Container Registry using az acr import command[^1^][2]
           printf "%s\n" "[$(date)] [INFO] Importing $source_image" | tee -a $LOGFILE
-          az acr import --name $ACRNAME --source $source_image --image $image_name --force 2>> $LOGFILE || printf "%s\n" "[$(date)] [ERROR] Failed to import $source_image" >> $LOGFILE
+          az acr import --name $ACRNAME --source $source_image --image $image_name --force
+
+          if [ $? -eq 0 ]; then
+            # Update the kustomization.yaml file with the new image name
+            replace_repo
+
+          else
+            # Log error messages
+            printf "%s\n" "[$(date)] [ERROR] Failed to import $source_image" >> $LOGFILE
+            return 2>> $LOGFILE
+          fi
         fi
       fi
     fi
@@ -67,3 +85,4 @@ find "$DIR" -type f -name "kustomization.yaml" | while read file; do
 done
 
 printf "%s\n" "$(date) Done importing Images" | tee -a $LOGFILE
+
