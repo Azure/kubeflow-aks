@@ -72,7 +72,7 @@ TENANTID=$(az account show --query tenantId -o tsv)
 ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
 ```
 
-## Install kubelogin
+## Install kubelogin and log into the cluster
 Next install kubelogin using the [installation instructions](https://github.com/Azure/kubelogin) appropriate for your computer. From there, you'll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.
 
 ```bash
@@ -80,6 +80,12 @@ az aks get-credentials --resource-group $RGNAME \
   --name $AKSCLUSTER
 
 kubelogin convert-kubeconfig -l azurecli
+```
+
+Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
+{{< alert color="warning" >}}⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.{{< /alert >}}
+```bash
+kubectl get nodes
 ```
 
 ## Install kustomize
