@@ -1,0 +1,799 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.93.0" />
+<link rel="canonical" type="text/html" href="https://Azure.github.io/kubeflow-aks/main/docs/">
+<link rel="alternate" type="application/rss&#43;xml" href="https://Azure.github.io/kubeflow-aks/main/docs/index.xml">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/kubeflow-aks/main/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/kubeflow-aks/main/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/kubeflow-aks/main/favicons/android-192x192.png" sizes="192x192">
+
+<title>Documentation | Kubeflow on AKS</title>
+<meta name="description" content="Docs for Kubeflow on AKS and Azure">
+<meta property="og:title" content="Documentation" />
+<meta property="og:description" content="Docs for Kubeflow on AKS and Azure" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://Azure.github.io/kubeflow-aks/main/docs/" /><meta property="og:site_name" content="Kubeflow on AKS" />
+
+<meta itemprop="name" content="Documentation">
+<meta itemprop="description" content="Docs for Kubeflow on AKS and Azure"><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Documentation"/>
+<meta name="twitter:description" content="Docs for Kubeflow on AKS and Azure"/>
+
+
+
+
+<link rel="preload" href="/kubeflow-aks/main/scss/main.min.def2cdda5cfcd95d9660c969a68946395435ad5fc75402be473d9995c7e926b3.css" as="style">
+<link href="/kubeflow-aks/main/scss/main.min.def2cdda5cfcd95d9660c969a68946395435ad5fc75402be473d9995c7e926b3.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK"
+  crossorigin="anonymous"></script>
+
+
+
+  </head>
+  <body class="td-section">
+    <header>
+      <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+  <a class="navbar-brand" href="/kubeflow-aks/main/"><span class="navbar-brand__logo navbar-logo"><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500"><g><path style="fill:#fff" d="M116.8525 421.9722c-5.7041.0-10.3442-4.3127-10.3442-9.6129V88.183c0-5.3002 4.6401-9.6117 10.3442-9.6117H320.858c3.0347.0 9.3959.5498 11.7506 2.6302l.3545.3442 58.905 63.2912c2.3101 2.491 2.9202 8.4928 2.9202 11.3184v256.2039c0 5.3002-4.6407 9.6129-10.3436 9.6129H116.8525z"/><g><g><g><path style="fill:#767676" d="M384.4445 423.2066H116.852c-6.3839.0-11.5786-4.8658-11.5786-10.8474V88.1831c0-5.9804 5.1947-10.8461 11.5786-10.8461h204.0062c.377.0 9.2786.0329 12.568 2.9389l.3947.3833 58.9508 63.337c3.2135 3.4652 3.2514 11.7924 3.2514 12.1593v256.2036C396.0231 418.3408 390.8284 423.2066 384.4445 423.2066zM116.5079 411.9189c.0848.0278.1999.0531.3441.0531h267.5925c.1442.0.2581-.0253.3441-.0531V156.1556c-.0076-.9033-.3593-3.7347-.7034-5.0037l-57.6527-61.9416c-1.4651-.3176-4.4533-.6389-5.5742-.6389H116.852c-.143.0-.2594.024-.3441.0531V411.9189zm267.4533-261.149zM327.0321 89.371v.0013V89.371z"/></g></g></g><g><g><path style="fill:#5b7fc0" d="M189.0874 210.1754l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4473C177.5953 212.627 183.0601 210.1742 189.0874 210.1754zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 234.1722 197.0804 232.033z"/><path style="opacity:.3;fill:#fff" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/><g><defs><path id="SVGID_1_" d="M194.7376 237.6875c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 234.2399 196.1861 236.239 194.7376 237.6875z"/></defs><clipPath id="SVGID_2_"><use xlink:href="#SVGID_1_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_2_);fill:#fff" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/><path style="opacity:.13;clip-path:url(#SVGID_2_);fill:#020202" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/></g><g><defs><path id="SVGID_3_" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/></defs><clipPath id="SVGID_4_"><use xlink:href="#SVGID_3_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_4_);fill:#5b7fc0" d="M172.6595 215.6045c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8475-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 209.1953 176.6171 211.647 172.6595 215.6045z"/></g></g><rect x="198.8952" y="225.1043" style="fill:#5b7fc0" width="122.6266" height="13.8671"/></g><g><path style="fill:#d95140" d="M189.0874 155.7611l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.0249 2.454-11.4897 6.4116-15.4473C177.5953 158.2128 183.0601 155.7599 189.0874 155.7611zm7.993 21.8577c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.2508 181.7667 197.0816 179.758 197.0804 177.6188z"/><path style="opacity:.3;fill:#fff" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/><g><defs><path id="SVGID_5_" d="M194.7376 183.2733c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 179.8256 196.1861 181.8248 194.7376 183.2733z"/></defs><clipPath id="SVGID_6_"><use xlink:href="#SVGID_5_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_6_);fill:#fff" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/><path style="opacity:.13;clip-path:url(#SVGID_6_);fill:#020202" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/></g><g><defs><path id="SVGID_7_" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/></defs><clipPath id="SVGID_8_"><use xlink:href="#SVGID_7_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_8_);fill:#d95140" d="M172.6595 161.1903c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 154.7811 176.6171 157.2327 172.6595 161.1903z"/></g><rect x="198.8952" y="170.69" style="fill:#d95140" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#56a55c" d="M189.5379 264.6147l.0012-.0012c7.7751.0012 15.0294 4.1862 18.932 10.9235 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032-5.8394.0-11.3281-2.2733-15.458-6.4032-4.13-4.13-6.4032-9.6186-6.4056-15.4628.0012-6.0249 2.454-11.4897 6.4116-15.4472C178.0458 267.0663 183.5105 264.6135 189.5379 264.6147zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6538 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.7013 290.6202 197.5321 288.6115 197.5309 286.4723z"/><path style="opacity:.3;fill:#fff" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/><g><defs><path id="SVGID_9_" d="M195.1881 292.1268c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9941 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.5344 288.6792 196.6366 290.6783 195.1881 292.1268z"/></defs><clipPath id="SVGID_10_"><use xlink:href="#SVGID_9_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_10_);fill:#fff" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/><path style="opacity:.13;clip-path:url(#SVGID_10_);fill:#020202" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/></g><g><defs><path id="SVGID_11_" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/></defs><clipPath id="SVGID_12_"><use xlink:href="#SVGID_11_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_12_);fill:#56a55c" d="M173.11 270.0439c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7325-11.1497-10.9151-18.926-10.9151C182.5311 263.6346 177.0676 266.0863 173.11 270.0439z"/></g></g><rect x="199.3456" y="279.5436" style="fill:#56a55c" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#f1bc42" d="M189.0874 318.7208l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3305-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4472C177.5953 321.1724 183.0601 318.7196 189.0874 318.7208zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 342.7176 197.0804 340.5784z"/><path style="opacity:.3;fill:#fff" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/><g><defs><path id="SVGID_13_" d="M194.7376 346.2329c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 342.7853 196.1861 344.7844 194.7376 346.2329z"/></defs><clipPath id="SVGID_14_"><use xlink:href="#SVGID_13_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_14_);fill:#fff" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/><path style="opacity:.13;clip-path:url(#SVGID_14_);fill:#020202" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/></g><g><defs><path id="SVGID_15_" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/></defs><clipPath id="SVGID_16_"><use xlink:href="#SVGID_15_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_16_);fill:#f1bc42" d="M172.6595 324.15c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8474-1.0151-7.6327-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 317.7407 176.6171 320.1924 172.6595 324.15z"/></g></g><rect x="198.8952" y="333.6497" style="fill:#f1bc42" width="122.6266" height="13.8671"/></g></g></svg></span><span class="navbar-brand__name">Kubeflow on AKS</span></a>
+  <div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+    <ul class="navbar-nav mt-2 mt-lg-0">
+      <li class="nav-item mr-4 mb-2 mb-lg-0">
+        <a class="nav-link" href="/kubeflow-aks/main/docs/"><i class='fas fa-book pr-2'></i><span>Documentation</span></a>
+      </li>
+      <li class="nav-item mr-4 mb-2 mb-lg-0">
+        <a class="nav-link" href="https://github.com/azure/kubeflow-aks" target="_blank"><i class='fab fa-github pr-2'></i><span>GitHub</span></a>
+      </li>
+      </ul>
+  </div>
+  <div class="navbar-nav d-none d-lg-block">
+    <div id="docsearch"></div>
+
+  </div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            
+
+
+
+
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href="#" onclick="print();return false;">Click here to print</a>.
+</p><p>
+<a href="/kubeflow-aks/main/docs/">Return to the regular view of this page</a>.
+</p>
+</div>
+
+
+
+<h1 class="title">Documentation</h1>
+
+
+
+
+
+    <ul>
+    
+  
+  
+  
+  
+
+  
+    
+    
+	
+<li>1: <a href="#pg-6e17e09fffc1050f46600282def85180">Overview</a></li>
+
+
+    
+    <ul>
+        
+  
+  
+  
+  
+
+  
+
+    </ul>
+    
+  
+    
+    
+	
+<li>2: <a href="#pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c">Contribution Guidelines</a></li>
+
+
+    
+    <ul>
+        
+  
+  
+  
+  
+
+  
+
+    </ul>
+    
+  
+    
+    
+	
+<li>3: <a href="#pg-d899ecbdfd85e54a0efbeedb5a527c83">Deployment Options</a></li>
+
+
+    
+    <ul>
+        
+  
+  
+  
+  
+
+  
+    
+    
+	
+<li>3.1: <a href="#pg-3d546655593853847edddd1c1dd5ef85">Deploy Kubeflow with Password, Ingress and TLS</a></li>
+
+
+    
+  
+    
+    
+	
+<li>3.2: <a href="#pg-de7654acb0d178b47cd8b7316b01fef9">Prerequisties</a></li>
+
+
+    
+  
+    
+    
+	
+<li>3.3: <a href="#pg-1d51b81e8d0a5fde09fc3f0009638cb3">Vanilla Installation</a></li>
+
+
+    
+  
+
+    </ul>
+    
+  
+
+    </ul>
+
+
+<div class="content">
+      
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-6e17e09fffc1050f46600282def85180">1 - Overview</h1>
+    <div class="lead">Overview of Kubeflow on Azure Kubernetes Service</div>
+	<p>Azure Kubernetes Service(AKS) is a managed Kubernetes platform on Azure. It provides various features that makes it easy to get up and running on production grade Kubernetes Clusters. For more information about AKS, check out <a href="https://learn.microsoft.com/azure/aks/intro-kubernetes">Introduction to Azure Kubernetes Service</a>.</p>
+<p>This project provides various deployment options for running and testing Kubeflow running on AKS. To get started, check out our <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/">Deployment Options</a> page.</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c">2 - Contribution Guidelines</h1>
+    <div class="lead">How to contribute to the docs</div>
+	<h2 id="contributing">Contributing</h2>
+<p>This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit <a href="https://cla.opensource.microsoft.com">https://cla.opensource.microsoft.com</a>.</p>
+<p>When you submit a pull request, a CLA bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.</p>
+<p>This project has adopted the <a href="https://opensource.microsoft.com/codeofconduct/">Microsoft Open Source Code of Conduct</a>.
+For more information see the <a href="https://opensource.microsoft.com/codeofconduct/faq/">Code of Conduct FAQ</a> or
+contact <a href="mailto:opencode@microsoft.com">opencode@microsoft.com</a> with any additional questions or comments.</p>
+<h2 id="trademarks">Trademarks</h2>
+<p>This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
+<a href="https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general">Microsoft&rsquo;s Trademark &amp; Brand Guidelines</a>.
+Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
+Any use of third-party trademarks or logos are subject to those third-party&rsquo;s policies.</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-d899ecbdfd85e54a0efbeedb5a527c83">3 - Deployment Options</h1>
+    <div class="lead">Deploy Kubeflow into AKS</div>
+	<p>Start by checking out the <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/">prerequisites</a> page</p>
+<p>If you want to deploy Kubeflow with minimal changes on AKS, then consider the <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/">vanilla</a> deployment option. The Kubeflow control plane is installed on Azure Kubernetes Service (AKS), which is a managed container service used to run and scale Kubernetes applications in the cloud.</p>
+<p>For a more secure deployment option that is has minimum baseline security, then consider the <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/">deploy with custom password and TLS</a> deployment option.</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-3d546655593853847edddd1c1dd5ef85">3.1 - Deploy Kubeflow with Password, Ingress and TLS</h1>
+    <div class="lead">Deploying Kubeflow on AKS with Custom Password and TLS</div>
+	<h2 id="background">Background</h2>
+<p>In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a>. You will then install Kubeflow after creating custom Password. This deployment option will also make use of TLS with a self-signed certificate and an ingress controller. Swap out this self signed certificate with your own CA certs for production workloads.</p>
+<h2 id="deploy-kubeflow-with-password-ingress-and-tls">Deploy Kubeflow with Password, Ingress and TLS</h2>
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: In order to complete this deployment, you will need to have either  <code>User Access Admin</code> <strong>and</strong> <code>Contributor</code> or <code>Owner</code> access to the subscription you are deploying into.
+
+</div>
+
+<p>Use the <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a> templates to deploy the infrastructure for your application. We will be using the <a href="https://github.com/Azure/AKS-Construction">AKS construction</a> project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the <a href="https://azure.github.io/AKS-Construction/">AKS construction helper</a> for more details about AKS construction.</p>
+<p>You can also try out the automated option using <a href="https://magefile.org/">Mage</a> build tool at the <a href="https://github.com/Azure-Samples/azure-opensource-labs/tree/main/cloud-native/aks-kubeflow#kubeflow-on-azure-kubernetes-service-aks">Azure Open Source Labs</a>.</p>
+<p>Login to the Azure CLI.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az login
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: <code>az account set --subscription &lt;NAME_OR_ID_OF_SUBSCRIPTION&gt;</code>.
+
+</div>
+
+<p>Install kubectl using the Azure CLI, if required.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks install-cli
+</span></span></code></pre></div><p>Clone this repo which includes the <a href="https://github.com/Azure/AKS-Construction">Azure/AKS-Construction</a> and <a href="https://github.com/kubeflow/manifests/tree/v1.6-branch">kubeflow/manifests</a> repos as <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">Git Submodules</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
+</span></span></code></pre></div><p>Change directory into the newly cloned directory</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> kubeflow-aks
+</span></span></code></pre></div><h2 id="deployment-steps">Deployment steps</h2>
+<p>Get the signed in user id so that you can get admin access to the cluster you create</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">SIGNEDINUSER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az ad signed-in-user show --query id --out tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">RGNAME</span><span style="color:#ce5c00;font-weight:bold">=</span>kubeflow
+</span></span></code></pre></div><p>Create deployment</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az group create -n <span style="color:#000">$RGNAME</span> -l eastus
+</span></span><span style="display:flex;"><span><span style="color:#000">DEP</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az deployment group create -g <span style="color:#000">$RGNAME</span> --parameters <span style="color:#000">signedinuser</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">$SIGNEDINUSER</span> -f main.bicep -o json<span style="color:#204a87;font-weight:bold">)</span>
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running <code>echo $DEP &gt; test.json</code> and restore it by running <code>export DEP=$(cat test.json)</code>.
+
+</div>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">KVNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.kvAppName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">AKSCLUSTER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.aksClusterName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">TENANTID</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az account show --query tenantId -o tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">ACRNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az acr list -g <span style="color:#000">$RGNAME</span> --query <span style="color:#4e9a06">&#34;[0].name&#34;</span>  -o tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span></code></pre></div><h2 id="install-kubelogin-and-log-into-the-cluster">Install kubelogin and log into the cluster</h2>
+<p>Next install kubelogin using the <a href="https://github.com/Azure/kubelogin">installation instructions</a> appropriate for your computer. From there, you&rsquo;ll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks get-credentials --resource-group <span style="color:#000">$RGNAME</span> <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>  --name <span style="color:#000">$AKSCLUSTER</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubelogin convert-kubeconfig -l azurecli
+</span></span></code></pre></div><p>Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.
+
+</div>
+</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get nodes
+</span></span></code></pre></div><h2 id="install-kustomize">Install kustomize</h2>
+<p>Next install kustomize using the <a href="https://kubectl.docs.kubernetes.io/installation/kustomize/">installation instructions</a> appropriate for your computer.</p>
+
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: In order to use the <code>kustomize</code> command below to deploy Kubeflow, you must use <a href="https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0">Kustomize v3.2.0</a>. More info <a href="https://github.com/kubeflow/manifests#prerequisites">here</a>.
+
+</div>
+
+<h2 id="install-kubelogin-with-tls-and-unique-password">Install kubelogin with TLS and Unique Password</h2>
+<p>It is assumed you have completed the steps in the main <a href="./README.md">README</a> file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.</p>
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.
+
+</div>
+
+<ol>
+<li>
+<p>The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it <a href="https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password">using python</a>. For simplicity we will be using coderstool&rsquo;s <a href="https://www.coderstool.com/bcrypt-hash-generator">Bycrypt Hash Generator</a> for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the &ldquo;Generate Hash&rdquo; button. You can generate multiple if you have multiple users.
+<img src="./images/brypt-password-generation.png" alt="Generate password"></p>
+</li>
+<li>
+<p>Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array.</p>
+</li>
+<li>
+<p>Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way</p>
+</li>
+<li>
+<p>Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -r tls-manifest/manifests/ manifests/
+</span></span></code></pre></div></li>
+<li>
+<p>cd to the manifests folder and install kubeflow</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests
+</span></span></code></pre></div><p>Install all of the components via a single command</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build example <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
+</span></span></code></pre></div></li>
+<li>
+<p>Once the command has completed, check the pods are ready</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get pods -n cert-manager
+</span></span><span style="display:flex;"><span>kubectl get pods -n istio-system
+</span></span><span style="display:flex;"><span>kubectl get pods -n auth
+</span></span><span style="display:flex;"><span>kubectl get pods -n knative-eventing
+</span></span><span style="display:flex;"><span>kubectl get pods -n knative-serving
+</span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow
+</span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow-user-example-com
+</span></span></code></pre></div></li>
+<li>
+<p>Restart dex to ensure dex is using the updated password
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: It is important that you restart the dex pod by running the command below. If you don&rsquo;t any previous password (including the default password 12341234 if not changed) will be used from the time the Service is exposed via <code>LoadBalancer</code> until the time this command is run or the dex is otherwise restarted.
+
+</div>
+</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl rollout restart deployment dex -n auth
+</span></span></code></pre></div></li>
+<li>
+<p>Configure TLS. Start by getting IP address of istio gateway</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">IP</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>kubectl -n istio-system get service istio-ingressgateway --output <span style="color:#000">jsonpath</span><span style="color:#ce5c00;font-weight:bold">={</span>.status.loadBalancer.ingress<span style="color:#ce5c00;font-weight:bold">[</span>0<span style="color:#ce5c00;font-weight:bold">]</span>.ip<span style="color:#ce5c00;font-weight:bold">}</span><span style="color:#204a87;font-weight:bold">)</span>
+</span></span></code></pre></div><p>Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: If you are using a mac you will need to change the command to <code>sed -i '' &quot;s/192.168.0.5/$IP/&quot; tls-manifest/certificate.yaml </code>.
+
+</div>
+
+
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: If these sed commands don&rsquo;t work for any reason or if you don&rsquo;t have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.
+
+</div>
+</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
+</span></span><span style="display:flex;"><span>sed -i  <span style="color:#4e9a06">&#34;s/192.168.0.5/</span><span style="color:#000">$IP</span><span style="color:#4e9a06">/&#34;</span> tls-manifest/certificate.yaml 
+</span></span></code></pre></div></li>
+<li>
+<p>Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in tls-manifest/manifests/common/istio-1-14/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
+</span></span><span style="display:flex;"><span>kubectl apply -f  tls-manifest/certificate.yaml 
+</span></span></code></pre></div></li>
+<li>
+<p>You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
+<img src="./images/logged-in-with-tls.png" alt="Generate password"></p>
+</li>
+</ol>
+<h2 id="testing-the-deployment-with-a-notebook-server">Testing the deployment with a Notebook server</h2>
+<p>You can test that the deployments worked by creating a new Notebook server using the GUI.</p>
+<ol>
+<li>Click on &ldquo;Create a new Notebook server&rdquo;
+<img src="./images/create-new-notebook-server.png" alt="creating a new Notebook server"></li>
+<li>Click on &ldquo;+ New Notebook&rdquo; in the top right corner of the resulting page</li>
+<li>Enter a name for the server</li>
+<li>Leave the &ldquo;jupyterlab&rdquo; option selected</li>
+<li>Feel free to pick one of the images available, in this case we choose the default</li>
+<li>Set Requested CPU to 0.5 and requested memory in Gi to 1</li>
+<li>Under Data Volumes click on &ldquo;+ Add new volume&rdquo;</li>
+<li>Expand the resulting section</li>
+<li>Set the name to datavol-1. The default name provided would not work because it has characters that are not allowed</li>
+<li>Set the size in Gi to 1</li>
+<li>Uncheck &ldquo;Use default class&rdquo;</li>
+<li>Choose a class from the provided options. In this case I will choose &ldquo;azurefile-premium&rdquo;</li>
+<li>Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
+<img src="./images/data-volume-config.png" alt="data volume config"></li>
+<li>Click on &ldquo;Launch&rdquo; at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
+<img src="./images/server-provisioned-successfully-tls.png" alt="deployment successful"></li>
+<li>Click on &ldquo;Connect&rdquo; to access your jupyter lab</li>
+<li>Under Notebook, click on Python 3 to access your jupyter notebook and start coding</li>
+</ol>
+<h2 id="destroy-the-resources">Destroy the resources</h2>
+<p>Run the command below to destroy the resources you just created after you are done testing</p>
+<pre tabindex="0"><code class="language-azurecli" data-lang="azurecli">az group delete -n $RGNAME
+</code></pre>
+</div>
+
+
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-de7654acb0d178b47cd8b7316b01fef9">3.2 - Prerequisties</h1>
+    <div class="lead">Set up your environment for deploying Kubeflow for AKS</div>
+	<h1 id="kubeflow-on-aks-prerequisites">Kubeflow on AKS Prerequisites</h1>
+<p>For all Kubeflow on AKS deployment options, you will need the following</p>
+<ul>
+<li>An <strong>Azure Subscription</strong> (e.g. <a href="https://aka.ms/azure-free-account">Free</a> or <a href="https://aka.ms/azure-student-account">Student</a> account)
+<ul>
+<li>
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: In order to complete the deployments, you will need to have either  <code>User Access Admin</code> <strong>and</strong> <code>Contributor</code> or <code>Owner</code> access to the subscription you are deploying into.
+
+</div>
+</li>
+</ul>
+</li>
+<li>The <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a></li>
+<li>
+<ul>
+<li>A <a href="https://github.com">GitHub Account</a></li>
+</ul>
+</li>
+<li>Bash shell (e.g. macOS, Linux, <a href="https://docs.microsoft.com/windows/wsl/about">Windows Subsystem for Linux (WSL)</a>, <a href="https://multipass.run/">Multipass</a>, <a href="https://docs.microsoft.com/azure/cloud-shell/quickstart">Azure Cloud Shell</a>, <a href="https://github.com/features/codespaces">GitHub Codespaces</a>, <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers">devcontainers</a>, etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the <strong>correct</strong> version of kustomize</li>
+<li>The following installed in your Bash shell if you are not going with the codespaces or devcontainers option
+<ul>
+<li><a href="https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64">kustomize v3.2.0</a></li>
+<li><a href="https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip">kubelogin</a></li>
+<li>git</li>
+<li><a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install">Bicep</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/">Kubectl</a></li>
+<li><a href="https://gnuwin32.sourceforge.net/packages/sed.htm">sed</a> (optional)
+
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Note</h4>
+
+    If you have access to <a href="https://docs.github.com/en/codespaces/overview">GitHub Codespaces</a> or <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a> on your local machine, it is highly recommended that you deploy this using a <a href="https://code.visualstudio.com/docs/devcontainers/containers">devcontainer</a> as it includes all the tools you need. The configuration for the devcontainer can be found <a href="https://github.com/azure/kubeflow-aks/tree/main/.devcontainer">here</a>.
+
+</div>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-1d51b81e8d0a5fde09fc3f0009638cb3">3.3 - Vanilla Installation</h1>
+    <div class="lead">Deploy kubeflow into an AKS cluster using default settings.</div>
+	<h2 id="background">Background</h2>
+<p>In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a>. You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser.</p>
+<h2 id="instructions-for-basic-deployment-without-tls-and-with-default-password">Instructions for Basic Deployment without TLS and with Default Password</h2>
+<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="./Deploy-with-tls.md">Deploy kubeflow with TLS</a>.</p>
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn&rsquo;t have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.
+
+</div>
+
+<p>Use the <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a> templates to deploy the infrastructure for your application. We will be using the <a href="https://github.com/Azure/AKS-Construction">AKS construction</a> project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the <a href="https://azure.github.io/AKS-Construction/">AKS construction helper</a> for more details about AKS construction.</p>
+<p>Login to the Azure CLI.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az login
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: <code>az account set --subscription &lt;NAME_OR_ID_OF_SUBSCRIPTION&gt;</code>.
+
+</div>
+
+<p>Install kubectl using the Azure CLI, if required.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks install-cli
+</span></span></code></pre></div><p>Clone this repo which includes the <a href="https://github.com/Azure/AKS-Construction">Azure/AKS-Construction</a> and <a href="https://github.com/kubeflow/manifests/tree/v1.6-branch">kubeflow/manifests</a> repos as <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">Git Submodules</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
+</span></span></code></pre></div><p>Change directory into the newly cloned directory</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> kubeflow-aks
+</span></span></code></pre></div><h2 id="deployment-steps">Deployment steps</h2>
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: In order to complete this deployment, you will need to have either  <code>User Access Admin</code> <strong>and</strong> <code>Contributor</code> or <code>Owner</code> access to the subscription you are deploying into.
+
+</div>
+
+<p>Get the signed in user id so that you can get admin access to the cluster you create</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">SIGNEDINUSER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az ad signed-in-user show --query id --out tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">RGNAME</span><span style="color:#ce5c00;font-weight:bold">=</span>kubeflow
+</span></span></code></pre></div><p>Create deployment</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az group create -n <span style="color:#000">$RGNAME</span> -l eastus
+</span></span><span style="display:flex;"><span><span style="color:#000">DEP</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az deployment group create -g <span style="color:#000">$RGNAME</span> --parameters <span style="color:#000">signedinuser</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">$SIGNEDINUSER</span> -f main.bicep -o json<span style="color:#204a87;font-weight:bold">)</span>
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running <code>echo $DEP &gt; test.json</code> and restore it by running <code>export DEP=$(cat test.json)</code>.
+
+</div>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">KVNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.kvAppName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">AKSCLUSTER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.aksClusterName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">TENANTID</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az account show --query tenantId -o tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#000">ACRNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az acr list -g <span style="color:#000">$RGNAME</span> --query <span style="color:#4e9a06">&#34;[0].name&#34;</span>  -o tsv<span style="color:#204a87;font-weight:bold">)</span>
+</span></span></code></pre></div><h2 id="install-kubelogin-and-log-into-the-cluster">Install kubelogin and log into the cluster</h2>
+<p>Next install kubelogin using the <a href="https://github.com/Azure/kubelogin">installation instructions</a> appropriate for your computer. From there, you&rsquo;ll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks get-credentials --resource-group <span style="color:#000">$RGNAME</span> <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>  --name <span style="color:#000">$AKSCLUSTER</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubelogin convert-kubeconfig -l azurecli
+</span></span></code></pre></div><p>Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
+
+
+<div class="alert alert-warning" role="alert">
+
+
+    ⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.
+
+</div>
+</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get nodes
+</span></span></code></pre></div><h2 id="install-kustomize">Install kustomize</h2>
+<p>Next install kustomize using the <a href="https://kubectl.docs.kubernetes.io/installation/kustomize/">installation instructions</a> appropriate for your computer.</p>
+
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: In order to use the <code>kustomize</code> command below to deploy Kubeflow, you must use <a href="https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0">Kustomize v3.2.0</a>. More info <a href="https://github.com/kubeflow/manifests#prerequisites">here</a>.
+
+</div>
+
+<h2 id="deploy-kubeflow-without-tls-using-default-password">Deploy Kubeflow without TLS using Default Password</h2>
+<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="./Deploy-with-tls.md">Deploy kubeflow with TLS</a>.</p>
+<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.6-branch</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/
+</span></span><span style="display:flex;"><span>git checkout v1.6-branch
+</span></span></code></pre></div><p>Install all of the components via a single command</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build example <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
+</span></span></code></pre></div><p>Once the command has completed, check the pods are ready</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get pods -n cert-manager
+</span></span><span style="display:flex;"><span>kubectl get pods -n istio-system
+</span></span><span style="display:flex;"><span>kubectl get pods -n auth
+</span></span><span style="display:flex;"><span>kubectl get pods -n knative-eventing
+</span></span><span style="display:flex;"><span>kubectl get pods -n knative-serving
+</span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow
+</span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow-user-example-com
+</span></span></code></pre></div><p>Run <code>kubectl port-forward</code> to access the Kubeflow dashboard</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+</span></span></code></pre></div><p>Finally, open <a href="http://localhost:8080/">http://localhost:8080</a> and login with the default user&rsquo;s credentials. The default email address is <code>user@example.com</code> and the default password is <code>12341234</code></p>
+<h2 id="testing-the-deployment-with-a-notebook-server">Testing the deployment with a Notebook server</h2>
+<p>You can test that the deployments worked by creating a new Notebook server using the GUI.</p>
+<ol>
+<li>
+<p>Click on &ldquo;Create a new Notebook server&rdquo;
+<img src="./images/create-new-notebook-server.png" alt="creating a new Notebook server"></p>
+</li>
+<li>
+<p>Click on &ldquo;+ New Notebook&rdquo; in the top right corner of the resulting page</p>
+</li>
+<li>
+<p>Enter a name for the server</p>
+</li>
+<li>
+<p>Leave the &ldquo;jupyterlab&rdquo; option selected</p>
+</li>
+<li>
+<p>Feel free to pick one of the images available, in this case we choose the default</p>
+</li>
+<li>
+<p>Set Requested CPU to 0.5 and requested memory in Gi to 1</p>
+</li>
+<li>
+<p>Under Data Volumes click on &ldquo;+ Add new volume&rdquo;</p>
+</li>
+<li>
+<p>Expand the resulting section</p>
+</li>
+<li>
+<p>Set the name to datavol-1. The default name provided would not work because it has characters that are not allowed</p>
+</li>
+<li>
+<p>Set the size in Gi to 1</p>
+</li>
+<li>
+<p>Uncheck &ldquo;Use default class&rdquo;</p>
+</li>
+<li>
+<p>Choose a class from the provided options. In this case I will choose &ldquo;azurefile-premium&rdquo;</p>
+</li>
+<li>
+<p>Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
+<img src="./images/data-volume-config.png" alt="data volume config"></p>
+</li>
+<li>
+<p>Click on &ldquo;Launch&rdquo; at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
+<img src="./images/server-provisioned-successfully.png" alt="deployment successful"></p>
+</li>
+<li>
+<p>Click on &ldquo;Connect&rdquo; to access your jupyter lab</p>
+</li>
+<li>
+<p>Under Notebook, click on Python 3 to access your jupyter notebook and start coding</p>
+</li>
+</ol>
+<h2 id="next-steps">Next steps</h2>
+<p>[Secure your kubeflow cluster using TLS and stronger Password] deployment option.</p>
+
+</div>
+
+
+
+    
+	
+  
+
+    
+	
+  
+
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2023 Kubeflow on AKS Authors All Rights Reserved</small>
+        
+	
+		
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="/kubeflow-aks/main/js/main.min.6b9acfd0c4ac63f6146db27c21094585583777f6b303d8a8ebfe07c986e6c24c.js" integrity="sha256-a5rP0MSsY/YUbbJ8IQlFhVg3d/azA9io6/4HyYbmwkw=" crossorigin="anonymous"></script>
+<script src='/kubeflow-aks/main/js/tabpane-persist.js'></script>
+
+
+
+  </body>
+</html>
