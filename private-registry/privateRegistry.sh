@@ -1,9 +1,14 @@
 #!/bin/bash
 
 # Functions
+add_repo () {
+  sed -i "s|$registry|$registry\\n  newName: $ACRURL/${registry##*/}|g" $file
+  printf "%s\n" "[$(date)] [INFO] $registry updated to $ACRURL/${registry##*/} in $file" | tee -a $LOGFILE
+}
+
 replace_repo () {
-  sed -i "s|$registry|$ACRURL/$image_name|g" $file
-  printf "%s\n" "[$(date)] [INFO] $registry updated to $ACRURL/$image_name in $file" | tee -a $LOGFILE
+  sed -i "s|newName: $registry|newName: $ACRURL/${registry##*/}|g" $file
+  printf "%s\n" "[$(date)] [INFO] $registry updated to $ACRURL/${registry##*/} in $file" | tee -a $LOGFILE
 }
 
 ## Set the name of the log file
@@ -62,6 +67,48 @@ find "$DIR" -type f -name "kustomization.yaml" | while read file; do
           printf "%s\n" "[$(date)] [INFO] $image_name already exists on ACR and does not need to be imported" | tee -a "$LOGFILE"
           
           # Update the kustomization.yaml file with the new image name
+          add_repo
+
+        else
+        # Import the image from another container registry to Azure Container Registry using az acr import command[^1^][2]
+          printf "%s\n" "[$(date)] [INFO] Importing $source_image" | tee -a $LOGFILE
+          az acr import --name $ACRNAME --source $source_image --image $image_name --force
+
+          if [ $? -eq 0 ]; then
+            # Update the kustomization.yaml file with the new image name
+            add_repo
+
+          else
+            # Log error messages
+            printf "%s\n" "[$(date)] [ERROR] Failed to import $source_image" >> $LOGFILE
+            return 2>> $LOGFILE
+          fi
+        fi
+      fi
+
+      # Check if the next line contains a newName property
+      elif [[ $next_line =~ newName:\ (.+) ]]; then
+      # Extract the tag name and store it in a variable
+        tag=${BASH_REMATCH[1]}
+
+        # Concatenate the registry and tag names with a colon delimiter and echo to console
+        source_image="$registry:$tag"
+
+        # echo $source_image
+        image_name=${registry##*/}:${tag}
+        printf "%s\n" "[$(date)] [DEBUG] $image_name found in $file" | tee -a "$LOGFILE"
+
+        # Check if the image already exists on Azure Container Registry using az acr repository show command[^1^][4]
+        az acr repository show --name $ACRNAME --image $image_name > /dev/null 2>&1
+
+        # Get the exit code of the command (0 means success, non-zero means failure)
+        exit_code=$?
+
+        # If exit code is 0, echo a message that the ACR repository was found and does not need to be imported
+        if [ $exit_code -eq 0 ]; then
+          printf "%s\n" "[$(date)] [INFO] $image_name already exists on ACR and does not need to be imported" | tee -a "$LOGFILE"
+          
+          # Update the kustomization.yaml file with the new image name
           replace_repo
 
         else
@@ -79,7 +126,6 @@ find "$DIR" -type f -name "kustomization.yaml" | while read file; do
             return 2>> $LOGFILE
           fi
         fi
-      fi
     fi
   done
 done
