@@ -92,7 +92,7 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 ## Install Kubeflow with TLS and Unique Password
 Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
 
-{{< alert color="warning" >}}⚠️ Warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ Warning: For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
 
 1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
     ![Generate password](./images/brypt-password-generation.png)
