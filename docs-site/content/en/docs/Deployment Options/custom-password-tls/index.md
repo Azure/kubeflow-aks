@@ -89,18 +89,18 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 
 {{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}} 
 
-## Install kubelogin with TLS and Unique Password
-It is assumed you have completed the steps in the main [README](./README.md) file up to point where you deployed installed Kustomize. Follow the steps below to deploy kubeflow and provide access to it with TLS. Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
+## Install Kubeflow with TLS and Unique Password
+Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
 
-{{< alert color="warning" >}}⚠️ Warning:For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ Warning: For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.{{< /alert >}}
 
 1. The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it [using python](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). For simplicity we will be using coderstool's [Bycrypt Hash Generator](https://www.coderstool.com/bcrypt-hash-generator) for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the "Generate Hash" button. You can generate multiple if you have multiple users.
     ![Generate password](./images/brypt-password-generation.png)
-1. Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array.
+1. Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array. Please update the default email address in the params file located at manifests\common\user-namespace\base\params.env file if changed from default.
 1. Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way
 1. Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.
     ```bash
-    cp -r tls-manifest/manifests/ manifests/
+    cp -r tls-manifest/manifests .
     ```
 1. cd to the manifests folder and install kubeflow
     ```bash
@@ -140,7 +140,6 @@ It is assumed you have completed the steps in the main [README](./README.md) fil
     ```
 1. Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in tls-manifest/manifests/common/istio-1-14/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.
     ```bash
-    cd ..
     kubectl apply -f  tls-manifest/certificate.yaml 
     ```
 1. You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
