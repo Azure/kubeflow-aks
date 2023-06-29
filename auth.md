@@ -1,5 +1,5 @@
 # Kubeflow Auth
 
 URL: http://localhost:8080
-Username: user@example.com
-Password: 12341234
+Username: srpadala@microsoft.com
+Password: Kf0nazure
