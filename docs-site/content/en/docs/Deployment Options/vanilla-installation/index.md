@@ -98,17 +98,20 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
 
-From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.6-branch`.
+From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.7-branch`.
 
 ```bash
 cd manifests/
-git checkout v1.6-branch
+git checkout v1.7-branch
+cd ..
 ```
 
 Install all of the components via a single command
 
 ```bash
-while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+cp -a deployments/vanilla manifests/vanilla
+cd manifests/  
+while ! kustomize build vanilla | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
 ```
 
 Once the command has completed, check the pods are ready
