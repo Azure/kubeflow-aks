@@ -35,8 +35,8 @@
 
 
 
-<link rel="preload" href="/kubeflow-aks/main/scss/main.min.43ad6541a45f31cd03dd1066a29ba2595ef582b492c6241a2288367893840e77.css" as="style">
-<link href="/kubeflow-aks/main/scss/main.min.43ad6541a45f31cd03dd1066a29ba2595ef582b492c6241a2288367893840e77.css" rel="stylesheet" integrity="">
+<link rel="preload" href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" as="style">
+<link href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" rel="stylesheet" integrity="">
 
 <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -410,20 +410,20 @@ Any use of third-party trademarks or logos are subject to those third-party&rsqu
 <img src="./images/brypt-password-generation.png" alt="Generate password"></p>
 </li>
 <li>
-<p>Head to the tls-manifest/manifests/common/dex/base/config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array. Please update the default email address in the params file located at manifests\common\user-namespace\base\params.env file if changed from default.</p>
+<p>Head to the deployments/tls/dex-config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array. Please update the default email address in the params file located at manifests\common\user-namespace\base\params.env file if changed from default.</p>
 </li>
 <li>
 <p>Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way</p>
 </li>
 <li>
 <p>Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -r tls-manifest/manifests .
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -a deployments/tls manifests/tls
 </span></span></code></pre></div></li>
 <li>
 <p>cd to the manifests folder and install kubeflow</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests
 </span></span></code></pre></div><p>Install all of the components via a single command</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build example <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build tls <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
 </span></span></code></pre></div></li>
 <li>
 <p>Once the command has completed, check the pods are ready</p>
@@ -450,31 +450,11 @@ Any use of third-party trademarks or logos are subject to those third-party&rsqu
 </span></span></code></pre></div></li>
 <li>
 <p>Configure TLS. Start by getting IP address of istio gateway</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">IP</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>kubectl -n istio-system get service istio-ingressgateway --output <span style="color:#000">jsonpath</span><span style="color:#ce5c00;font-weight:bold">={</span>.status.loadBalancer.ingress<span style="color:#ce5c00;font-weight:bold">[</span>0<span style="color:#ce5c00;font-weight:bold">]</span>.ip<span style="color:#ce5c00;font-weight:bold">}</span><span style="color:#204a87;font-weight:bold">)</span>
-</span></span></code></pre></div><p>Replace the IP address in the tls-manifest/certificate.yaml file with the IP address of the istio gateway using the sed command below
-
-
-<div class="alert alert-warning" role="alert">
-
-
-    ⚠️ Warning: If you are using a mac you will need to change the command to <code>sed -i '' &quot;s/192.168.0.5/$IP/&quot; tls-manifest/certificate.yaml </code>.
-
-</div>
-
-
-
-<div class="alert alert-primary" role="alert">
-
-
-    💡Note: If these sed commands don&rsquo;t work for any reason or if you don&rsquo;t have sed installed, you will need to update these files manually by replacing the placeholders in the files mentioned below.
-
-</div>
-</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
-</span></span><span style="display:flex;"><span>sed -i  <span style="color:#4e9a06">&#34;s/192.168.0.5/</span><span style="color:#000">$IP</span><span style="color:#4e9a06">/&#34;</span> tls-manifest/certificate.yaml 
-</span></span></code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl -n istio-system get service istio-ingressgateway --output <span style="color:#000">jsonpath</span><span style="color:#ce5c00;font-weight:bold">={</span>.status.loadBalancer.ingress<span style="color:#ce5c00;font-weight:bold">[</span>0<span style="color:#ce5c00;font-weight:bold">]</span>.ip<span style="color:#ce5c00;font-weight:bold">}</span>
+</span></span></code></pre></div><p>Replace the IP address in the deployments/tls/certificate.yaml file (line 13) with the IP address of the istio gateway and save the file.</p>
+</li>
 <li>
-<p>Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in tls-manifest/manifests/common/istio-1-14/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.</p>
+<p>Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in manifests/common/istio-1-16/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f  tls-manifest/certificate.yaml 
 </span></span></code></pre></div></li>
 <li>
@@ -675,11 +655,14 @@ Any use of third-party trademarks or logos are subject to those third-party&rsqu
 
 <h2 id="deploy-kubeflow-without-tls-using-default-password">Deploy Kubeflow without TLS using Default Password</h2>
 <p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="./Deploy-with-tls.md">Deploy kubeflow with TLS</a>.</p>
-<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.6-branch</code>.</p>
+<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.7-branch</code>.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/
-</span></span><span style="display:flex;"><span>git checkout v1.6-branch
+</span></span><span style="display:flex;"><span>git checkout v1.7-branch
+</span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
 </span></span></code></pre></div><p>Install all of the components via a single command</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build example <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -a deployments/vanilla manifests/vanilla
+</span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/  
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build vanilla <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
 </span></span></code></pre></div><p>Once the command has completed, check the pods are ready</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get pods -n cert-manager
 </span></span><span style="display:flex;"><span>kubectl get pods -n istio-system
