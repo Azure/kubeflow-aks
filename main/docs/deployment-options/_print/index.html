@@ -355,8 +355,7 @@ This is the multi-page printable view of this section.
 <p>For all Kubeflow on AKS deployment options, you will need the following</p>
 <ul>
 <li>An <strong>Azure Subscription</strong> (e.g. <a href="https://aka.ms/azure-free-account">Free</a> or <a href="https://aka.ms/azure-student-account">Student</a> account)
-<ul>
-<li>
+
 
 <div class="alert alert-warning" role="alert">
 
@@ -364,8 +363,6 @@ This is the multi-page printable view of this section.
     ⚠️ Warning: In order to complete the deployments, you will need to have either  <code>User Access Admin</code> <strong>and</strong> <code>Contributor</code> or <code>Owner</code> access to the subscription you are deploying into.
 
 </div>
-</li>
-</ul>
 </li>
 <li>The <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a></li>
 <li>
@@ -376,24 +373,24 @@ This is the multi-page printable view of this section.
 <li>Bash shell (e.g. macOS, Linux, <a href="https://docs.microsoft.com/windows/wsl/about">Windows Subsystem for Linux (WSL)</a>, <a href="https://multipass.run/">Multipass</a>, <a href="https://docs.microsoft.com/azure/cloud-shell/quickstart">Azure Cloud Shell</a>, <a href="https://github.com/features/codespaces">GitHub Codespaces</a>, <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers">devcontainers</a>, etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the <strong>correct</strong> version of kustomize</li>
 <li>The following installed in your Bash shell if you are not going with the codespaces or devcontainers option
 <ul>
-<li><a href="https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64">kustomize v3.2.0</a></li>
-<li><a href="https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip">kubelogin</a></li>
+<li><a href="https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64">Kustomize v3.2.0</a></li>
+<li><a href="https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip">Kubelogin</a></li>
 <li>git</li>
 <li><a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install">Bicep</a></li>
 <li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/">Kubectl</a></li>
-<li><a href="https://gnuwin32.sourceforge.net/packages/sed.htm">sed</a> (optional)
+<li><a href="https://gnuwin32.sourceforge.net/packages/sed.htm">sed</a> (optional)</li>
+</ul>
+</li>
+</ul>
 
 
 <div class="alert alert-primary" role="alert">
-<h4 class="alert-heading">Note</h4>
+
 
     If you have access to <a href="https://docs.github.com/en/codespaces/overview">GitHub Codespaces</a> or <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a> on your local machine, it is highly recommended that you deploy this using a <a href="https://code.visualstudio.com/docs/devcontainers/containers">devcontainer</a> as it includes all the tools you need. The configuration for the devcontainer can be found <a href="https://github.com/azure/kubeflow-aks/tree/main/.devcontainer">here</a>.
 
 </div>
-</li>
-</ul>
-</li>
-</ul>
+
 
 </div>
 
