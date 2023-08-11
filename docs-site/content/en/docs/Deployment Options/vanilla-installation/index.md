@@ -53,14 +53,18 @@ Get the signed in user id so that you can get admin access to the cluster you cr
 
 ```bash
 SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
+```
+Setup deployment parameters
+```bash
+DEPLOYMENTREGION=eastus
+KUBERNETESVERSION=$(az aks get-versions -l $DEPLOYMENTREGION -o tsv --query "values[?contains(@.capabilities.supportPlan,'AKSLongTermSupport')].version")
 RGNAME=kubeflow
 ```
-
 Create deployment
 
 ```bash
-az group create -n $RGNAME -l eastus
-DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
+az group create -n $RGNAME -l $DEPLOYMENTREGION
+DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER kubernetesVersion=$KUBERNETESVERSION -f main.bicep -o json)
 ```
 
 {{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
