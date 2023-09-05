@@ -9,6 +9,7 @@ module aksconst './AKS-Construction/bicep/main.bicep' = {
     location: location
     resourceName: nameseed
     enable_aad: true
+    kubernetesVersion: '1.26.6'
     enableAzureRBAC: true
     registries_sku: 'Standard'
     omsagent: true
