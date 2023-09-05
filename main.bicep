@@ -19,7 +19,7 @@ module aksconst './AKS-Construction/bicep/main.bicep' = {
     osDiskType: 'Managed'
     AksPaidSkuForSLA: true
     networkPolicy: 'azure'
-    azurepolicy: 'audit'
+    azurepolicy: 'Audit'
     acrPushRolePrincipalId: signedinuser
     adminPrincipalId: signedinuser
     AksDisableLocalAccounts: true
