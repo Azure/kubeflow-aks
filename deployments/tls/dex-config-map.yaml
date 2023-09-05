@@ -16,17 +16,14 @@ data:
       format: text
     oauth2:
       skipApprovalScreen: true
-    enablePasswordDB: true
+    enablePasswordDB: true  
     staticPasswords:
     - email: user@example.com
-      hash: 
-      # https://github.com/dexidp/dex/pull/1601/commits
-      # FIXME: Use hashFromEnv instead
-      username: user
+      hash: $2a$10$aEO3ZBW0K03zZUCuKB.uK.0HbsQ166Ckzktg39rKx5nS.CD8l1eGq
+      username: srpadala@microsoft.com
       userID: "15841185641784"
     staticClients:
-    # https://github.com/dexidp/dex/pull/1664
     - idEnv: OIDC_CLIENT_ID
-      redirectURIs: ["/login/oidc"]
+      redirectURIs: ["/authservice/oidc/callback"]
       name: 'Dex Login Application'
       secretEnv: OIDC_CLIENT_SECRET
