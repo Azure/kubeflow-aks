@@ -14,7 +14,7 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 
 ## Instructions for Basic Deployment without TLS and with Default Password
 
-This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
 {{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.{{< /alert >}}
 
@@ -26,7 +26,7 @@ Login to the Azure CLI.
 az login
 ```
 
-{{< alert color="primary" >}}💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}}
 
 Install kubectl using the Azure CLI, if required.
 
@@ -41,9 +41,10 @@ git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
 ```
 
 Change directory into the newly cloned directory
+
 ```bash
 cd kubeflow-aks
-``` 
+```
 
 ## Deployment steps
 
@@ -63,7 +64,7 @@ az group create -n $RGNAME -l eastus
 DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
 ```
 
-{{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}}
 
 ```bash
 KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
@@ -73,6 +74,7 @@ ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
 ```
 
 ## Install kubelogin and log into the cluster
+
 Next install kubelogin using the [installation instructions](https://github.com/Azure/kubelogin) appropriate for your computer. From there, you'll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.
 
 ```bash
@@ -84,6 +86,7 @@ kubelogin convert-kubeconfig -l azurecli
 
 Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
 {{< alert color="warning" >}}⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.{{< /alert >}}
+
 ```bash
 kubectl get nodes
 ```
@@ -92,11 +95,11 @@ kubectl get nodes
 
 Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
 
-{{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}} 
+{{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}}
 
 ## Deploy Kubeflow without TLS using Default Password
 
-This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
 From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.7-branch`.
 
@@ -135,6 +138,7 @@ kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 Finally, open [http://localhost:8080](http://localhost:8080/) and login with the default user's credentials. The default email address is `user@example.com` and the default password is `12341234`
 
 ## Testing the deployment with a Notebook server
+
 You can test that the deployments worked by creating a new Notebook server using the GUI.
 
 1. Click on "Create a new Notebook server"
@@ -159,4 +163,5 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
 ## Next steps
-[Secure your kubeflow cluster using TLS and stronger Password] deployment option. 
+
+[Secure your kubeflow cluster using TLS and stronger Password] deployment option.

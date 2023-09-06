@@ -9,7 +9,6 @@ module aksconst './AKS-Construction/bicep/main.bicep' = {
     location: location
     resourceName: nameseed
     enable_aad: true
-    kubernetesVersion: '1.26.6'
     enableAzureRBAC: true
     registries_sku: 'Standard'
     omsagent: true
@@ -19,7 +18,7 @@ module aksconst './AKS-Construction/bicep/main.bicep' = {
     osDiskType: 'Managed'
     AksPaidSkuForSLA: true
     networkPolicy: 'azure'
-    azurepolicy: 'Audit'
+    azurepolicy: 'audit'
     acrPushRolePrincipalId: signedinuser
     adminPrincipalId: signedinuser
     AksDisableLocalAccounts: true
