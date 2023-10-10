@@ -16,31 +16,34 @@ process_files(){
       source_image="$name:$newTag"
       image_name=${name##*/}:${newTag}
 
-      #Check if the image already exists on Azure Container Registry using az acr repository show command[^1^][4]
-      az acr repository show --name $ACRNAME --image $image_name > /dev/null 2>&1
+      if [[ $name =~ ((gcr\.io|docker\.io)/.+) ]]; then
 
-      # Get the exit code of the command (0 means success, non-zero means failure)
-      exit_code=$?
+        #Check if the image already exists on Azure Container Registry using az acr repository show command[^1^][4]
+        az acr repository show --name $ACRNAME --image $image_name > /dev/null 2>&1
 
-      # If exit code is 0, echo a message that the ACR repository was found and does not need to be imported
-      if [ $exit_code -eq 0 ]; then
-        printf "%s\n" "[$(date)] [INFO] $image_name already exists on ACR and does not need to be imported" | tee -a "$LOGFILE"
+        # Get the exit code of the command (0 means success, non-zero means failure)
+        exit_code=$?
+        
         updated_image_name="${ACRURL}/${name##*/}"
-        yq eval ".images[] |= select(.name == \"$name\") |= .newName |= \"$updated_image_name\"" -i $file
-      
-      else
-        printf "%s\n" "[$(date)] [INFO] Importing $source_image" | tee -a $LOGFILE
-        az acr import --name $ACRNAME --source $source_image --image $image_name --force
 
-        if [ $? -eq 0 ]; then
-          # Update the kustomization.yaml file with the new image name
-          updated_image_name="${ACRURL}/${name##*/}"
+        # If exit code is 0, echo a message that the ACR repository was found and does not need to be imported
+        if [ $exit_code -eq 0 ]; then
+          printf "%s\n" "[$(date)] [INFO] $image_name already exists on ACR and does not need to be imported" | tee -a "$LOGFILE"
           yq eval ".images[] |= select(.name == \"$name\") |= .newName |= \"$updated_image_name\"" -i $file
-
+        
         else
-          # Log error messages
-          printf "%s\n" "[$(date)] [ERROR] Failed to import $source_image" >> $LOGFILE
-          return 2>> $LOGFILE
+          printf "%s\n" "[$(date)] [INFO] Importing $source_image" | tee -a $LOGFILE
+          az acr import --name $ACRNAME --source $source_image --image $image_name --force
+
+          if [ $? -eq 0 ]; then
+            # Update the kustomization.yaml file with the new image name
+            yq eval ".images[] |= select(.name == \"$name\") |= .newName |= \"$updated_image_name\"" -i $file
+
+          else
+            # Log error messages
+            printf "%s\n" "[$(date)] [ERROR] Failed to import $source_image" >> $LOGFILE
+            return 2>> $LOGFILE
+          fi
         fi
       fi
   done
