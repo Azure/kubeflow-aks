@@ -1,6 +1,7 @@
 param nameseed string = 'kubeflow'
 param location string = resourceGroup().location
 param signedinuser string
+param kubernetesVersion string
 
 //---------Kubernetes Construction---------
 module aksconst './AKS-Construction/bicep/main.bicep' = {
@@ -24,6 +25,7 @@ module aksconst './AKS-Construction/bicep/main.bicep' = {
     AksDisableLocalAccounts: true
     custom_vnet: true
     upgradeChannel: 'stable'
+    kubernetesVersion: kubernetesVersion
 
     //Workload Identity requires OidcIssuer to be configured on AKS
     // oidcIssuer: true
