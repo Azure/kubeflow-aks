@@ -14,7 +14,7 @@ In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other 
 
 ## Instructions for Basic Deployment without TLS and with Default Password
 
-This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
 {{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.{{< /alert >}}
 
@@ -99,7 +99,7 @@ Next install kustomize using the [installation instructions](https://kubectl.doc
 
 ## Deploy Kubeflow without TLS using Default Password
 
-This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS](./Deploy-with-tls.md).
+This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
 From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.8-branch`.
 
