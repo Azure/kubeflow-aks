@@ -20,7 +20,7 @@ data:
     staticPasswords:
     - email: user@example.com
       hash: $2a$10$aEO3ZBW0K03zZUCuKB.uK.0HbsQ166Ckzktg39rKx5nS.CD8l1eGq
-      username: srpadala@microsoft.com
+      username: user@example.com
       userID: "15841185641784"
     staticClients:
     - idEnv: OIDC_CLIENT_ID
