@@ -10,7 +10,7 @@ spec:
   #dnsNames:
   #  - uniquednsname.eastus.cloudapp.azure.com
   ipAddresses:
-    - {{IP_ADDRESS}}}
+    - {{ IP_ADDRESS }}
   isCA: true
   # Issuer references are always required.
   issuerRef:
