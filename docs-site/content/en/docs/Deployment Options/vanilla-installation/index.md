@@ -3,14 +3,16 @@ categories: ["quickstart"]
 tags: ["test", "sample", "docs"]
 title: "Vanilla Installation"
 linkTitle: "Vanilla Installation"
-date: 2023-03-07
+date: 2025-08-19
+weight: 2
 description: >
   Deploy kubeflow into an AKS cluster using default settings.
 ---
 
 ## Background
 
-In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser.
+In this lab you will deploy an [Azure Kubernetes Service (AKS) Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli). AKS Automatic provides a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser. 
+For more information on AKS Automatic, please refer to the [AKS Automatic documentation](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic).
 
 ## Instructions for Basic Deployment without TLS and with Default Password
 
@@ -18,27 +20,90 @@ This deployment option is for testing only. To deploy with TLS, and change defau
 
 {{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.{{< /alert >}}
 
-Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) templates to deploy the infrastructure for your application. We will be using the [AKS construction](https://github.com/Azure/AKS-Construction) project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the [AKS construction helper](https://azure.github.io/AKS-Construction/) for more details about AKS construction.
+
+## Deploy AKS Automatic
+
+Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to deploy an [AKS Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster. 
+
+{{< alert color="primary" >}}💡Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:
+- Microsoft.Authorization/policyAssignments/write
+- Microsoft.Authorization/policyAssignments/read.{{< /alert >}}
+
+
+For detailed instructions on installing AKS Automatic, please refer to the [AKS Automatic installation documentation](https://learn.microsoft.com/en-us/azure/aks/automatic/quick-automatic-managed-network?pivots=azure-cli).
 
 Login to the Azure CLI.
-
 ```bash
 az login
 ```
 
 {{< alert color="primary" >}}💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}}
 
-Install kubectl using the Azure CLI, if required.
+Set up your environment variables
 
+```bash
+RGNAME=kubeflow
+CLUSTERNAME=kubeflow-aks-automatic
+LOCATION=eastus
+```
+
+Create the resource group
+
+```bash
+az group create -n $RGNAME -l $LOCATION
+```
+
+Add or Update AKS extension
+```bash
+az extension add --name aks-preview
+```
+This article requires the `aks-preview` Azure CLI extension version **9.0.0b4** or later.
+
+Create an AKS Automatic cluster
+```bash
+az aks create \
+    --resource-group $RGNAME \
+    --name $CLUSTERNAME \
+    --location $LOCATION \
+    --sku automatic \
+    --generate-ssh-keys 
+```
+
+{{< alert color="primary" >}}💡Note: AKS Automatic is in Preview and requires feature to be registered in subscription.
+```bash
+az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPreview
+```
+{{< /alert >}}
+
+### Connect to AKS Automatic Cluster
+
+Install kubectl using the Azure CLI, if required.
 ```bash
 az aks install-cli
 ```
+Get the credentials for your AKS cluster
 
-Clone this repo which includes the [Azure/AKS-Construction](https://github.com/Azure/AKS-Construction) and [kubeflow/manifests](https://github.com/kubeflow/manifests/tree/v1.6-branch) repos as [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+```bash
+az aks get-credentials --resource-group $RGNAME --name $CLUSTERNAME
+```
+
+Verify connectivity to the cluster. This should return a list of nodes.
+
+```bash
+kubectl get nodes
+```
+
+{{< alert color="primary" >}}💡Note: With AKS Automatic, you don't need kubelogin as the cluster uses managed identity for authentication.{{< /alert >}}
+
+## Deploy KubeFlow
+
+Clone this repo which includes the [kubeflow/manifests](https://github.com/kubeflow/manifests) repo as [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
 
 ```bash
 git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
 ```
+{{< alert color="primary" >}}💡Note: The `--recurse-submodules ` flag helps to get manifests from git submodule linked to this  repo{{< /alert >}} 
+
 
 Change directory into the newly cloned directory
 
@@ -46,66 +111,30 @@ Change directory into the newly cloned directory
 cd kubeflow-aks
 ```
 
-## Deployment steps
-
-{{< alert color="warning" >}}⚠️ Warning: In order to complete this deployment, you will need to have either  `User Access Admin` **and** `Contributor` or `Owner` access to the subscription you are deploying into.{{< /alert >}}
-
-Get the signed in user id so that you can get admin access to the cluster you create
-
-```bash
-SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
-RGNAME=kubeflow
-```
-
-Create deployment
-
-```bash
-az group create -n $RGNAME -l eastus
-DEP=$(az deployment group create -g $RGNAME --parameters signedinuser=$SIGNEDINUSER -f main.bicep -o json)
-```
-
-{{< alert color="primary" >}}💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running `echo $DEP > test.json` and restore it by running `export DEP=$(cat test.json)`.{{< /alert >}}
-
-```bash
-KVNAME=$(echo $DEP | jq -r '.properties.outputs.kvAppName.value')
-AKSCLUSTER=$(echo $DEP | jq -r '.properties.outputs.aksClusterName.value')
-TENANTID=$(az account show --query tenantId -o tsv)
-ACRNAME=$(az acr list -g $RGNAME --query "[0].name"  -o tsv)
-```
-
-## Install kubelogin and log into the cluster
-
-Next install kubelogin using the [installation instructions](https://github.com/Azure/kubelogin) appropriate for your computer. From there, you'll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.
-
-```bash
-az aks get-credentials --resource-group $RGNAME \
-  --name $AKSCLUSTER
-
-kubelogin convert-kubeconfig -l azurecli
-```
-
-Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
-{{< alert color="warning" >}}⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.{{< /alert >}}
-
-```bash
-kubectl get nodes
-```
-
 ## Install kustomize
 
-Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
+Install kustomize using the installation script:
 
-{{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}}
+```bash
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+sudo mv ./kustomize /usr/local/bin/kustomize
+```
 
-## Deploy Kubeflow without TLS using Default Password
+Verify the installation:
+
+```bash
+kustomize version
+```
+
+## Run Kubeflow Kustomize deployment
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
-From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.8-branch`.
+From the root of the repo, `cd` into kubeflow's  `manifests` directory and make sure you are in the `v1.10-branch`.
 
 ```bash
 cd manifests/
-git checkout v1.8-branch
+git checkout v1.10-branch
 cd ..
 ```
 
@@ -114,8 +143,10 @@ Install all of the components via a single command
 ```bash
 cp -a deployments/vanilla manifests/vanilla
 cd manifests/  
-while ! kustomize build vanilla | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+while ! kustomize build vanilla | kubectl apply --server-side=true -f -; do echo "Retrying to apply resources"; sleep 10; done
 ```
+
+{{< alert color="primary" >}}💡Note: The `--server-side=true` flag helps with large CRDs that may exceed annotation size limits. The retry loop handles dependency ordering issues during installation.{{< /alert >}}
 
 Once the command has completed, check the pods are ready
 
@@ -128,7 +159,11 @@ kubectl get pods -n knative-serving
 kubectl get pods -n kubeflow
 kubectl get pods -n kubeflow-user-example-com
 ```
+{{< alert color="primary" >}}💡Note: Depending on the VM SKU automatic picked for your region it might scale up to 4 nodes to run all the Kubeflow components{{< /alert >}}
 
+
+
+## Access the Kubeflow dashboard
 Run `kubectl port-forward` to access the Kubeflow dashboard
 
 ```bash
@@ -142,7 +177,7 @@ Finally, open [http://localhost:8080](http://localhost:8080/) and login with the
 You can test that the deployments worked by creating a new Notebook server using the GUI.
 
 1. Click on "Create a new Notebook server"
-![creating a new Notebook server](./images/create-new-notebook-server.png)
+![creating a new Notebook server](./images/create-new-notebook.png)
 
 1. Click on "+ New Notebook" in the top right corner of the resulting page
 1. Enter a name for the server
