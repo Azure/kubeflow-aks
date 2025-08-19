@@ -2,6 +2,6 @@
 	path = AKS-Construction
 	url = https://github.com/Azure/AKS-Construction.git
 [submodule "manifests"]
-	path = manifests
-	url = https://github.com/kubeflow/manifests.git
-	branch = v1.8-branch
+        path = manifests
+        url = https://github.com/kubeflow/manifests.git
+        branch = v1.10-branch
