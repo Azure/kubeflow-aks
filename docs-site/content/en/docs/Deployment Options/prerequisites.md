@@ -1,9 +1,10 @@
 ---
 categories: ["prerequisites"]
 tags: ["docs"]
-title: "Prerequisties"
+title: "Prerequisites"
 linkTitle: "Prerequisites"
-date: 2023-03-07
+date: 2025-08-19
+weight: 1
 description: >
   Set up your environment for deploying Kubeflow for AKS
 ---
@@ -18,8 +19,8 @@ For all Kubeflow on AKS deployment options, you will need the following
 - - A [GitHub Account](https://github.com)
 - Bash shell (e.g. macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart), [GitHub Codespaces](https://github.com/features/codespaces), [devcontainers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the **correct** version of kustomize
 - The following installed in your Bash shell if you are not going with the codespaces or devcontainers option
-    - [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64)
-    - [Kubelogin](https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip)
+    - [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv5.7.1)
+    - [Kubelogin](https://github.com/Azure/kubelogin/releases/tag/v0.2.10)
     - git
     - [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
     - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/)

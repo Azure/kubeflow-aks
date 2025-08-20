@@ -1,5 +1,5 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](./CONTRIBUTING.md)
-![current development version](https://img.shields.io/badge/Kubeflow-v1.6.1-green)
+![current development version](https://img.shields.io/badge/Kubeflow-v1.10-green)
 [![License](https://img.shields.io/github/license/azure/kubeflow-aks)](./LICENSE)
 
 This is not an officially supported Microsoft product. This project is actively being maintained.
