@@ -4,7 +4,7 @@
     <link>https://Azure.github.io/kubeflow-aks/main/categories/prerequisites/</link>
     <description>Recent content in prerequisites on Kubeflow on AKS</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 07 Mar 2023 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 Aug 2025 00:00:00 +0000</lastBuildDate>
     
 	  <atom:link href="https://Azure.github.io/kubeflow-aks/main/categories/prerequisites/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,25 +15,9 @@
     
     
     <item>
-      <title>Docs: Deployment Options</title>
-      <link>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/</link>
-      <pubDate>Tue, 07 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Start by checking out the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/&#34;&gt;prerequisites&lt;/a&gt; page&lt;/p&gt;
-&lt;p&gt;If you want to deploy Kubeflow with minimal changes on AKS, then consider the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/&#34;&gt;vanilla&lt;/a&gt; deployment option. The Kubeflow control plane is installed on Azure Kubernetes Service (AKS), which is a managed container service used to run and scale Kubernetes applications in the cloud.&lt;/p&gt;
-&lt;p&gt;For a more secure deployment option that is has minimum baseline security, then consider the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/&#34;&gt;deploy with custom password and TLS&lt;/a&gt; deployment option.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Prerequisties</title>
+      <title>Docs: Prerequisites</title>
       <link>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/</link>
-      <pubDate>Tue, 07 Mar 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate>
       
       <guid>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/</guid>
       <description>
@@ -61,8 +45,8 @@
 &lt;li&gt;Bash shell (e.g. macOS, Linux, &lt;a href=&#34;https://docs.microsoft.com/windows/wsl/about&#34;&gt;Windows Subsystem for Linux (WSL)&lt;/a&gt;, &lt;a href=&#34;https://multipass.run/&#34;&gt;Multipass&lt;/a&gt;, &lt;a href=&#34;https://docs.microsoft.com/azure/cloud-shell/quickstart&#34;&gt;Azure Cloud Shell&lt;/a&gt;, &lt;a href=&#34;https://github.com/features/codespaces&#34;&gt;GitHub Codespaces&lt;/a&gt;, &lt;a href=&#34;https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers&#34;&gt;devcontainers&lt;/a&gt;, etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the &lt;strong&gt;correct&lt;/strong&gt; version of kustomize&lt;/li&gt;
 &lt;li&gt;The following installed in your Bash shell if you are not going with the codespaces or devcontainers option
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64&#34;&gt;Kustomize v3.2.0&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/Azure/kubelogin/releases/download/v0.0.26/kubelogin-linux-amd64.zip&#34;&gt;Kubelogin&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv5.7.1&#34;&gt;Kustomize&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Azure/kubelogin/releases/tag/v0.2.10&#34;&gt;Kubelogin&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;git&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install&#34;&gt;Bicep&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/&#34;&gt;Kubectl&lt;/a&gt;&lt;/li&gt;
@@ -79,6 +63,22 @@
 
 &lt;/div&gt;
 
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Deployment Options</title>
+      <link>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/</link>
+      <pubDate>Tue, 07 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Start by checking out the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/&#34;&gt;prerequisites&lt;/a&gt; page&lt;/p&gt;
+&lt;p&gt;If you want to deploy Kubeflow with minimal changes on AKS, then consider the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/&#34;&gt;vanilla&lt;/a&gt; deployment option. The Kubeflow control plane is installed on Azure Kubernetes Service (AKS), which is a managed container service used to run and scale Kubernetes applications in the cloud.&lt;/p&gt;
+&lt;p&gt;For a more secure deployment option that is has minimum baseline security, then consider the &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/&#34;&gt;deploy with custom password and TLS&lt;/a&gt; deployment option.&lt;/p&gt;
 
       </description>
     </item>

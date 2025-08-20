@@ -26,14 +26,14 @@
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2023-03-07T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-03-07T00:00:00+00:00" /><meta property="og:site_name" content="Kubeflow on AKS" />
+<meta property="article:published_time" content="2025-08-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-08-19T00:00:00+00:00" /><meta property="og:site_name" content="Kubeflow on AKS" />
 
 <meta itemprop="name" content="Vanilla Installation">
 <meta itemprop="description" content="Deploy kubeflow into an AKS cluster using default settings.
-"><meta itemprop="datePublished" content="2023-03-07T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2023-03-07T00:00:00+00:00" />
-<meta itemprop="wordCount" content="914">
+"><meta itemprop="datePublished" content="2025-08-19T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2025-08-19T00:00:00+00:00" />
+<meta itemprop="wordCount" content="917">
 <meta itemprop="keywords" content="test,sample,docs," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Vanilla Installation"/>
 <meta name="twitter:description" content="Deploy kubeflow into an AKS cluster using default settings.
@@ -42,8 +42,8 @@
 
 
 
-<link rel="preload" href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" as="style">
-<link href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" rel="stylesheet" integrity="">
+<link rel="preload" href="/kubeflow-aks/main/scss/main.min.d0fbb3d65caa06b13aac8d32d364194c5f852cea556c2de4783d6157559fcecb.css" as="style">
+<link href="/kubeflow-aks/main/scss/main.min.d0fbb3d65caa06b13aac8d32d364194c5f852cea556c2de4783d6157559fcecb.css" rel="stylesheet" integrity="">
 
 <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -97,12 +97,12 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-kubeflow-aksmaindocsdeployment-options-li">
   <a href="/kubeflow-aks/main/docs/deployment-options/" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id="m-kubeflow-aksmaindocsdeployment-options"><span class="">Deployment Options</span></a>
   <ul class="ul-2 foldable">
-    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls-li">
-  <a href="/kubeflow-aks/main/docs/deployment-options/custom-password-tls/" title="Deploy Kubeflow with Password, Ingress and TLS" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls"><span class="">Deploy TLS and Custom Password</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites-li">
-  <a href="/kubeflow-aks/main/docs/deployment-options/prerequisites/" title="Prerequisties" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites"><span class="">Prerequisites</span></a>
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites-li">
+  <a href="/kubeflow-aks/main/docs/deployment-options/prerequisites/" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites"><span class="">Prerequisites</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubeflow-aksmaindocsdeployment-optionsvanilla-installation-li">
   <a href="/kubeflow-aks/main/docs/deployment-options/vanilla-installation/" class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsvanilla-installation"><span class="td-sidebar-nav-active-item">Vanilla Installation</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls-li">
+  <a href="/kubeflow-aks/main/docs/deployment-options/custom-password-tls/" title="Deploy Kubeflow with Password, Ingress and TLS" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls"><span class="">Deploy TLS and Custom Password</span></a>
 </li>
   </ul>
 </li>
@@ -130,10 +130,15 @@
   <ul>
     <li><a href="#background">Background</a></li>
     <li><a href="#instructions-for-basic-deployment-without-tls-and-with-default-password">Instructions for Basic Deployment without TLS and with Default Password</a></li>
-    <li><a href="#deployment-steps">Deployment steps</a></li>
-    <li><a href="#install-kubelogin-and-log-into-the-cluster">Install kubelogin and log into the cluster</a></li>
+    <li><a href="#deploy-aks-automatic">Deploy AKS Automatic</a>
+      <ul>
+        <li><a href="#connect-to-aks-automatic-cluster">Connect to AKS Automatic Cluster</a></li>
+      </ul>
+    </li>
+    <li><a href="#deploy-kubeflow">Deploy KubeFlow</a></li>
     <li><a href="#install-kustomize">Install kustomize</a></li>
-    <li><a href="#deploy-kubeflow-without-tls-using-default-password">Deploy Kubeflow without TLS using Default Password</a></li>
+    <li><a href="#run-kubeflow-kustomize-deployment">Run Kubeflow Kustomize deployment</a></li>
+    <li><a href="#access-the-kubeflow-dashboard">Access the Kubeflow dashboard</a></li>
     <li><a href="#testing-the-deployment-with-a-notebook-server">Testing the deployment with a Notebook server</a></li>
     <li><a href="#next-steps">Next steps</a></li>
   </ul>
@@ -260,9 +265,11 @@
 		
 	</header>    
 	<h2 id="background">Background</h2>
-<p>In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a>. You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser.</p>
+<p>In this lab, you will use the <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> to deploy an <a href="https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic">Azure Kubernetes Service (AKS) Automatic</a> cluster. AKS Automatic offers a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. For more details, see the <a href="https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic">AKS Automatic documentation</a>. Note that AKS Automatic is currently in preview, while it provides faster setup and less manual configuration, it is not recommended for production use. For production workloads or when advanced features and customization are required, use regular AKS instead.
+You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser.</p>
+<p>You can follow these same instructions to deploy Kubeflow on a non-automatic AKS cluster.</p>
 <h2 id="instructions-for-basic-deployment-without-tls-and-with-default-password">Instructions for Basic Deployment without TLS and with Default Password</h2>
-<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="./Deploy-with-tls.md">Deploy kubeflow with TLS</a>.</p>
+<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/">Deploy kubeflow with TLS</a>.</p>
 
 
 <div class="alert alert-warning" role="alert">
@@ -272,7 +279,23 @@
 
 </div>
 
-<p>Use the <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a> templates to deploy the infrastructure for your application. We will be using the <a href="https://github.com/Azure/AKS-Construction">AKS construction</a> project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the <a href="https://azure.github.io/AKS-Construction/">AKS construction helper</a> for more details about AKS construction.</p>
+<h2 id="deploy-aks-automatic">Deploy AKS Automatic</h2>
+<p>Use the <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> to deploy an <a href="https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic">AKS Automatic</a> cluster.</p>
+
+
+<div class="alert alert-primary" role="alert">
+
+
+    <p>💡Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:</p>
+<ul>
+<li>Microsoft.Authorization/policyAssignments/write</li>
+<li>Microsoft.Authorization/policyAssignments/read.</li>
+</ul>
+
+
+</div>
+
+<p>For detailed instructions on installing AKS Automatic, please refer to the <a href="https://learn.microsoft.com/en-us/azure/aks/automatic/quick-automatic-managed-network?pivots=azure-cli">AKS Automatic installation documentation</a>.</p>
 <p>Login to the Azure CLI.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az login
 </span></span></code></pre></div>
@@ -284,80 +307,89 @@
 
 </div>
 
-<p>Install kubectl using the Azure CLI, if required.</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks install-cli
-</span></span></code></pre></div><p>Clone this repo which includes the <a href="https://github.com/Azure/AKS-Construction">Azure/AKS-Construction</a> and <a href="https://github.com/kubeflow/manifests/tree/v1.6-branch">kubeflow/manifests</a> repos as <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">Git Submodules</a></p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
-</span></span></code></pre></div><p>Change directory into the newly cloned directory</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> kubeflow-aks
-</span></span></code></pre></div><h2 id="deployment-steps">Deployment steps</h2>
-
-
-<div class="alert alert-warning" role="alert">
-
-
-    ⚠️ Warning: In order to complete this deployment, you will need to have either  <code>User Access Admin</code> <strong>and</strong> <code>Contributor</code> or <code>Owner</code> access to the subscription you are deploying into.
-
-</div>
-
-<p>Get the signed in user id so that you can get admin access to the cluster you create</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">SIGNEDINUSER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az ad signed-in-user show --query id --out tsv<span style="color:#204a87;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">RGNAME</span><span style="color:#ce5c00;font-weight:bold">=</span>kubeflow
-</span></span></code></pre></div><p>Create deployment</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az group create -n <span style="color:#000">$RGNAME</span> -l eastus
-</span></span><span style="display:flex;"><span><span style="color:#000">DEP</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az deployment group create -g <span style="color:#000">$RGNAME</span> --parameters <span style="color:#000">signedinuser</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#000">$SIGNEDINUSER</span> -f main.bicep -o json<span style="color:#204a87;font-weight:bold">)</span>
+<p>Set up your environment variables</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">RGNAME</span><span style="color:#ce5c00;font-weight:bold">=</span>kubeflow
+</span></span><span style="display:flex;"><span><span style="color:#000">CLUSTERNAME</span><span style="color:#ce5c00;font-weight:bold">=</span>kubeflow-aks-automatic
+</span></span><span style="display:flex;"><span><span style="color:#000">LOCATION</span><span style="color:#ce5c00;font-weight:bold">=</span>eastus
+</span></span></code></pre></div><p>Create the resource group</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az group create -n <span style="color:#000">$RGNAME</span> -l <span style="color:#000">$LOCATION</span>
+</span></span></code></pre></div><p>Add or Update AKS extension</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az extension add --name aks-preview
+</span></span></code></pre></div><p>This article requires the <code>aks-preview</code> Azure CLI extension version <strong>9.0.0b4</strong> or later.</p>
+<p>Create an AKS Automatic cluster</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks create <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>    --resource-group <span style="color:#000">$RGNAME</span> <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>    --name <span style="color:#000">$CLUSTERNAME</span> <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>    --location <span style="color:#000">$LOCATION</span> <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>    --sku automatic <span style="color:#4e9a06">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>    --generate-ssh-keys 
 </span></span></code></pre></div>
 
 <div class="alert alert-primary" role="alert">
 
 
-    💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running <code>echo $DEP &gt; test.json</code> and restore it by running <code>export DEP=$(cat test.json)</code>.
+    <p>💡Note: AKS Automatic is in Preview and requires feature to be registered in subscription.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPreview
+</span></span></code></pre></div>
 
 </div>
 
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000">KVNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.kvAppName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">AKSCLUSTER</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span><span style="color:#204a87">echo</span> <span style="color:#000">$DEP</span> <span style="color:#000;font-weight:bold">|</span> jq -r <span style="color:#4e9a06">&#39;.properties.outputs.aksClusterName.value&#39;</span><span style="color:#204a87;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">TENANTID</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az account show --query tenantId -o tsv<span style="color:#204a87;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#000">ACRNAME</span><span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87;font-weight:bold">$(</span>az acr list -g <span style="color:#000">$RGNAME</span> --query <span style="color:#4e9a06">&#34;[0].name&#34;</span>  -o tsv<span style="color:#204a87;font-weight:bold">)</span>
-</span></span></code></pre></div><h2 id="install-kubelogin-and-log-into-the-cluster">Install kubelogin and log into the cluster</h2>
-<p>Next install kubelogin using the <a href="https://github.com/Azure/kubelogin">installation instructions</a> appropriate for your computer. From there, you&rsquo;ll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks get-credentials --resource-group <span style="color:#000">$RGNAME</span> <span style="color:#4e9a06">\
-</span></span></span><span style="display:flex;"><span><span style="color:#4e9a06"></span>  --name <span style="color:#000">$AKSCLUSTER</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>kubelogin convert-kubeconfig -l azurecli
-</span></span></code></pre></div><p>Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
-
-
-<div class="alert alert-warning" role="alert">
-
-
-    ⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.
-
-</div>
-</p>
+<h3 id="connect-to-aks-automatic-cluster">Connect to AKS Automatic Cluster</h3>
+<p>Install kubectl using the Azure CLI, if required.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks install-cli
+</span></span></code></pre></div><p>Get the credentials for your AKS cluster</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>az aks get-credentials --resource-group <span style="color:#000">$RGNAME</span> --name <span style="color:#000">$CLUSTERNAME</span>
+</span></span></code></pre></div><p>Verify connectivity to the cluster. This should return a list of nodes.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get nodes
-</span></span></code></pre></div><h2 id="install-kustomize">Install kustomize</h2>
-<p>Next install kustomize using the <a href="https://kubectl.docs.kubernetes.io/installation/kustomize/">installation instructions</a> appropriate for your computer.</p>
-
+</span></span></code></pre></div>
 
 <div class="alert alert-primary" role="alert">
 
 
-    💡Note: In order to use the <code>kustomize</code> command below to deploy Kubeflow, you must use <a href="https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0">Kustomize v3.2.0</a>. More info <a href="https://github.com/kubeflow/manifests#prerequisites">here</a>.
+    💡Note: With AKS Automatic, you don&rsquo;t need kubelogin as the cluster uses managed identity for authentication.
 
 </div>
 
-<h2 id="deploy-kubeflow-without-tls-using-default-password">Deploy Kubeflow without TLS using Default Password</h2>
-<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="./Deploy-with-tls.md">Deploy kubeflow with TLS</a>.</p>
-<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.7-branch</code>.</p>
+<h2 id="deploy-kubeflow">Deploy KubeFlow</h2>
+<p>Clone this repo which includes the <a href="https://github.com/kubeflow/manifests">kubeflow/manifests</a> repo as <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">Git Submodules</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: The <code>--recurse-submodules </code> flag helps to get manifests from git submodule linked to this  repo
+
+</div>
+
+<p>Change directory into the newly cloned directory</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> kubeflow-aks
+</span></span></code></pre></div><h2 id="install-kustomize">Install kustomize</h2>
+<p>Install kustomize using the installation script:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -s <span style="color:#4e9a06">&#34;https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh&#34;</span> <span style="color:#000;font-weight:bold">|</span> bash
+</span></span><span style="display:flex;"><span>sudo mv ./kustomize /usr/local/bin/kustomize
+</span></span></code></pre></div><p>Verify the installation:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kustomize version
+</span></span></code></pre></div><h2 id="run-kubeflow-kustomize-deployment">Run Kubeflow Kustomize deployment</h2>
+<p>This deployment option is for testing only. To deploy with TLS, and change default password, please click here: <a href="https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/">Deploy kubeflow with TLS</a>.</p>
+<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.10-branch</code>.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/
-</span></span><span style="display:flex;"><span>git checkout v1.7-branch
+</span></span><span style="display:flex;"><span>git checkout v1.10-branch
 </span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
 </span></span></code></pre></div><p>Install all of the components via a single command</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -a deployments/vanilla manifests/vanilla
 </span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/  
-</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build vanilla <span style="color:#000;font-weight:bold">|</span> kubectl apply -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
-</span></span></code></pre></div><p>Once the command has completed, check the pods are ready</p>
+</span></span><span style="display:flex;"><span><span style="color:#204a87;font-weight:bold">while</span> ! kustomize build vanilla <span style="color:#000;font-weight:bold">|</span> kubectl apply --server-side<span style="color:#ce5c00;font-weight:bold">=</span><span style="color:#204a87">true</span> -f -<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">do</span> <span style="color:#204a87">echo</span> <span style="color:#4e9a06">&#34;Retrying to apply resources&#34;</span><span style="color:#000;font-weight:bold">;</span> sleep 10<span style="color:#000;font-weight:bold">;</span> <span style="color:#204a87;font-weight:bold">done</span>
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: The <code>--server-side=true</code> flag helps with large CRDs that may exceed annotation size limits. The retry loop handles dependency ordering issues during installation.
+
+</div>
+
+<p>Once the command has completed, check the pods are ready</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get pods -n cert-manager
 </span></span><span style="display:flex;"><span>kubectl get pods -n istio-system
 </span></span><span style="display:flex;"><span>kubectl get pods -n auth
@@ -365,15 +397,25 @@
 </span></span><span style="display:flex;"><span>kubectl get pods -n knative-serving
 </span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow
 </span></span><span style="display:flex;"><span>kubectl get pods -n kubeflow-user-example-com
-</span></span></code></pre></div><p>Run <code>kubectl port-forward</code> to access the Kubeflow dashboard</p>
+</span></span></code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+
+
+    💡Note: Depending on the VM SKU automatic picked for your region it might scale up to 4 nodes to run all the Kubeflow components
+
+</div>
+
+<h2 id="access-the-kubeflow-dashboard">Access the Kubeflow dashboard</h2>
+<p>Run <code>kubectl port-forward</code> to access the Kubeflow dashboard</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 </span></span></code></pre></div><p>Finally, open <a href="http://localhost:8080/">http://localhost:8080</a> and login with the default user&rsquo;s credentials. The default email address is <code>user@example.com</code> and the default password is <code>12341234</code></p>
 <h2 id="testing-the-deployment-with-a-notebook-server">Testing the deployment with a Notebook server</h2>
 <p>You can test that the deployments worked by creating a new Notebook server using the GUI.</p>
 <ol>
 <li>
-<p>Click on &ldquo;Create a new Notebook server&rdquo;
-<img src="./images/create-new-notebook-server.png" alt="creating a new Notebook server"></p>
+<p>Click on &ldquo;Create a new Notebook&rdquo;
+<img src="./images/create-new-notebook.png" alt="creating a new Notebook server"></p>
 </li>
 <li>
 <p>Click on &ldquo;+ New Notebook&rdquo; in the top right corner of the resulting page</p>
@@ -406,7 +448,7 @@
 <p>Uncheck &ldquo;Use default class&rdquo;</p>
 </li>
 <li>
-<p>Choose a class from the provided options. In this case I will choose &ldquo;azurefile-premium&rdquo;</p>
+<p>Choose a class from the provided options. In this case I will choose <code>azurefile-premium</code></p>
 </li>
 <li>
 <p>Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
@@ -446,7 +488,7 @@
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2023 Kubeflow on AKS Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2025 Kubeflow on AKS Authors All Rights Reserved</small>
         
 	
 		

@@ -33,7 +33,7 @@
 <meta itemprop="description" content="Deploying Kubeflow on AKS with Custom Password and TLS
 "><meta itemprop="datePublished" content="2023-03-07T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2023-03-07T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1290">
+<meta itemprop="wordCount" content="1336">
 <meta itemprop="keywords" content="test,sample,docs," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Deploy Kubeflow with Password, Ingress and TLS"/>
 <meta name="twitter:description" content="Deploying Kubeflow on AKS with Custom Password and TLS
@@ -42,8 +42,8 @@
 
 
 
-<link rel="preload" href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" as="style">
-<link href="/kubeflow-aks/main/scss/main.min.d6cc2ae862fa5c937a2dbb3d86c775f5e0f56868c19e280b817554aeceea0342.css" rel="stylesheet" integrity="">
+<link rel="preload" href="/kubeflow-aks/main/scss/main.min.d0fbb3d65caa06b13aac8d32d364194c5f852cea556c2de4783d6157559fcecb.css" as="style">
+<link href="/kubeflow-aks/main/scss/main.min.d0fbb3d65caa06b13aac8d32d364194c5f852cea556c2de4783d6157559fcecb.css" rel="stylesheet" integrity="">
 
 <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -97,12 +97,12 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-kubeflow-aksmaindocsdeployment-options-li">
   <a href="/kubeflow-aks/main/docs/deployment-options/" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id="m-kubeflow-aksmaindocsdeployment-options"><span class="">Deployment Options</span></a>
   <ul class="ul-2 foldable">
-    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls-li">
-  <a href="/kubeflow-aks/main/docs/deployment-options/custom-password-tls/" title="Deploy Kubeflow with Password, Ingress and TLS" class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls"><span class="td-sidebar-nav-active-item">Deploy TLS and Custom Password</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites-li">
-  <a href="/kubeflow-aks/main/docs/deployment-options/prerequisites/" title="Prerequisties" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites"><span class="">Prerequisites</span></a>
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites-li">
+  <a href="/kubeflow-aks/main/docs/deployment-options/prerequisites/" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsprerequisites"><span class="">Prerequisites</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubeflow-aksmaindocsdeployment-optionsvanilla-installation-li">
   <a href="/kubeflow-aks/main/docs/deployment-options/vanilla-installation/" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionsvanilla-installation"><span class="">Vanilla Installation</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls-li">
+  <a href="/kubeflow-aks/main/docs/deployment-options/custom-password-tls/" title="Deploy Kubeflow with Password, Ingress and TLS" class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id="m-kubeflow-aksmaindocsdeployment-optionscustom-password-tls"><span class="td-sidebar-nav-active-item">Deploy TLS and Custom Password</span></a>
 </li>
   </ul>
 </li>
@@ -361,6 +361,12 @@
 <p>Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way</p>
 </li>
 <li>
+<p>From the root of the repo, <code>cd</code> into kubeflow&rsquo;s  <code>manifests</code> directory and make sure you are in the <code>v1.8-branch</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#204a87">cd</span> manifests/
+</span></span><span style="display:flex;"><span>git checkout v1.8-branch
+</span></span><span style="display:flex;"><span><span style="color:#204a87">cd</span> ..
+</span></span></code></pre></div></li>
+<li>
 <p>Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cp -a deployments/tls manifests/tls
 </span></span></code></pre></div></li>
@@ -396,14 +402,27 @@
 <li>
 <p>Configure TLS. Start by getting IP address of istio gateway</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl -n istio-system get service istio-ingressgateway --output <span style="color:#000">jsonpath</span><span style="color:#ce5c00;font-weight:bold">={</span>.status.loadBalancer.ingress<span style="color:#ce5c00;font-weight:bold">[</span>0<span style="color:#ce5c00;font-weight:bold">]</span>.ip<span style="color:#ce5c00;font-weight:bold">}</span>
-</span></span></code></pre></div><p>Replace the IP address in the deployments/tls/certificate.yaml file (line 13) with the IP address of the istio gateway and save the file.</p>
-</li>
+</span></span></code></pre></div><p>Replace the IP address in the tls/certificate.yaml file (line 13) with the IP address of the istio gateway and save the file.</p>
+<p>Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the patch below in the kustomization.yaml file in tls folder ) and use that too.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f8f8f8;text-decoration:underline">  </span>- <span style="color:#204a87;font-weight:bold">target</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span></span></span><span style="display:flex;"><span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#204a87;font-weight:bold">version</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#000">v1</span><span style="color:#f8f8f8;text-decoration:underline">
+</span></span></span><span style="display:flex;"><span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#204a87;font-weight:bold">kind</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#000">Service</span><span style="color:#f8f8f8;text-decoration:underline">
+</span></span></span><span style="display:flex;"><span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#204a87;font-weight:bold">name</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#000">istio-ingressgateway</span><span style="color:#f8f8f8;text-decoration:underline">
+</span></span></span><span style="display:flex;"><span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#204a87;font-weight:bold">patch</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#000;font-weight:bold">|-</span><span style="color:#8f5902;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">      apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">      kind: Service
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">      metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">        name: istio-ingressgateway
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">        namespace: istio-system
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">        annotations:
+</span></span></span><span style="display:flex;"><span><span style="color:#8f5902;font-style:italic">          service.beta.kubernetes.io/azure-dns-label-name: &lt;unique-service-label&gt;</span><span style="color:#f8f8f8;text-decoration:underline">      
+</span></span></span></code></pre></div></li>
 <li>
-<p>Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the annotation in manifests/common/istio-1-16/istio-install/base/patches/service.yaml ) and use that too. Deploy the certificate manifest file.</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f  tls-manifest/certificate.yaml 
+<p>Deploy the certificate manifest file.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f  tls/certificate.yaml 
 </span></span></code></pre></div></li>
 <li>
-<p>You have completed the deployment. Access the dashboard by entering the IP address in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
+<p>You have completed the deployment. Access the dashboard by entering the IP address (http://<IP>) in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
 <img src="./images/logged-in-with-tls.png" alt="Generate password"></p>
 </li>
 </ol>
@@ -454,7 +473,7 @@
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2023 Kubeflow on AKS Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2025 Kubeflow on AKS Authors All Rights Reserved</small>
         
 	
 		

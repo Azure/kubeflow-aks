@@ -2,50 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://Azure.github.io/kubeflow-aks/main/docs/overview/</loc>
   </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/docs/contribution-guidelines/</loc>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/docs/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/categories/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
+    <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/</loc>
     <lastmod>2023-03-07T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/docs/contribution-guidelines/</loc>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/docs/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/categories/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/tags/docs/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/categories/prerequisites/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/categories/quickstart/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/tags/sample/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/tags/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Azure.github.io/kubeflow-aks/main/tags/test/</loc>
+    <lastmod>2025-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/</loc>
     <lastmod>2023-03-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/tags/docs/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://Azure.github.io/kubeflow-aks/main/categories/getstarted/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/prerequisites/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/categories/prerequisites/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/categories/quickstart/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/tags/sample/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/tags/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/tags/test/</loc>
-    <lastmod>2023-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/vanilla-installation/</loc>
     <lastmod>2023-03-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://Azure.github.io/kubeflow-aks/main/search/</loc>
