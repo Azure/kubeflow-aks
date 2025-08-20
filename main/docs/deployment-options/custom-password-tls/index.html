@@ -33,7 +33,7 @@
 <meta itemprop="description" content="Deploying Kubeflow on AKS with Custom Password and TLS
 "><meta itemprop="datePublished" content="2023-03-07T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2023-03-07T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1336">
+<meta itemprop="wordCount" content="1364">
 <meta itemprop="keywords" content="test,sample,docs," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Deploy Kubeflow with Password, Ingress and TLS"/>
 <meta name="twitter:description" content="Deploying Kubeflow on AKS with Custom Password and TLS
@@ -128,6 +128,7 @@
             <div class="td-toc">
         <nav id="TableOfContents">
   <ul>
+    <li><a href="#this-deployment-option-is-outdated-please-use-the-vanilla-deployment-option-instead">This deployment option is outdated. Please use the vanilla deployment option instead</a></li>
     <li><a href="#background">Background</a></li>
     <li><a href="#deploy-kubeflow-with-password-ingress-and-tls">Deploy Kubeflow with Password, Ingress and TLS</a></li>
     <li><a href="#deployment-steps">Deployment steps</a></li>
@@ -259,7 +260,9 @@
 
 		
 	</header>    
-	<h2 id="background">Background</h2>
+	<h2 id="this-deployment-option-is-outdated-please-use-the-vanilla-deployment-option-instead">This deployment option is outdated. Please use the vanilla deployment option instead</h2>
+<p>We are working on updating this option but for now, please use the Vanilla deployment option.</p>
+<h2 id="background">Background</h2>
 <p>In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with <a href="https://docs.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a> and <a href="https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview">Bicep</a>. You will then install Kubeflow after creating custom Password. This deployment option will also make use of TLS with a self-signed certificate and an ingress controller. Swap out this self signed certificate with your own CA certs for production workloads.</p>
 <h2 id="deploy-kubeflow-with-password-ingress-and-tls">Deploy Kubeflow with Password, Ingress and TLS</h2>
 

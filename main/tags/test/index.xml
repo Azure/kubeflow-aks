@@ -239,7 +239,9 @@ You will then install Kubeflow using the default settings using Kustomize and cr
       <description>
         
         
-        &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+        &lt;h2 id=&#34;this-deployment-option-is-outdated-please-use-the-vanilla-deployment-option-instead&#34;&gt;This deployment option is outdated. Please use the vanilla deployment option instead&lt;/h2&gt;
+&lt;p&gt;We are working on updating this option but for now, please use the Vanilla deployment option.&lt;/p&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
 &lt;p&gt;In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with &lt;a href=&#34;https://docs.microsoft.com/cli/azure/install-azure-cli&#34;&gt;Azure CLI&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview&#34;&gt;Bicep&lt;/a&gt;. You will then install Kubeflow after creating custom Password. This deployment option will also make use of TLS with a self-signed certificate and an ingress controller. Swap out this self signed certificate with your own CA certs for production workloads.&lt;/p&gt;
 &lt;h2 id=&#34;deploy-kubeflow-with-password-ingress-and-tls&#34;&gt;Deploy Kubeflow with Password, Ingress and TLS&lt;/h2&gt;
 
