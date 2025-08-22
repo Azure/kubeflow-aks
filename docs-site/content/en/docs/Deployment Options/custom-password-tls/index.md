@@ -90,12 +90,6 @@ Log in to the cluster. Enter your Azure credentials when prompted afterwards to 
 kubectl get nodes
 ```
 
-## Install kustomize
-
-Next install kustomize using the [installation instructions](https://kubectl.docs.kubernetes.io/installation/kustomize/) appropriate for your computer.
-
-{{< alert color="primary" >}}💡Note: In order to use the `kustomize` command below to deploy Kubeflow, you must use [Kustomize v3.2.0](https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0). More info [here](https://github.com/kubeflow/manifests#prerequisites).{{< /alert >}}
-
 ## Install Kubeflow with TLS and Unique Password
 
 Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.
