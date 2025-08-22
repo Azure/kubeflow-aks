@@ -18,7 +18,7 @@ For more information on AKS Automatic, please refer to the [AKS Automatic docume
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
-{{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn't have this restriction, uses TLS and Ingress please head to the [Deploy kubeflow with TLS] option.{{< /alert >}}
 
 
 ## Deploy AKS Automatic
@@ -76,12 +76,7 @@ az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPr
 {{< /alert >}}
 
 ### Connect to AKS Automatic Cluster
-
-Install kubectl using the Azure CLI, if required.
-```bash
-az aks install-cli
-```
-Get the credentials for your AKS cluster
+After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures `kubectl` to use them.
 
 ```bash
 az aks get-credentials --resource-group $RGNAME --name $CLUSTERNAME
@@ -111,20 +106,6 @@ Change directory into the newly cloned directory
 cd kubeflow-aks
 ```
 
-## Install kustomize
-
-Install kustomize using the installation script:
-
-```bash
-curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-sudo mv ./kustomize /usr/local/bin/kustomize
-```
-
-Verify the installation:
-
-```bash
-kustomize version
-```
 
 ## Run Kubeflow Kustomize deployment
 
@@ -172,6 +153,7 @@ kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 
 Finally, open [http://localhost:8080](http://localhost:8080/) and login with the default user's credentials. The default email address is `user@example.com` and the default password is `12341234`
 
+
 ## Testing the deployment with a Notebook server
 
 You can test that the deployments worked by creating a new Notebook server using the GUI.
@@ -197,6 +179,123 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Click on "Connect" to access your jupyter lab
 1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
 
-## Next steps
 
-[Secure your kubeflow cluster using TLS and stronger Password] deployment option.
+## Change default password
+{{< alert color="warning" >}}⚠️ Warning: Update the default password before making this deployment accessible from outside the cluster.{{< /alert >}}
+
+To change the default password for the Kubeflow dashboard, you need to update the Dex configuration. 
+1. First generate Password/Hashes by following steps described in `kubeflow` docs [using python to generate bcrypt hash](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). Or for simplicity you can use an online tool like [bcrypt-generator](https://www.bcrypt-generator.com/) to create a new hash.
+
+```bash
+pip3 install passlib
+python3 -c 'from passlib.hash import bcrypt; import getpass; print(bcrypt.using(rounds=12, ident="2y").hash(getpass.getpass()))'
+
+Password: ***
+$2y$12$XXXXXXXXXXXXXXXXXXX
+```
+2. Delete existing password
+```bash
+kubectl delete secret dex-passwords -n auth
+```
+3. Create new password secret
+```bash
+kubectl create secret generic dex-passwords --from-literal=DEX_USER_PASSWORD='REPLACE_WITH_HASH' -n auth
+```
+4. Restart the Dex deployment to pick up the new password secret:
+```bash
+kubectl rollout restart deployment dex -n auth
+```
+
+To add more users 
+1. update `dex` config map `deployments/vanilla/dex-config-map.yaml` with more entries in user array:
+
+```
+    staticPasswords:
+    - email: user@example.com
+      hashFromEnv: DEX_USER_PASSWORD
+      username: user
+      userID: "15841185641784"
+      # Add more users here
+    - email: user2@example.com
+        hashFromEnv: DEX_USER2_PASSWORD
+        username: user2
+        userID: "15841185641785"
+```
+
+2. Update `DEX_USER2_PASSWORD` with the new password hash.
+
+```bash
+kubectl patch secret dex-passwords -n auth --type='json' -p='[{"op": "replace", "path": "/data/DEX_USER2_PASSWORD", "value":"'$(echo -n 'REPLACE_WITH_HASH' | base64)'"}]'
+```
+3. Apply config map and restsrt deployment
+
+```bash
+kubectl apply -f deployments/vanilla/dex-config-map.yaml
+kubectl rollout restart deployment dex -n auth
+```
+
+## Expose the Kubeflow dashboard using Ingress
+
+AKS Automatic includes the **nginx ingress controller** as part of the **app-routing-system** addon, which makes it easy to expose Kubeflow externally without port-forwarding.
+
+### Create an Ingress resource for Kubeflow
+
+1. Create and apply an ingress manifest to expose the Kubeflow dashboard:
+
+```bash
+echo 'apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubeflow-ingress
+  namespace: istio-system
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-ingressgateway
+            port:
+              number: 80' | kubectl apply -f -
+```
+
+2. Get the external IP address of the nginx ingress controller:
+
+```bash
+kubectl get ingress kubeflow-ingress -n istio-system
+```
+
+Wait for the `ADDRESS` field to show an external IP address (this may take a few minutes).
+
+```
+NAME               CLASS                                HOSTS   ADDRESS       PORTS   AGE
+kubeflow-ingress   webapprouting.kubernetes.azure.com   *       xxx.149.0.222   80      16m
+```
+
+3. Access Kubeflow using the external IP:
+
+Once the IP is available, you can access Kubeflow directly via: `http://<EXTERNAL-IP>`
+
+{{< alert color="primary" >}}💡Note: With AKS Automatic's app-routing-system, you get a managed nginx ingress controller without needing to install or configure it manually. This provides external access to Kubeflow without using port-forwarding.{{< /alert >}}
+
+{{< alert color="warning" >}}⚠️ Warning: This exposes Kubeflow publicly on the internet. Make sure to change the default password before doing this, and consider using TLS certificates for production deployments.{{< /alert >}}
+
+### Optional: Use Azure DNS for a friendly URL
+
+You can also configure a custom domain name using Azure DNS:
+
+```bash
+kubectl annotate service nginx -n app-routing-system \
+  service.beta.kubernetes.io/azure-dns-label-name=my-kubeflow-cluster
+```
+
+This will make Kubeflow accessible at: `http://my-kubeflow-cluster.$LOCATION.cloudapp.azure.com`
+
+## Next steps
+[Deploy with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}) deployment option.
