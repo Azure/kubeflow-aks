@@ -14,3 +14,6 @@ unzip kubelogin-linux-amd64.zip
 sudo mv bin/linux_amd64/kubelogin /usr/bin/
 rm -rf ./bin
 rm kubelogin-linux-amd64.zip
+
+# aks extension
+az extension add --name aks-preview

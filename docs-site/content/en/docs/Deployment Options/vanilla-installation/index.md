@@ -11,8 +11,8 @@ description: >
 
 ## Background
 
-In this lab you will deploy an [Azure Kubernetes Service (AKS) Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster with [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli). AKS Automatic provides a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser. 
-For more information on AKS Automatic, please refer to the [AKS Automatic documentation](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic).
+In this lab, you will use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to deploy an [Azure Kubernetes Service (AKS) Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster. AKS Automatic offers a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. For more details, see the [AKS Automatic documentation](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic). Note that AKS Automatic is currently in preview, while it provides faster setup and less manual configuration, it is not recommended for production use. For production workloads or when advanced features and customization are required, use regular AKS instead.
+You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser. 
 
 ## Instructions for Basic Deployment without TLS and with Default Password
 
@@ -158,7 +158,7 @@ Finally, open [http://localhost:8080](http://localhost:8080/) and login with the
 
 You can test that the deployments worked by creating a new Notebook server using the GUI.
 
-1. Click on "Create a new Notebook server"
+1. Click on "Create a new Notebook"
 ![creating a new Notebook server](./images/create-new-notebook.png)
 
 1. Click on "+ New Notebook" in the top right corner of the resulting page
@@ -171,7 +171,7 @@ You can test that the deployments worked by creating a new Notebook server using
 1. Set the name to datavol-1. The default name provided would not work because it has characters that are not allowed
 1. Set the size in Gi to 1
 1. Uncheck "Use default class"
-1. Choose a class from the provided options. In this case I will choose "azurefile-premium"
+1. Choose a class from the provided options. In this case I will choose `azurefile-premium`
 1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
     ![data volume config](./images/data-volume-config.png)
 1. Click on "Launch" at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
