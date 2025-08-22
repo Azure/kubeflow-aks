@@ -11,13 +11,19 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: recursive 
+          submodules: recursive
+          persist-credentials: true
       
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -43,4 +49,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-site/public
           destination_dir: ${{ steps.extract_branch.outputs.branch }}
-          # keep_files: true 
+          # keep_files: true
