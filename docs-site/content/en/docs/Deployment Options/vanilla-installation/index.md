@@ -297,5 +297,8 @@ kubectl annotate service nginx -n app-routing-system \
 
 This will make Kubeflow accessible at: `http://my-kubeflow-cluster.$LOCATION.cloudapp.azure.com`
 
+
+{{< alert color="primary" >}}💡Note: DNS Label must be unique for the Azure region.{{< /alert >}}
+
 ## Next steps
 [Deploy with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}) deployment option.
