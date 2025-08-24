@@ -41,7 +41,6 @@ resources:
 - ../common/istio/istio-namespace/base
 - ../common/istio/istio-install/overlays/oauth2-proxy
 # OIDC Authservice
-#- ../common/oidc-client/oidc-authservice/base
 - ../common/oauth2-proxy/overlays/m2m-dex-and-kind
 # Dex
 - ../common/dex/overlays/oauth2-proxy
