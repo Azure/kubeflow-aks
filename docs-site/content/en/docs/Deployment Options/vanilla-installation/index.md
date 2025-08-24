@@ -12,11 +12,11 @@ description: >
 ## Background
 
 In this lab, you will use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to deploy an [Azure Kubernetes Service (AKS) Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster. AKS Automatic offers a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. For more details, see the [AKS Automatic documentation](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic). Note that AKS Automatic is currently in preview, while it provides faster setup and less manual configuration, it is not recommended for production use. For production workloads or when advanced features and customization are required, use regular AKS instead.
-You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser. You will change default password and make kubeflow dashboard accessible using Ingress.
+You will then install Kubeflow using the default settings using Kustomize and create a jupyter notebook server you can easily access on your browser.
 
 You can follow these same instructions to deploy Kubeflow on a non-automatic AKS cluster.
 
-## Instructions for Basic Deployment with Default Password
+## Instructions for Basic Deployment without TLS and with Default Password
 
 This deployment option is for testing only. To deploy with TLS, and change default password, please click here: [Deploy kubeflow with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}).
 
@@ -303,4 +303,6 @@ This will make Kubeflow accessible at: `http://my-kubeflow-cluster.$LOCATION.clo
 {{< alert color="primary" >}}💡Note: DNS Label must be unique for the Azure region.{{< /alert >}}
 
 ## Next steps
+To connect to Kubeflow applications you need to set up HTTPS. The reason is that many of our web applications (e.g., Tensorboard Web Application, Jupyter Web Application, Katib UI) use Secure Cookies, so accessing Kubeflow with HTTP over a non-localhost domain does not work.
+
 [Deploy with TLS]({{< ref "/docs/Deployment Options/custom-password-tls" >}}) deployment option.
