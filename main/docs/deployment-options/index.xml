@@ -45,8 +45,22 @@
 &lt;li&gt;Bash shell (e.g. macOS, Linux, &lt;a href=&#34;https://docs.microsoft.com/windows/wsl/about&#34;&gt;Windows Subsystem for Linux (WSL)&lt;/a&gt;, &lt;a href=&#34;https://multipass.run/&#34;&gt;Multipass&lt;/a&gt;, &lt;a href=&#34;https://docs.microsoft.com/azure/cloud-shell/quickstart&#34;&gt;Azure Cloud Shell&lt;/a&gt;, &lt;a href=&#34;https://github.com/features/codespaces&#34;&gt;GitHub Codespaces&lt;/a&gt;, &lt;a href=&#34;https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers&#34;&gt;devcontainers&lt;/a&gt;, etc). This repository comes with a .devcontainer folder that allows you to configure your Codespaces or devcontainers environment so that it has all the required Bash tools like kubelogin and the &lt;strong&gt;correct&lt;/strong&gt; version of kustomize&lt;/li&gt;
 &lt;li&gt;The following installed in your Bash shell if you are not going with the codespaces or devcontainers option
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv5.7.1&#34;&gt;Kustomize&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/Azure/kubelogin/releases/tag/v0.2.10&#34;&gt;Kubelogin&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv5.7.1&#34;&gt;Kustomize&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;Install Kustomize&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo mv ./kustomize /usr/local/bin/kustomize
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;Verify the installation:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kustomize version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Azure/kubelogin/releases/tag/v0.2.10&#34;&gt;Kubelogin&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;to install both &lt;code&gt;kubectl&lt;/code&gt; and &lt;code&gt;kubelogin&lt;/code&gt; use Azure CLI:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks install-cli
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;git&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install&#34;&gt;Bicep&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/&#34;&gt;Kubectl&lt;/a&gt;&lt;/li&gt;
@@ -87,7 +101,7 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 &lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
 
 
-    ⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn&amp;rsquo;t have this restriction, uses TLS and shows how to change default password, please head to the [Deploy kubeflow with TLS] option.
+    ⚠️ Warning: This deployment option would require users to have access to the kubernetes cluster. For a better deployment option that doesn&amp;rsquo;t have this restriction, uses TLS and Ingress please head to the [Deploy kubeflow with TLS] option.
 
 &lt;/div&gt;
 
@@ -147,9 +161,7 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 &lt;/div&gt;
 
 &lt;h3 id=&#34;connect-to-aks-automatic-cluster&#34;&gt;Connect to AKS Automatic Cluster&lt;/h3&gt;
-&lt;p&gt;Install kubectl using the Azure CLI, if required.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks install-cli
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Get the credentials for your AKS cluster&lt;/p&gt;
+&lt;p&gt;After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures &lt;code&gt;kubectl&lt;/code&gt; to use them.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks get-credentials --resource-group &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; --name &lt;span style=&#34;color:#000&#34;&gt;$CLUSTERNAME&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify connectivity to the cluster. This should return a list of nodes.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get nodes
@@ -176,12 +188,6 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 
 &lt;p&gt;Change directory into the newly cloned directory&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; kubeflow-aks
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-kustomize&#34;&gt;Install kustomize&lt;/h2&gt;
-&lt;p&gt;Install kustomize using the installation script:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; bash
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo mv ./kustomize /usr/local/bin/kustomize
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify the installation:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kustomize version
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-kubeflow-kustomize-deployment&#34;&gt;Run Kubeflow Kustomize deployment&lt;/h2&gt;
 &lt;p&gt;This deployment option is for testing only. To deploy with TLS, and change default password, please click here: &lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/&#34;&gt;Deploy kubeflow with TLS&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;From the root of the repo, &lt;code&gt;cd&lt;/code&gt; into kubeflow&amp;rsquo;s  &lt;code&gt;manifests&lt;/code&gt; directory and make sure you are in the &lt;code&gt;v1.10-branch&lt;/code&gt;.&lt;/p&gt;
@@ -278,7 +284,79 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;next-steps&#34;&gt;Next steps&lt;/h2&gt;
-&lt;p&gt;[Secure your kubeflow cluster using TLS and stronger Password] deployment option.&lt;/p&gt;
+&lt;p&gt;To connect to Kubeflow applications you need to set up HTTPS. The reason is that many of our web applications (e.g., Tensorboard Web Application, Jupyter Web Application, Katib UI) use Secure Cookies, so accessing Kubeflow with HTTP over a non-localhost domain does not work.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/&#34;&gt;Deploy with TLS&lt;/a&gt; deployment option.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Authenticate Kubeflow users with Custom Password or Entra Id</title>
+      <link>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/authn-users-entra/</link>
+      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/authn-users-entra/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;p&gt;In this lab, you will update the &lt;a href=&#34;../vanilla-installation&#34;&gt;Kubeflow vanilla installation&lt;/a&gt; option to configure authentication using either custom users and  passwords or Azure Entra ID.&lt;/p&gt;
+&lt;h2 id=&#34;change-default-password&#34;&gt;Change default password&lt;/h2&gt;
+
+
+&lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
+
+
+    ⚠️ Warning: Always Update the default password before making Kubeflow deployment accessible from outside the cluster.
+
+&lt;/div&gt;
+
+&lt;p&gt;To change the default password for the Kubeflow dashboard, you need to update the Dex configuration.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;First generate Password/Hashes by following steps described in &lt;code&gt;kubeflow&lt;/code&gt; docs &lt;a href=&#34;https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password&#34;&gt;using python to generate bcrypt hash&lt;/a&gt;. Or for simplicity you can use an online tool like &lt;a href=&#34;https://www.bcrypt-generator.com/&#34;&gt;bcrypt-generator&lt;/a&gt; to create a new hash.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pip3 install passlib
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;python3 -c &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;from passlib.hash import bcrypt; import getpass; print(bcrypt.using(rounds=12, ident=&amp;#34;2y&amp;#34;).hash(getpass.getpass()))&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Password: ***
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;$2&lt;/span&gt;y&lt;span style=&#34;color:#000&#34;&gt;$12$XXXXXXXXXXXXXXXXXXX&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Delete existing password&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl delete secret dex-passwords -n auth
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Create new password secret&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl create secret generic dex-passwords --from-literal&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;DEX_USER_PASSWORD&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;REPLACE_WITH_HASH&amp;#39;&lt;/span&gt; -n auth
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Restart the Dex deployment to pick up the new password secret:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl rollout restart deployment dex -n auth
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To add more users&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;update &lt;code&gt;dex&lt;/code&gt; config map &lt;code&gt;deployments/vanilla/dex-config-map.yaml&lt;/code&gt; with more entries in user array:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    staticPasswords:
+    - email: user@example.com
+      hashFromEnv: DEX_USER_PASSWORD
+      username: user
+      userID: &amp;#34;15841185641784&amp;#34;
+      # Add more users here
+    - email: user2@example.com
+        hashFromEnv: DEX_USER2_PASSWORD
+        username: user2
+        userID: &amp;#34;15841185641785&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Update &lt;code&gt;DEX_USER2_PASSWORD&lt;/code&gt; with the new password hash.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl patch secret dex-passwords -n auth --type&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;json&amp;#39;&lt;/span&gt; -p&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/data/DEX_USER2_PASSWORD&amp;#34;, &amp;#34;value&amp;#34;:&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; -n &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;REPLACE_WITH_HASH&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; base64&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;&amp;#34;}]&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Apply config map and restart deployment&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f deployments/vanilla/dex-config-map.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl rollout restart deployment dex -n auth
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note: if need to update the default email address, change the params file located at &lt;code&gt;manifests\common\user-namespace\base\params.env&lt;/code&gt; before installing Kubeflow.&lt;/p&gt;
+&lt;h2 id=&#34;entra-id-configuration&#34;&gt;Entra ID Configuration&lt;/h2&gt;
 
       </description>
     </item>
@@ -286,28 +364,35 @@ You will then install Kubeflow using the default settings using Kustomize and cr
     <item>
       <title>Docs: Deploy Kubeflow with Password, Ingress and TLS</title>
       <link>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/</link>
-      <pubDate>Tue, 07 Mar 2023 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
       
       <guid>https://Azure.github.io/kubeflow-aks/main/docs/deployment-options/custom-password-tls/</guid>
       <description>
         
         
-        &lt;h2 id=&#34;this-deployment-option-is-outdated-please-use-the-vanilla-deployment-option-instead&#34;&gt;This deployment option is outdated. Please use the vanilla deployment option instead&lt;/h2&gt;
-&lt;p&gt;We are working on updating this option but for now, please use the Vanilla deployment option.&lt;/p&gt;
-&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
-&lt;p&gt;In this lab you will deploy an Azure Kubernetes Service (AKS) cluster and other Azure services (Container Registry, Managed Identity, Key Vault) with &lt;a href=&#34;https://docs.microsoft.com/cli/azure/install-azure-cli&#34;&gt;Azure CLI&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview&#34;&gt;Bicep&lt;/a&gt;. You will then install Kubeflow after creating custom Password. This deployment option will also make use of TLS with a self-signed certificate and an ingress controller. Swap out this self signed certificate with your own CA certs for production workloads.&lt;/p&gt;
-&lt;h2 id=&#34;deploy-kubeflow-with-password-ingress-and-tls&#34;&gt;Deploy Kubeflow with Password, Ingress and TLS&lt;/h2&gt;
+        &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;p&gt;In this lab, you will use the &lt;a href=&#34;https://docs.microsoft.com/cli/azure/install-azure-cli&#34;&gt;Azure CLI&lt;/a&gt; to deploy an &lt;a href=&#34;https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic&#34;&gt;Azure Kubernetes Service (AKS) Automatic&lt;/a&gt; cluster. AKS Automatic offers a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. For more details, see the &lt;a href=&#34;https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic&#34;&gt;AKS Automatic documentation&lt;/a&gt;. Note that AKS Automatic is currently in preview, while it provides faster setup and less manual configuration, it is not recommended for production use. For production workloads or when advanced features and customization are required, use regular AKS instead.
+You will then install Kubeflow with a custom password and TLS configuration. This deployment option uses a self-signed certificate and an ingress controller. Replace the self-signed certificate with your own CA certs for production workloads.&lt;/p&gt;
+&lt;p&gt;You can follow these same instructions to deploy Kubeflow on a non-automatic AKS cluster.&lt;/p&gt;
+&lt;h2 id=&#34;deployaks-automatic&#34;&gt;DeployAKS Automatic&lt;/h2&gt;
+&lt;h2 id=&#34;deploy-aks-automatic&#34;&gt;Deploy AKS Automatic&lt;/h2&gt;
+&lt;h2 id=&#34;deploy-aks-automatic-1&#34;&gt;Deploy AKS Automatic&lt;/h2&gt;
+&lt;p&gt;Use the &lt;a href=&#34;https://docs.microsoft.com/cli/azure/install-azure-cli&#34;&gt;Azure CLI&lt;/a&gt; to deploy an &lt;a href=&#34;https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic&#34;&gt;AKS Automatic&lt;/a&gt; cluster.&lt;/p&gt;
 
 
-&lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
 
 
-    ⚠️ Warning: In order to complete this deployment, you will need to have either  &lt;code&gt;User Access Admin&lt;/code&gt; &lt;strong&gt;and&lt;/strong&gt; &lt;code&gt;Contributor&lt;/code&gt; or &lt;code&gt;Owner&lt;/code&gt; access to the subscription you are deploying into.
+    &lt;p&gt;💡Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Microsoft.Authorization/policyAssignments/write&lt;/li&gt;
+&lt;li&gt;Microsoft.Authorization/policyAssignments/read.&lt;/li&gt;
+&lt;/ul&gt;
+
 
 &lt;/div&gt;
 
-&lt;p&gt;Use the &lt;a href=&#34;https://docs.microsoft.com/cli/azure/install-azure-cli&#34;&gt;Azure CLI&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview&#34;&gt;Bicep&lt;/a&gt; templates to deploy the infrastructure for your application. We will be using the &lt;a href=&#34;https://github.com/Azure/AKS-Construction&#34;&gt;AKS construction&lt;/a&gt; project to rapidly deploy the required Azure resources. The project allows users the flexibility to tweak their AKS environment however they want. Please check out the &lt;a href=&#34;https://azure.github.io/AKS-Construction/&#34;&gt;AKS construction helper&lt;/a&gt; for more details about AKS construction.&lt;/p&gt;
-&lt;p&gt;You can also try out the automated option using &lt;a href=&#34;https://magefile.org/&#34;&gt;Mage&lt;/a&gt; build tool at the &lt;a href=&#34;https://github.com/Azure-Samples/azure-opensource-labs/tree/main/cloud-native/aks-kubeflow#kubeflow-on-azure-kubernetes-service-aks&#34;&gt;Azure Open Source Labs&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For detailed instructions on installing AKS Automatic, please refer to the &lt;a href=&#34;https://learn.microsoft.com/en-us/azure/aks/automatic/quick-automatic-managed-network?pivots=azure-cli&#34;&gt;AKS Automatic installation documentation&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Login to the Azure CLI.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az login
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -319,100 +404,112 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 
 &lt;/div&gt;
 
-&lt;p&gt;Install kubectl using the Azure CLI, if required.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks install-cli
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Clone this repo which includes the &lt;a href=&#34;https://github.com/Azure/AKS-Construction&#34;&gt;Azure/AKS-Construction&lt;/a&gt; and &lt;a href=&#34;https://github.com/kubeflow/manifests/tree/v1.6-branch&#34;&gt;kubeflow/manifests&lt;/a&gt; repos as &lt;a href=&#34;https://git-scm.com/book/en/v2/Git-Tools-Submodules&#34;&gt;Git Submodules&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Change directory into the newly cloned directory&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; kubeflow-aks
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;deployment-steps&#34;&gt;Deployment steps&lt;/h2&gt;
-&lt;p&gt;Get the signed in user id so that you can get admin access to the cluster you create&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;SIGNEDINUSER&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;az ad signed-in-user show --query id --out tsv&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;RGNAME&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;kubeflow
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Create deployment&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az group create -n &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; -l eastus
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;DEP&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;az deployment group create -g &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; --parameters &lt;span style=&#34;color:#000&#34;&gt;signedinuser&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$SIGNEDINUSER&lt;/span&gt; -f main.bicep -o json&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;p&gt;Set up your environment variables&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;RGNAME&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;kubeflow
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;CLUSTERNAME&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;kubeflow-aks-automatic
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;LOCATION&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;eastus
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Create the resource group&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az group create -n &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; -l &lt;span style=&#34;color:#000&#34;&gt;$LOCATION&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add or Update AKS extension&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az extension add --name aks-preview
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This article requires the &lt;code&gt;aks-preview&lt;/code&gt; Azure CLI extension version &lt;strong&gt;9.0.0b4&lt;/strong&gt; or later.&lt;/p&gt;
+&lt;p&gt;Create an AKS Automatic cluster&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks create &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;    --resource-group &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;    --name &lt;span style=&#34;color:#000&#34;&gt;$CLUSTERNAME&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;    --location &lt;span style=&#34;color:#000&#34;&gt;$LOCATION&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;    --sku automatic &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;    --generate-ssh-keys 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
 
 
-    💡Note: The DEP variable is very important and will be used in subsequent steps. You can save it by running &lt;code&gt;echo $DEP &amp;gt; test.json&lt;/code&gt; and restore it by running &lt;code&gt;export DEP=$(cat test.json)&lt;/code&gt;.
+    &lt;p&gt;💡Note: AKS Automatic is in Preview and requires feature to be registered in subscription.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPreview
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;/div&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;KVNAME&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;$DEP&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; jq -r &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;.properties.outputs.kvAppName.value&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;AKSCLUSTER&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;$DEP&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; jq -r &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;.properties.outputs.aksClusterName.value&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;TENANTID&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;az account show --query tenantId -o tsv&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;ACRNAME&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;az acr list -g &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; --query &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;[0].name&amp;#34;&lt;/span&gt;  -o tsv&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-kubelogin-and-log-into-the-cluster&#34;&gt;Install kubelogin and log into the cluster&lt;/h2&gt;
-&lt;p&gt;Next install kubelogin using the &lt;a href=&#34;https://github.com/Azure/kubelogin&#34;&gt;installation instructions&lt;/a&gt; appropriate for your computer. From there, you&amp;rsquo;ll need to run the following commands to download the kubeconfig file and convert it for use with kubelogin.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks get-credentials --resource-group &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;\
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;  --name &lt;span style=&#34;color:#000&#34;&gt;$AKSCLUSTER&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubelogin convert-kubeconfig -l azurecli
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Log in to the cluster. Enter your Azure credentials when prompted afterwards to complete the login. If this is successful, kubectl should return a list of nodes.
-
-
-&lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
-
-
-    ⚠️ Warning: It is important that you log into the cluster at this point to avoid running into issues at a later point.
-
-&lt;/div&gt;
-&lt;/p&gt;
+&lt;h3 id=&#34;connect-to-aks-automatic-cluster&#34;&gt;Connect to AKS Automatic Cluster&lt;/h3&gt;
+&lt;p&gt;After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures &lt;code&gt;kubectl&lt;/code&gt; to use them.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az aks get-credentials --resource-group &lt;span style=&#34;color:#000&#34;&gt;$RGNAME&lt;/span&gt; --name &lt;span style=&#34;color:#000&#34;&gt;$CLUSTERNAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify connectivity to the cluster. This should return a list of nodes.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get nodes
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-kustomize&#34;&gt;Install kustomize&lt;/h2&gt;
-&lt;p&gt;Next install kustomize using the &lt;a href=&#34;https://kubectl.docs.kubernetes.io/installation/kustomize/&#34;&gt;installation instructions&lt;/a&gt; appropriate for your computer.&lt;/p&gt;
-
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
 
 
-    💡Note: In order to use the &lt;code&gt;kustomize&lt;/code&gt; command below to deploy Kubeflow, you must use &lt;a href=&#34;https://github.com/kubernetes-sigs/kustomize/releases/tag/v3.2.0&#34;&gt;Kustomize v3.2.0&lt;/a&gt;. More info &lt;a href=&#34;https://github.com/kubeflow/manifests#prerequisites&#34;&gt;here&lt;/a&gt;.
+    💡Note: With AKS Automatic, you don&amp;rsquo;t need kubelogin as the cluster uses managed identity for authentication.
 
 &lt;/div&gt;
 
-&lt;h2 id=&#34;install-kubeflow-with-tls-and-unique-password&#34;&gt;Install Kubeflow with TLS and Unique Password&lt;/h2&gt;
-&lt;p&gt;Please note that a self-signed certificate is used for demonstration purposes. Do not use self signed certs for production workloads. You can easily swap this self-signed cert with your CA certificate for your usecase.&lt;/p&gt;
+&lt;h2 id=&#34;deploy-kubeflow-with-password-ingress-and-tls&#34;&gt;Deploy Kubeflow with Password, Ingress and TLS&lt;/h2&gt;
+&lt;p&gt;Clone this repo which includes the &lt;a href=&#34;https://github.com/kubeflow/manifests&#34;&gt;kubeflow/manifests&lt;/a&gt; repo as &lt;a href=&#34;https://git-scm.com/book/en/v2/Git-Tools-Submodules&#34;&gt;Git Submodules&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+
+
+    💡Note: The &lt;code&gt;--recurse-submodules &lt;/code&gt; flag helps to get manifests from git submodule linked to this  repo
+
+&lt;/div&gt;
+
+&lt;p&gt;Change directory into the newly cloned directory&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; kubeflow-aks
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From the root of the repo, ensure you&amp;rsquo;re using the v1.10-branch:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; manifests/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout v1.10-branch
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Copy the TLS deployment files:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cp -a deployments/tls manifests/tls
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;configure-custom-password&#34;&gt;Configure Custom password&lt;/h3&gt;
 
 
 &lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
 
 
-    ⚠️ Warning: For this deployment, we will be using a simple method for authenticating to Kubeflow. For more advanced usecases, please configure your deployment to use Azure AD.
+    ⚠️ Warning: For production deployments, configure Azure AD integration instead of static passwords.
 
 &lt;/div&gt;
 
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;The first step is to generate a new Hash/Password combination using bycrypt. There are many ways of doing this, eg by generating it &lt;a href=&#34;https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password&#34;&gt;using python&lt;/a&gt;. For simplicity we will be using coderstool&amp;rsquo;s &lt;a href=&#34;https://www.coderstool.com/bcrypt-hash-generator&#34;&gt;Bycrypt Hash Generator&lt;/a&gt; for testing purposes. Do not do this for production workloads. In the plain text field, enter a password for your first user, then click on the &amp;ldquo;Generate Hash&amp;rdquo; button. You can generate multiple if you have multiple users.
-&lt;img src=&#34;./images/brypt-password-generation.png&#34; alt=&#34;Generate password&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Head to the deployments/tls/dex-config-map.yaml file and update the hash value there (around line 22) with the hash you just generated. You can also change the email address, username and userid. In addition, you can setup multiple users by adding more users to the array. Please update the default email address in the params file located at manifests\common\user-namespace\base\params.env file if changed from default.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Update your auth.md file with the new email address and password (plain text password not hash) or store the secrets in a more secure way&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;From the root of the repo, &lt;code&gt;cd&lt;/code&gt; into kubeflow&amp;rsquo;s  &lt;code&gt;manifests&lt;/code&gt; directory and make sure you are in the &lt;code&gt;v1.8-branch&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; manifests/
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout v1.8-branch
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; ..
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Copy the contents of this newly updated manifests folder to the kubeflow manifests folder. This will update the files so the deployment includes your config changes.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cp -a deployments/tls manifests/tls
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;cd to the manifests folder and install kubeflow&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; manifests
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install all of the components via a single command&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;while&lt;/span&gt; ! kustomize build tls &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; kubectl apply -f -&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;Retrying to apply resources&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; sleep 10&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Once the command has completed, check the pods are ready&lt;/p&gt;
+&lt;p&gt;In the next steps generate password hash for your custom password and replace it in the dex-passwords.yaml file.&lt;/p&gt;
+&lt;p&gt;First generate Password/Hash by following steps described in &lt;code&gt;kubeflow&lt;/code&gt; docs &lt;a href=&#34;https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password&#34;&gt;using python to generate bcrypt hash&lt;/a&gt;. Or for simplicity you can use an online tool like &lt;a href=&#34;https://www.bcrypt-generator.com/&#34;&gt;bcrypt-generator&lt;/a&gt; to create a new hash.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;PASSWORD&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;your_custom_password&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;PASSWORD_HASH&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;python3 -c &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;import bcrypt; print(bcrypt.hashpw(b&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$PASSWORD&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;, bcrypt.gensalt()).decode())&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Update the password hash in the &lt;code&gt;manifests/tls/dex-passwords.yaml&lt;/code&gt; secret:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sed -i &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;s|&amp;lt;YOUR_DEX_USER_PASSWORD&amp;gt;|&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$PASSWORD_HASH&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;|g&amp;#34;&lt;/span&gt; manifests/tls/dex-passwords.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+
+
+    💡Warning: Always change default password before exposing Kubeflow dashboard externally.
+
+&lt;/div&gt;
+
+&lt;h2 id=&#34;install-kubeflow&#34;&gt;Install Kubeflow&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Deploy Kubeflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;cd&lt;/span&gt; manifests/  
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;while&lt;/span&gt; ! kustomize build tls &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; kubectl apply --server-side&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;true&lt;/span&gt; -f -&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;Retrying to apply resources&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; sleep 10&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+
+
+    💡Note: The &lt;code&gt;--server-side=true&lt;/code&gt; flag helps with large CRDs that may exceed annotation size limits. The retry loop handles dependency ordering issues during installation.
+
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Once the command has completed, check the pods are ready&lt;/li&gt;
+&lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n cert-manager
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n istio-system
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n auth
@@ -420,52 +517,130 @@ You will then install Kubeflow using the default settings using Kustomize and cr
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n knative-serving
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n kubeflow
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get pods -n kubeflow-user-example-com
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Restart dex to ensure dex is using the updated password
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+
+
+    💡Note: Depending on the VM SKU automatic picked for your region it might scale up to 4 nodes to run all the Kubeflow components
+
+&lt;/div&gt;
+
+&lt;h2 id=&#34;expose-the-kubeflow-dashboard-using-ingress-with-tls&#34;&gt;Expose the Kubeflow dashboard using Ingress with TLS&lt;/h2&gt;
+&lt;p&gt;There are couple options to expose your Kubeflow cluster with proper HTTPS using Ingress. See note in Kubeflow docs &lt;a href=&#34;https://github.com/kubeflow/manifests/blob/master/README.md#nodeport--loadbalancer--ingress&#34;&gt;NodePort / LoadBalancer / Ingress&lt;/a&gt; In this example we will use the &lt;strong&gt;nginx ingress controller&lt;/strong&gt; which is included as part of the &lt;strong&gt;app-routing-system&lt;/strong&gt; addon in AKS Automatic.&lt;/p&gt;
+&lt;h3 id=&#34;step-1-create-tls-certificate&#34;&gt;Step 1: Create TLS Certificate&lt;/h3&gt;
+&lt;p&gt;We can create a self-signed certificate for the Kubeflow with IP available on Nginx ingress LoadBalancer or assign DNS Label&lt;/p&gt;
+&lt;h3 id=&#34;step-1-find-ip-or-dns-label-of-nginx-ingress&#34;&gt;Step 1: Find IP or DNS Label of Nginx ingress&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Obtain Nginx IP&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#000&#34;&gt;NGINX_IP&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;$(&lt;/span&gt;kubectl get svc -n app-routing-system -o &lt;span style=&#34;color:#000&#34;&gt;jsonpath&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;{.items[?(@.spec.type==&amp;#34;LoadBalancer&amp;#34;)].status.loadBalancer.ingress[0].ip}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;Nginx IP: &lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$NGINX_IP&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Optional: Use Azure DNS for a friendly URL
+You can also configure a custom domain name assigned to the Nginx ingress service using Azure DNS:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl annotate service nginx -n app-routing-system &lt;span style=&#34;color:#4e9a06&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&lt;/span&gt;  service.beta.kubernetes.io/azure-dns-label-name&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;my-kubeflow-cluster
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will make Kubeflow accessible at: &lt;code&gt;my-kubeflow-cluster.$LOCATION.cloudapp.azure.com&lt;/code&gt;
+
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+
+
+    💡Note: DNS Label must be unique for the Azure region.
+
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;step-2-create-tls-certificate&#34;&gt;Step 2: Create TLS Certificate&lt;/h3&gt;
+&lt;p&gt;If using IP address create following certificate:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;apiVersion: cert-manager.io/v1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;kind: Certificate
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  name: kubeflow-tls-cert
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  namespace: app-routing-system
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;spec:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  secretName: kubeflow-tls-secret
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  ipAddresses:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    - &lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$NGINX_IP&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  isCA: false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  issuerRef:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    name: kubeflow-self-signing-issuer
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    kind: ClusterIssuer
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    group: cert-manager.io&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; kubectl apply -f -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If using DNS label use following definition (replace &lt;code&gt;my-kubeflow-cluster&lt;/code&gt; with your unique dns label)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;apiVersion: cert-manager.io/v1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;kind: Certificate
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  name: kubeflow-tls-cert
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  namespace: app-routing-system
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;spec:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  secretName: kubeflow-tls-secret
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  dnsNames:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    - my-kubeflow-cluster.&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;$LOCATION&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;.cloudapp.azure.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  isCA: false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  issuerRef:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    name: kubeflow-self-signing-issuer
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    kind: ClusterIssuer
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    group: cert-manager.io&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; kubectl apply -f -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Deploy the certificate:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f tls/certificate.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wait for the certificate to be ready:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl &lt;span style=&#34;color:#204a87&#34;&gt;wait&lt;/span&gt; --for&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;condition&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;Ready certificate/kubeflow-tls-cert -n istio-system --timeout&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt;300s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;step-3-configure-ingress&#34;&gt;Step 3: Configure Ingress&lt;/h3&gt;
+&lt;p&gt;Create and apply an ingress manifest to expose the Kubeflow components:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#39;apiVersion: networking.k8s.io/v1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;kind: Ingress
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  name: kubeflow-ingress
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  namespace: istio-system
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  annotations:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    nginx.ingress.kubernetes.io/rewrite-target: /
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    nginx.ingress.kubernetes.io/ssl-redirect: &amp;#34;false&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    nginx.ingress.kubernetes.io/force-ssl-redirect: &amp;#34;true&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;    nginx.ingress.kubernetes.io/ssl-protocols: &amp;#34;TLSv1.2 TLSv1.3&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;spec:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  ingressClassName: webapprouting.kubernetes.azure.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  tls:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  - secretName: kubeflow-tls-secret
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  rules:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;  - http:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;      paths:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;      - path: /
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;        pathType: Prefix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;        backend:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;          service:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;            name: istio-ingressgateway
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;            port:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;              number: 80&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|&lt;/span&gt; kubectl apply -f -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify Ingress:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get ingress kubeflow-ingress -n istio-system
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wait for the &lt;code&gt;ADDRESS&lt;/code&gt; field to show an external IP address (this may take a few minutes).&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;NAME               CLASS                                HOSTS   ADDRESS       PORTS   AGE
+kubeflow-ingress   webapprouting.kubernetes.azure.com   *       xxx.149.0.222   443      16m
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;access-kubeflow-dashboard&#34;&gt;Access Kubeflow Dashboard&lt;/h2&gt;
+&lt;p&gt;You can now access the Kubeflow dashboard at &lt;code&gt;https://$NGINX_IP&lt;/code&gt; or &lt;code&gt;https://my-kubeflow-cluster.$LOCATION.cloudapp.azure.com&lt;/code&gt; if DNS was configured.&lt;/p&gt;
 
 
 &lt;div class=&#34;alert alert-warning&#34; role=&#34;alert&#34;&gt;
 
 
-    ⚠️ Warning: It is important that you restart the dex pod by running the command below. If you don&amp;rsquo;t any previous password (including the default password 12341234 if not changed) will be used from the time the Service is exposed via &lt;code&gt;LoadBalancer&lt;/code&gt; until the time this command is run or the dex is otherwise restarted.
+    ⚠️ Warning: You will see a browser warning about the self-signed certificate. Click &amp;ldquo;Advanced&amp;rdquo; and proceed to access the dashboard.
 
 &lt;/div&gt;
-&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl rollout restart deployment dex -n auth
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure TLS. Start by getting IP address of istio gateway&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl -n istio-system get service istio-ingressgateway --output &lt;span style=&#34;color:#000&#34;&gt;jsonpath&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;={&lt;/span&gt;.status.loadBalancer.ingress&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;[&lt;/span&gt;0&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;]&lt;/span&gt;.ip&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace the IP address in the tls/certificate.yaml file (line 13) with the IP address of the istio gateway and save the file.&lt;/p&gt;
-&lt;p&gt;Please note that instead of providing the IP address like we did above, you could give the LoadBalancer an Azure sub-domain (via the patch below in the kustomization.yaml file in tls folder ) and use that too.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;target&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;version&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;v1&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;kind&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;Service&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;istio-ingressgateway&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;patch&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;|-&lt;/span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;      apiVersion: v1
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;      kind: Service
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;      metadata:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;        name: istio-ingressgateway
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;        namespace: istio-system
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;        annotations:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;          service.beta.kubernetes.io/azure-dns-label-name: &amp;lt;unique-service-label&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Deploy the certificate manifest file.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f  tls/certificate.yaml 
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;You have completed the deployment. Access the dashboard by entering the IP address (http://&lt;IP&gt;) in a browser. You might get a warning saying the connection is unsafe. This is expected since you are using a self signed certificate. Click on advanced and proceed to the URL to view your dashboard. Log in using the email address and password in the auth.md file (assuming you updated it with your email address and password in the previous step)
-&lt;img src=&#34;./images/logged-in-with-tls.png&#34; alt=&#34;Generate password&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
+
+&lt;p&gt;Log in using:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Email: &lt;a href=&#34;mailto:user@example.com&#34;&gt;user@example.com&lt;/a&gt; (or the email you configured)&lt;/li&gt;
+&lt;li&gt;Password: The password you used to generate the hash&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;testing-the-deployment-with-a-notebook-server&#34;&gt;Testing the deployment with a Notebook server&lt;/h2&gt;
 &lt;p&gt;You can test that the deployments worked by creating a new Notebook server using the GUI.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;Click on &amp;ldquo;Create a new Notebook server&amp;rdquo;
-&lt;img src=&#34;./images/create-new-notebook-server.png&#34; alt=&#34;creating a new Notebook server&#34;&gt;&lt;/li&gt;
+&lt;li&gt;Click on &amp;ldquo;Create a new Notebook&amp;rdquo; on the Kubeflow dashboard
+&lt;img src=&#34;./images/create-new-notebook.png&#34; alt=&#34;creating a new Notebook&#34;&gt;&lt;/li&gt;
 &lt;li&gt;Click on &amp;ldquo;+ New Notebook&amp;rdquo; in the top right corner of the resulting page&lt;/li&gt;
 &lt;li&gt;Enter a name for the server&lt;/li&gt;
 &lt;li&gt;Leave the &amp;ldquo;jupyterlab&amp;rdquo; option selected&lt;/li&gt;
