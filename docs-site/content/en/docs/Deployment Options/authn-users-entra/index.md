@@ -1,73 +1,55 @@
 ---
 categories: ["getstarted"]
 tags: ["test", "sample", "docs"]
-title: "Authenticate Kubeflow users with Custom Password or Entra Id"
-linkTitle: "Authenticate Kubeflow users with Custom Password or Entra Id"
+title: "Authenticate Kubeflow users with a custom password"
+linkTitle: "Authenticate Kubeflow users"
 date: 2025-08-23
 weight: 3
 description: >
-  Authenticating Kubeflow users on AKS with Custom Password or Entra Id
+  Changing the Dex password and adding users on AKS
 ---
 
 ## Background
 
-In this lab, you will update the [Kubeflow vanilla installation](../vanilla-installation) option to configure authentication using either custom users and  passwords or Azure Entra ID.
+Change the Dex password for the [Kubeflow vanilla installation](../vanilla-installation) and add more static users. Integrating Dex with Microsoft Entra ID is not covered here.
 
-## Change default password
-{{< alert color="warning" >}}⚠️ Warning: Always Update the default password before making Kubeflow deployment accessible from outside the cluster.{{< /alert >}}
+## Change the Dex password
 
-To change the default password for the Kubeflow dashboard, you need to update the Dex configuration. 
-1. First generate Password/Hashes by following steps described in `kubeflow` docs [using python to generate bcrypt hash](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). Or for simplicity you can use an online tool like [bcrypt-generator](https://www.bcrypt-generator.com/) to create a new hash.
+The deployment no longer ships a default password: rendered manifests carry an unusable sentinel, and `just deploy-kubeflow` generates a real one at install time. To replace it at any point, run:
 
 ```bash
-pip3 install passlib
-python3 -c 'from passlib.hash import bcrypt; import getpass; print(bcrypt.using(rounds=12, ident="2y").hash(getpass.getpass()))'
-
-Password: ***
-$2y$12$XXXXXXXXXXXXXXXXXXX
-```
-2. Delete existing password
-```bash
-kubectl delete secret dex-passwords -n auth
-```
-3. Create new password secret
-```bash
-kubectl create secret generic dex-passwords --from-literal=DEX_USER_PASSWORD='REPLACE_WITH_HASH' -n auth
-```
-4. Restart the Dex deployment to pick up the new password secret:
-```bash
-kubectl rollout restart deployment dex -n auth
+just configure-dex
 ```
 
-To add more users 
-1. update `dex` config map `deployments/vanilla/dex-config-map.yaml` with more entries in user array:
+That generates a 32-character password and its cost-12 bcrypt hash, validates the hash, replaces the `dex-passwords` Secret, restarts Dex, refreshes the Istio `RequestAuthentication` JWKS URI, and prints the password once. To generate a password and hash without touching the cluster, run `just password`.
 
-```
+{{< alert color="warning" >}}⚠️ Do not paste a password into an online bcrypt generator. `just password` produces the hash locally from a cryptographically secure source.{{< /alert >}}
+
+To add more users, edit `overlay/patches/dex-config.yaml.in`, which patches Dex's ConfigMap when the overlay is rendered. Keep using `hashFromEnv` so no hash is committed:
+
+```yaml
     staticPasswords:
     - email: user@example.com
       hashFromEnv: DEX_USER_PASSWORD
       username: user
       userID: "15841185641784"
-      # Add more users here
     - email: user2@example.com
-        hashFromEnv: DEX_USER2_PASSWORD
-        username: user2
-        userID: "15841185641785"
+      hashFromEnv: DEX_USER2_PASSWORD
+      username: user2
+      userID: "15841185641785"
 ```
 
-2. Update `DEX_USER2_PASSWORD` with the new password hash.
+Generate the second user's credentials, saving the printed password before continuing:
 
 ```bash
-kubectl patch secret dex-passwords -n auth --type='json' -p='[{"op": "replace", "path": "/data/DEX_USER2_PASSWORD", "value":"'$(echo -n 'REPLACE_WITH_HASH' | base64)'"}]'
+just password
 ```
-3. Apply config map and restart deployment
+
+Add its hash to the same Secret, then re-render and restart Dex:
 
 ```bash
-kubectl apply -f deployments/vanilla/dex-config-map.yaml
-kubectl rollout restart deployment dex -n auth
+kubectl patch secret dex-passwords -n auth --type=json \
+  -p='[{"op":"add","path":"/data/DEX_USER2_PASSWORD","value":"'"$(printf %s '<paste-the-hash>' | base64 | tr -d '\n')"'"}]'
+just deploy-kubeflow
 ```
 
-Note: if need to update the default email address, change the params file located at `manifests\common\user-namespace\base\params.env` before installing Kubeflow.
-
-
-## Entra ID Configuration

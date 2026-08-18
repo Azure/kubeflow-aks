@@ -11,71 +11,66 @@ description: >
 
 ## Background
 
-In this lab, you will use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to deploy an [Azure Kubernetes Service (AKS) Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster. AKS Automatic offers a simplified, managed Kubernetes experience with automated node management, scaling, and security configurations. For more details, see the [AKS Automatic documentation](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic). Note that AKS Automatic is currently in preview, while it provides faster setup and less manual configuration, it is not recommended for production use. For production workloads or when advanced features and customization are required, use regular AKS instead.
-You will then install Kubeflow with a custom password and TLS configuration. This deployment option uses a self-signed certificate and an ingress controller. Replace the self-signed certificate with your own CA certs for production workloads.
+Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) and the `main.bicep` template in this repository to deploy an [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/what-is-aks) cluster, then install Kubeflow on it.
+Kubeflow is installed from a pinned community distribution release on a hostname you choose, served over publicly trusted HTTPS, with a generated Dex password that can be rotated.
 
-You can follow these same instructions to deploy Kubeflow on a non-automatic AKS cluster. 
 
-## DeployAKS Automatic
-## Deploy AKS Automatic
-## Deploy AKS Automatic
-Use the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to deploy an [AKS Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic) cluster. 
 
-{{< alert color="primary" >}}💡Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:
+## Deploy AKS
+
+Deploy the cluster with the `main.bicep` template in this repository.
+
+{{< alert color="primary" >}}💡 Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:
 - Microsoft.Authorization/policyAssignments/write
 - Microsoft.Authorization/policyAssignments/read.{{< /alert >}}
 
 
-For detailed instructions on installing AKS Automatic, please refer to the [AKS Automatic installation documentation](https://learn.microsoft.com/en-us/azure/aks/automatic/quick-automatic-managed-network?pivots=azure-cli).
+The cluster uses Microsoft Entra ID with Azure RBAC for Kubernetes authorization, so access is granted by role assignment rather than by a local admin credential.
 
 Login to the Azure CLI.
 ```bash
 az login
 ```
 
-{{< alert color="primary" >}}💡Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}}
+{{< alert color="primary" >}}💡 Note: If you have access to multiple subscriptions, you may need to run the following command to work with the appropriate subscription: `az account set --subscription <NAME_OR_ID_OF_SUBSCRIPTION>`.{{< /alert >}}
 
-Set up your environment variables
+Clone this repository.
 
 ```bash
-RGNAME=kubeflow
-CLUSTERNAME=kubeflow-aks-automatic
-LOCATION=eastus
+git clone https://github.com/Azure/kubeflow-aks.git
+cd kubeflow-aks
 ```
+
+Set up your environment variables. Every recipe below reads these.
+
+```bash
+export RESOURCE_GROUP=kubeflow
+export AKS_NAME=kubeflow-aks
+export LOCATION=eastus
+export SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
+```
+
+`SIGNEDINUSER` is the object ID of the signed-in user. The deployment grants it the `Azure Kubernetes Service RBAC Cluster Admin` role on the cluster, which `kubectl` needs because the cluster authenticates with Microsoft Entra ID.
 
 Create the resource group
 
 ```bash
-az group create -n $RGNAME -l $LOCATION
+az group create -n $RESOURCE_GROUP -l $LOCATION
 ```
 
-Add or Update AKS extension
+Create the cluster. `just validate` previews the same deployment without changing anything.
+
 ```bash
-az extension add --name aks-preview
-```
-This article requires the `aks-preview` Azure CLI extension version **9.0.0b4** or later.
-
-Create an AKS Automatic cluster
-```bash
-az aks create \
-    --resource-group $RGNAME \
-    --name $CLUSTERNAME \
-    --location $LOCATION \
-    --sku automatic \
-    --generate-ssh-keys 
+just deploy-aks
 ```
 
-{{< alert color="primary" >}}💡Note: AKS Automatic is in Preview and requires feature to be registered in subscription.
-```bash
-az feature register --namespace Microsoft.ContainerService --name AutomaticSKUPreview
-```
-{{< /alert >}}
+{{< alert color="primary" >}}💡 Note: `just deploy-aks` creates the cluster on the [Free pricing tier](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers), so cluster management costs nothing and you pay as you go for the nodes and other resources the cluster consumes. The Free tier carries no financially backed uptime SLA. The system node pool has two nodes, which you can size with the `nodeCount` and `vmSize` template parameters. Its Kubernetes version comes from `versions.env`, because Kubeflow `26.03.1` requires Kubernetes 1.34 or later. The cluster must not enforce Azure Policy or the AKS managed admission policies, which reject this workload.{{< /alert >}}
 
-### Connect to AKS Automatic Cluster
+### Connect to the cluster
 After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures `kubectl` to use them.
 
 ```bash
-az aks get-credentials --resource-group $RGNAME --name $CLUSTERNAME
+just credentials
 ```
 
 Verify connectivity to the cluster. This should return a list of nodes.
@@ -84,245 +79,51 @@ Verify connectivity to the cluster. This should return a list of nodes.
 kubectl get nodes
 ```
 
-{{< alert color="primary" >}}💡Note: With AKS Automatic, you don't need kubelogin as the cluster uses managed identity for authentication.{{< /alert >}}
+{{< alert color="primary" >}}💡 Note: The cluster authenticates to the Kubernetes API with Microsoft Entra ID, so `kubectl` signs you in through the `kubelogin` exec plugin and the first command prompts you to sign in. On Kubernetes 1.24 and later, `az aks get-credentials` writes that exec-plugin format for you, so there is no `kubelogin convert-kubeconfig` step for an interactive sign-in. In a non-interactive context such as CI, or when signed in as a service principal, run `kubelogin convert-kubeconfig -l azurecli` first. What authorizes you either way is the `Azure Kubernetes Service RBAC Cluster Admin` role assignment the deployment created for `$SIGNEDINUSER`.{{< /alert >}}
 
-## Deploy Kubeflow with Password, Ingress and TLS
+## Install Kubeflow with a custom hostname
 
-Clone this repo which includes the [kubeflow/manifests](https://github.com/kubeflow/manifests) repo as [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
-
-```bash
-git clone --recurse-submodules https://github.com/Azure/kubeflow-aks.git
-```
-{{< alert color="primary" >}}💡Note: The `--recurse-submodules ` flag helps to get manifests from git submodule linked to this  repo{{< /alert >}} 
-
-Change directory into the newly cloned directory
+Choose the public hostname before deploying, then run the remaining recipes from the repository root.
 
 ```bash
-cd kubeflow-aks
+# A regionally unique Azure DNS label.
+export DNS_LABEL=my-unique-kubeflow-label
+
+# Optional: serve Kubeflow on your own lower-case FQDN instead.
+export DOMAIN=kubeflow.example.com
+
+just deploy-kubeflow
 ```
 
-From the root of the repo, ensure you're using the v1.10-branch:
+With neither variable set, the deployment uses the Azure hostname generated by Bicep. With only `DNS_LABEL` set, the hostname is `$DNS_LABEL.$LOCATION.cloudapp.azure.com`. With `DOMAIN` set, it becomes the certificate and login hostname, and `DNS_LABEL` selects the Azure name you can point it at.
+
+When `DOMAIN` is set, `just deploy-kubeflow` stops and prints the unproxied DNS record to create. Create it, let it resolve publicly, then continue:
 
 ```bash
-cd manifests/
-git checkout v1.10-branch
-cd ..
+just wait-ready
+just e2e
 ```
 
-- Copy the TLS deployment files:
+The record must send `/.well-known/acme-challenge/` on port 80 straight to the Istio ingress. Do not put it behind a proxy or provider-side forced HTTPS: Let's Encrypt renews a 90-day certificate after roughly 60 days, so an interception added later can leave a working deployment unable to renew. That path is the only one exempt from Kubeflow's OAuth2 and JWT checks; all other unauthenticated HTTP traffic is denied.
+
+{{< alert color="warning" >}}⚠️ Save the password `just deploy-kubeflow` prints. It is shown once and is never written to a file.{{< /alert >}}
+
+Open the printed `https://` URL and sign in as `user@example.com`.
+
+### Rotate the Dex password
 
 ```bash
-cp -a deployments/tls manifests/tls
+just configure-dex
 ```
 
+This generates a new password and cost-12 bcrypt hash, validates the hash before using it, replaces the `dex-passwords` Secret, restarts Dex, refreshes the `RequestAuthentication` JWKS URI so Istio picks up the new signing keys, and waits for the Dex and oauth2-proxy rollouts. Each run invalidates the previous password.
 
-### Configure Custom password
-{{< alert color="warning" >}}⚠️ Warning: For production deployments, configure Azure AD integration instead of static passwords.{{< /alert >}}
+{{< alert color="warning" >}}⚠️ For production, integrate Dex with an external identity provider instead of relying on a shared static account.{{< /alert >}}
 
-In the next steps generate password hash for your custom password and replace it in the dex-passwords.yaml file.
+## Clean up
 
-First generate Password/Hash by following steps described in `kubeflow` docs [using python to generate bcrypt hash](https://github.com/kubeflow/manifests/blob/master/README.md#change-default-user-password). Or for simplicity you can use an online tool like [bcrypt-generator](https://www.bcrypt-generator.com/) to create a new hash.
+Remove the cluster and everything the deployment created:
 
 ```bash
-PASSWORD="your_custom_password"
-PASSWORD_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'$PASSWORD', bcrypt.gensalt()).decode())")
+az group delete -n $RESOURCE_GROUP
 ```
-
-Update the password hash in the `manifests/tls/dex-passwords.yaml` secret:
-```bash
-sed -i "s|<YOUR_DEX_USER_PASSWORD>|$PASSWORD_HASH|g" manifests/tls/dex-passwords.yaml
-```
-
-{{< alert color="primary" >}}💡Warning: Always change default password before exposing Kubeflow dashboard externally.{{< /alert >}}
-
-## Install Kubeflow
-
-
-- Deploy Kubeflow
-
-```bash
-cd manifests/  
-while ! kustomize build tls | kubectl apply --server-side=true -f -; do echo "Retrying to apply resources"; sleep 10; done
-```
-
-{{< alert color="primary" >}}💡Note: The `--server-side=true` flag helps with large CRDs that may exceed annotation size limits. The retry loop handles dependency ordering issues during installation.{{< /alert >}}
-
-- Once the command has completed, check the pods are ready
-
-```bash
-kubectl get pods -n cert-manager
-kubectl get pods -n istio-system
-kubectl get pods -n auth
-kubectl get pods -n knative-eventing
-kubectl get pods -n knative-serving
-kubectl get pods -n kubeflow
-kubectl get pods -n kubeflow-user-example-com
-```
-{{< alert color="primary" >}}💡Note: Depending on the VM SKU automatic picked for your region it might scale up to 4 nodes to run all the Kubeflow components{{< /alert >}}
-
-## Expose the Kubeflow dashboard using Ingress with TLS 
-
-There are couple options to expose your Kubeflow cluster with proper HTTPS using Ingress. See note in Kubeflow docs [NodePort / LoadBalancer / Ingress](https://github.com/kubeflow/manifests/blob/master/README.md#nodeport--loadbalancer--ingress) In this example we will use the **nginx ingress controller** which is included as part of the **app-routing-system** addon in AKS Automatic.
-
-### Step 1: Create TLS Certificate
-
-We can create a self-signed certificate for the Kubeflow with IP available on Nginx ingress LoadBalancer or assign DNS Label 
-
-### Step 1: Find IP or DNS Label of Nginx ingress
-
-- Obtain Nginx IP
-
-```bash
-NGINX_IP=$(kubectl get svc -n app-routing-system -o jsonpath='{.items[?(@.spec.type=="LoadBalancer")].status.loadBalancer.ingress[0].ip}')
-echo "Nginx IP: $NGINX_IP"
-```
-
-- Optional: Use Azure DNS for a friendly URL
-You can also configure a custom domain name assigned to the Nginx ingress service using Azure DNS:
-
-```bash
-kubectl annotate service nginx -n app-routing-system \
-  service.beta.kubernetes.io/azure-dns-label-name=my-kubeflow-cluster
-```
-
-This will make Kubeflow accessible at: `my-kubeflow-cluster.$LOCATION.cloudapp.azure.com`
-{{< alert color="primary" >}}💡Note: DNS Label must be unique for the Azure region.{{< /alert >}}
-
-### Step 2: Create TLS Certificate
-
-If using IP address create following certificate:
-
-```bash
-echo "apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: kubeflow-tls-cert
-  namespace: app-routing-system
-spec:
-  secretName: kubeflow-tls-secret
-  ipAddresses:
-    - $NGINX_IP
-  isCA: false
-  issuerRef:
-    name: kubeflow-self-signing-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io" | kubectl apply -f -
-```
-
-If using DNS label use following definition (replace `my-kubeflow-cluster` with your unique dns label)
-
-```bash
-echo "apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: kubeflow-tls-cert
-  namespace: app-routing-system
-spec:
-  secretName: kubeflow-tls-secret
-  dnsNames:
-    - my-kubeflow-cluster.$LOCATION.cloudapp.azure.com
-  isCA: false
-  issuerRef:
-    name: kubeflow-self-signing-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io" | kubectl apply -f -
-```
-
-
-- Deploy the certificate:
-
-```bash
-kubectl apply -f tls/certificate.yaml
-```
-
-Wait for the certificate to be ready:
-
-```bash
-kubectl wait --for=condition=Ready certificate/kubeflow-tls-cert -n istio-system --timeout=300s
-```
-
-### Step 3: Configure Ingress
-Create and apply an ingress manifest to expose the Kubeflow components:
-
-```bash
-echo 'apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: kubeflow-ingress
-  namespace: istio-system
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
-spec:
-  ingressClassName: webapprouting.kubernetes.azure.com
-  tls:
-  - secretName: kubeflow-tls-secret
-  rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: istio-ingressgateway
-            port:
-              number: 80' | kubectl apply -f -
-```
-
-Verify Ingress:
-
-```bash
-kubectl get ingress kubeflow-ingress -n istio-system
-```
-
-Wait for the `ADDRESS` field to show an external IP address (this may take a few minutes).
-
-```
-NAME               CLASS                                HOSTS   ADDRESS       PORTS   AGE
-kubeflow-ingress   webapprouting.kubernetes.azure.com   *       xxx.149.0.222   443      16m
-```
-
-## Access Kubeflow Dashboard
-
-You can now access the Kubeflow dashboard at `https://$NGINX_IP` or `https://my-kubeflow-cluster.$LOCATION.cloudapp.azure.com` if DNS was configured.
-
-{{< alert color="warning" >}}⚠️ Warning: You will see a browser warning about the self-signed certificate. Click "Advanced" and proceed to access the dashboard.{{< /alert >}}
-
-Log in using:
-- Email: user@example.com (or the email you configured)
-- Password: The password you used to generate the hash
-
-## Testing the deployment with a Notebook server
-
-You can test that the deployments worked by creating a new Notebook server using the GUI.
-
-1. Click on "Create a new Notebook" on the Kubeflow dashboard
-    ![creating a new Notebook](./images/create-new-notebook.png)
-1. Click on "+ New Notebook" in the top right corner of the resulting page
-1. Enter a name for the server
-1. Leave the "jupyterlab" option selected
-1. Feel free to pick one of the images available, in this case we choose the default
-1. Set Requested CPU to 0.5 and requested memory in Gi to 1
-1. Under Data Volumes click on "+ Add new volume"
-1. Expand the resulting section
-1. Set the name to datavol-1. The default name provided would not work because it has characters that are not allowed
-1. Set the size in Gi to 1
-1. Uncheck "Use default class"
-1. Choose a class from the provided options. In this case I will choose "azurefile-premium"
-1. Choose ReadWriteMany as the Access mode. Your data volume config should look like the picture below
-    ![data volume config](./images/data-volume-config.png)
-1. Click on "Launch" at the bottom of the page. A successful deployment should have a green checkmark under status, after 1-2 minutes.
-    ![deployment successful](./images/server-provisioned-successfully-tls.png)
-1. Click on "Connect" to access your jupyter lab
-1. Under Notebook, click on Python 3 to access your jupyter notebook and start coding
-
-## Destroy the resources
-
-Run the command below to destroy the resources you just created after you are done testing
-
-```azurecli
-az group delete -n $RGNAME
-```
-
