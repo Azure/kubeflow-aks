@@ -5,3 +5,4 @@ metadata:
   namespace: oauth2-proxy
 data:
   FORCE_HTTPS: "true"
+  ALLOW_SELF_SIGNED_ISSUER: "false"

@@ -63,6 +63,16 @@ fetch-kubeflow:
     #!/usr/bin/env bash
     set -euo pipefail
     source versions.env
+    if ! installed_kustomize="$(kustomize version 2>/dev/null)"; then
+        printf 'Kustomize %s is required but kustomize is not available.\n' \
+            "$KUSTOMIZE_VERSION" >&2
+        exit 1
+    fi
+    if [[ "$installed_kustomize" != "$KUSTOMIZE_VERSION" ]]; then
+        printf 'Kustomize %s is required; found %s.\n' \
+            "$KUSTOMIZE_VERSION" "$installed_kustomize" >&2
+        exit 1
+    fi
 
     archive=".cache/community-distribution-${KUBEFLOW_VERSION}.tar.gz"
     release_dir=".cache/community-distribution-${KUBEFLOW_VERSION}"
@@ -151,23 +161,49 @@ deploy-kubeflow: fetch-kubeflow
         > "$release_dir/aks-overlay/patches/dex-config.yaml"
     ! grep -q '@@' "$release_dir/aks-overlay/patches/dex-config.yaml"
 
+    credential_output="$(cd tools/password && go run . --deployment-machine)"
+    mapfile -t deployment_credentials <<< "$credential_output"
+    if (( ${#deployment_credentials[@]} != 4 )) ||
+       [[ -z "${deployment_credentials[0]}" ||
+          -z "${deployment_credentials[1]}" ||
+          -z "${deployment_credentials[2]}" ||
+          -z "${deployment_credentials[3]}" ]]; then
+        printf 'Password tool returned incomplete deployment output; refusing to render authentication secrets.\n' >&2
+        exit 1
+    fi
+    ******
+    hash="${deployment_credentials[1]}"
+    oidc_client_secret="${deployment_credentials[2]}"
+    oauth2_cookie_secret="${deployment_credentials[3]}"
+    (cd tools/password && go run . --validate-hash "$hash")
+    hash_b64="$(printf %s "$hash" | base64 | tr -d '\n')"
+    oidc_client_secret_b64="$(
+        printf %s "$oidc_client_secret" | base64 | tr -d '\n'
+    )"
+    oauth2_cookie_secret_b64="$(
+        printf %s "$oauth2_cookie_secret" | base64 | tr -d '\n'
+    )"
+
     # Every hostname in the overlay is a seed that kustomize replacements
-    # overwrite from params.env. If a replacement ever stops matching, the seed
-    # would ship instead, so refuse to apply rather than deploy a wrong issuer.
-    rendered="$(mktemp)"
-    trap 'rm -f "$rendered"' EXIT
-    kustomize build "$release_dir/aks-overlay" > "$rendered"
-    if grep -qE 'replaced-by-kustomize|@@' "$rendered"; then
+    # overwrite from params.env. Authentication placeholders are replaced in
+    # memory so generated credentials are never written to disk.
+    rendered="$(
+        kustomize build "$release_dir/aks-overlay" |
+            sed \
+                -e "s|@@DEX_PASSWORD_HASH_B64@@|${hash_b64}|g" \
+                -e "s|@@OIDC_CLIENT_SECRET_B64@@|${oidc_client_secret_b64}|g" \
+                -e "s|@@OAUTH2_COOKIE_SECRET_B64@@|${oauth2_cookie_secret_b64}|g"
+    )"
+    if grep -qE 'replaced-by-kustomize|@@' <<<"$rendered"; then
         printf 'Rendered manifests still contain a placeholder, so a kustomize replacement did not match. Refusing to apply.\n' >&2
-        grep -nE 'replaced-by-kustomize|@@' "$rendered" | head -5 >&2
+        grep -nE 'replaced-by-kustomize|@@' <<<"$rendered" | head -5 >&2
         exit 1
     fi
 
-    cd "$release_dir"
     attempt=1
     injection_retried=0
     while true; do
-        if apply_output="$(kustomize build aks-overlay |
+        if apply_output="$(printf '%s\n' "$rendered" |
             kubectl apply --server-side --force-conflicts -f - 2>&1)"; then
             printf '%s\n' "$apply_output"
             break
@@ -211,9 +247,9 @@ deploy-kubeflow: fetch-kubeflow
         sleep 20
         ((attempt += 1))
     done
-    cd - >/dev/null
 
-    credentials="$(just --quiet configure-dex)"
+    just --quiet _restart-auth
+    credentials="$(printf 'Password: %s\n' "$password")"
     password="${credentials#Password: }"
     password="${password%%$'\n'*}"
 
@@ -245,6 +281,28 @@ deploy-kubeflow: fetch-kubeflow
         printf 'Alternatively: %s A %s\n' "$DOMAIN" "$ingress_ip"
     fi
 
+# Restart Dex and OAuth2 Proxy after changing their runtime secrets.
+_restart-auth:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    kubectl rollout restart deployment/dex --namespace auth >&2
+    kubectl rollout status deployment/dex --namespace auth --timeout=5m >&2
+    jwks_uri="http://dex.auth.svc.cluster.local:5556/dex/keys?refresh=$(date -u +%s)"
+    kubectl patch requestauthentication/dex-jwt \
+        --namespace istio-system \
+        --type=json \
+        --patch="[
+            {
+                \"op\": \"replace\",
+                \"path\": \"/spec/jwtRules/0/jwksUri\",
+                \"value\": \"${jwks_uri}\"
+            }
+        ]" >&2
+    kubectl rollout restart deployment/oauth2-proxy \
+        --namespace oauth2-proxy >&2
+    kubectl rollout status deployment/oauth2-proxy \
+        --namespace oauth2-proxy --timeout=5m >&2
+
 # Generate and apply runtime Dex credentials, then restart authentication.
 configure-dex:
     #!/usr/bin/env bash
@@ -266,21 +324,7 @@ configure-dex:
         --dry-run=client \
         --output yaml |
         kubectl apply --filename - >&2
-    kubectl rollout restart deployment/dex --namespace auth >&2
-    kubectl rollout status deployment/dex --namespace auth --timeout=5m >&2
-    jwks_uri="http://dex.auth.svc.cluster.local:5556/dex/keys?refresh=$(date -u +%s)"
-    kubectl patch requestauthentication/dex-jwt \
-        --namespace istio-system \
-        --type=json \
-        --patch="[
-            {
-                \"op\": \"replace\",
-                \"path\": \"/spec/jwtRules/0/jwksUri\",
-                \"value\": \"${jwks_uri}\"
-            }
-        ]" >&2
-    kubectl rollout status deployment/oauth2-proxy \
-        --namespace oauth2-proxy --timeout=5m >&2
+    just --quiet _restart-auth
 
     printf 'Password: %s\n' "$password"
 

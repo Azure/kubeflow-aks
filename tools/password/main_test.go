@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"strings"
 	"testing"
 
@@ -97,5 +98,28 @@ func TestValidateBcryptHash(t *testing.T) {
 				t.Fatalf("validateBcryptHash() error = %v", err)
 			}
 		})
+	}
+}
+
+func TestGenerateSecret(t *testing.T) {
+	first, err := generateSecret()
+	if err != nil {
+		t.Fatalf("generate first secret: %v", err)
+	}
+	second, err := generateSecret()
+	if err != nil {
+		t.Fatalf("generate second secret: %v", err)
+	}
+	if first == second {
+		t.Fatal("generated identical secrets")
+	}
+	for _, secret := range []string{first, second} {
+		decoded, err := base64.RawURLEncoding.DecodeString(secret)
+		if err != nil {
+			t.Fatalf("decode secret: %v", err)
+		}
+		if len(decoded) != secretBytes {
+			t.Fatalf("decoded secret has %d bytes, want %d", len(decoded), secretBytes)
+		}
 	}
 }

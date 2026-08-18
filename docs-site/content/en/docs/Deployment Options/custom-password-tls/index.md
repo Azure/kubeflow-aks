@@ -20,9 +20,7 @@ Kubeflow is installed from a pinned community distribution release on a hostname
 
 Deploy the cluster with the `main.bicep` template in this repository.
 
-{{< alert color="primary" >}}💡 Note: In order to complete this deployment, you will need to have either  following permissions on Resource Group:
-- Microsoft.Authorization/policyAssignments/write
-- Microsoft.Authorization/policyAssignments/read.{{< /alert >}}
+{{< alert color="primary" >}}💡 Note: The deployment supports a least-privilege custom role scoped to the target resource group. See [Prerequisites]({{< ref "/docs/Deployment Options/prerequisites" >}}) for the exact actions. The role needs permission to deploy AKS and create the cluster role assignment; it does not need policy-assignment access.{{< /alert >}}
 
 
 The cluster uses Microsoft Entra ID with Azure RBAC for Kubernetes authorization, so access is granted by role assignment rather than by a local admin credential.

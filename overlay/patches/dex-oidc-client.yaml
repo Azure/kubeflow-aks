@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dex-oidc-client
+  namespace: auth
+data:
+  OIDC_CLIENT_SECRET: "@@OIDC_CLIENT_SECRET_B64@@"

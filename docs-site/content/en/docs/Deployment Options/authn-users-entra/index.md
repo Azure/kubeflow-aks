@@ -52,4 +52,3 @@ kubectl patch secret dex-passwords -n auth --type=json \
   -p='[{"op":"add","path":"/data/DEX_USER2_PASSWORD","value":"'"$(printf %s '<paste-the-hash>' | base64 | tr -d '\n')"'"}]'
 just deploy-kubeflow
 ```
-

@@ -8,6 +8,7 @@ package main
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"math/big"
 	"os"
@@ -25,7 +26,8 @@ const (
 	digitCount  = 10
 	symbolCount = 10
 
-	bcryptCost = 12
+	bcryptCost  = 12
+	secretBytes = 32
 )
 
 var bcryptPattern = regexp.MustCompile(`^\$2[aby]\$[0-9]{2}\$[./A-Za-z0-9]{53}$`)
@@ -85,6 +87,14 @@ func validateBcryptHash(hash string) error {
 	return nil
 }
 
+func generateSecret() (string, error) {
+	value := make([]byte, secretBytes)
+	if _, err := rand.Read(value); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(value), nil
+}
+
 func main() {
 	if len(os.Args) == 3 && os.Args[1] == "--validate-hash" {
 		if err := validateBcryptHash(os.Args[2]); err != nil {
@@ -94,8 +104,9 @@ func main() {
 		return
 	}
 	machineOutput := len(os.Args) == 2 && os.Args[1] == "--machine"
-	if len(os.Args) != 1 && !machineOutput {
-		fmt.Fprintln(os.Stderr, "usage: password [--machine | --validate-hash HASH]")
+	deploymentOutput := len(os.Args) == 2 && os.Args[1] == "--deployment-machine"
+	if len(os.Args) != 1 && !machineOutput && !deploymentOutput {
+		fmt.Fprintln(os.Stderr, "usage: password [--machine | --deployment-machine | --validate-hash HASH]")
 		os.Exit(2)
 	}
 
@@ -113,6 +124,20 @@ func main() {
 
 	if machineOutput {
 		fmt.Printf("%s\n%s\n", password, hash)
+		return
+	}
+	if deploymentOutput {
+		clientSecret, err := generateSecret()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "password: generate OIDC client secret: %v\n", err)
+			os.Exit(1)
+		}
+		cookieSecret, err := generateSecret()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "password: generate OAuth cookie secret: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("%s\n%s\n%s\n%s\n", password, hash, clientSecret, cookieSecret)
 		return
 	}
 	fmt.Printf("Password: %s\nHash: %s\n", password, hash)

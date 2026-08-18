@@ -17,12 +17,14 @@ configMapGenerator:
 
 patches:
   - path: patches/dex-config.yaml
+  - path: patches/dex-oidc-client.yaml
   - path: patches/dex-passwords.yaml
   - path: patches/istio-gateway.yaml
   - path: patches/istio-service.yaml
   - path: patches/oauth2-proxy-deployment.yaml
   - path: patches/oauth2-proxy-authorization.yaml
   - path: patches/oauth2-proxy-parameters.yaml
+  - path: patches/oauth2-proxy-secrets.yaml
   - path: patches/request-authentication.yaml
     target:
       group: security.istio.io
