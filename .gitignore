@@ -1,5 +1,2 @@
-test.json
-./AKS-Construction
-./manifests
-auth.md
+.cache/
 private-registry/privateRegistry.log
