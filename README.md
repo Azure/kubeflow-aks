@@ -10,13 +10,13 @@ The Kubeflow project is dedicated to making deployments of machine learning (ML)
 
 ## Getting Started
 
-There are a number of deployment options for running Kubeflow on AKS. To get started with deploying Kubeflow on [Azure Kubernetes Service](https://learn.microsoft.com/en-us/azure/aks/intro-kubernetes), see the [deployment options section](https://azure.github.io/kubeflow-aks/main/docs/deployment-options/) on the [Kubeflow on AKS](https://azure.github.io/kubeflow-aks/main) website.
+There are a number of deployment options for running Kubeflow on AKS. To get started with deploying Kubeflow on [Azure Kubernetes Service](https://learn.microsoft.com/en-us/azure/aks/intro-kubernetes), see the [deployment options section](https://azure.github.io/kubeflow-aks/docs/deployment-options/) on the [Kubeflow on AKS](https://azure.github.io/kubeflow-aks/) website.
 
 ## Help & Feedback
 
 For help, please consider the following venues (in order):
 
-* [Documentation](https://azure.github.io/kubeflow-aks/main/docs)
+* [Documentation](https://azure.github.io/kubeflow-aks/docs)
 * [Search open issues](https://github.com/Azure/kubeflow-aks/issues)
 * [File an issue](https://github.com/Azure/kubeflow-aks/issues/new)
 

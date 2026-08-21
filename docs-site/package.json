@@ -3,7 +3,7 @@
   "description": "Documentation site for Kubeflow on AKS.",
   "private": true,
   "license": "MIT",
-  "homepage": "https://azure.github.io/kubeflow-aks/main/",
+  "homepage": "https://azure.github.io/kubeflow-aks/",
   "bugs": "https://github.com/Azure/kubeflow-aks/issues",
   "repository": {
     "type": "git",
