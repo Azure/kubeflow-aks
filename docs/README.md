@@ -55,8 +55,8 @@ You will need the following:
         ```
     - git
     - [just](https://just.systems/man/en/packages.html), which runs every deployment step in this repository
-    - [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
-    - [Kubectl](https://kubernetes.io/docs/tasks/tools/), within one minor version of the cluster's Kubernetes version
+    - [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) `0.46.1`, the version pinned in `versions.env`
+    - [Kubectl](https://kubernetes.io/docs/tasks/tools/) `v1.35`, `v1.36` or `v1.37`, which is within one minor version of the `1.36` API server this deployment creates
     - [Go](https://go.dev/doc/install) 1.26.6 or greater
     - [sed](https://gnuwin32.sourceforge.net/packages/sed.htm), used to render the Dex configuration
 
@@ -168,8 +168,17 @@ This generates a new password and cost-12 bcrypt hash, validates the hash before
 
 ## Clean up
 
-Remove the cluster and everything the deployment created:
+If you created the resource group yourself, deleting it removes the cluster and
+everything the deployment created:
 
 ```bash
-az group delete -n $RESOURCE_GROUP
+az group delete -n $RESOURCE_GROUP --yes
 ```
+
+> [!WARNING]
+> Check `RESOURCE_GROUP` before running this. Deleting the group also deletes
+> every role assignment scoped to it. If an administrator created the group and
+> granted you the [least-privilege custom role](custom-role.md), do not delete
+> it: that role deliberately excludes resource-group deletion, and deleting the
+> group would destroy the access you were granted. Empty the group instead, and
+> leave removing it to whoever created it.
