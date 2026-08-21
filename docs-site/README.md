@@ -6,15 +6,21 @@ using the [Docsy](https://www.docsy.dev) theme.
 ## Where the site publishes
 
 `.github/workflows/gh-pages.yml` is the only publishing path. On a push to
-`main` that touches `docs-site/**`, it builds the site and pushes the output to
-the `gh-pages` branch under a directory named after the source branch, which
-GitHub Pages then serves:
+`main` that touches `docs-site/**`, it builds the site and hands the output to
+GitHub Pages as a deployment artifact:
 
-<https://azure.github.io/kubeflow-aks/main/>
+<https://azure.github.io/kubeflow-aks/>
 
-Because the output directory is per-branch, `baseURL` is passed to Hugo on the
-command line during the build. The `baseURL` in `config.toml` is the value used
-for local builds only.
+Pages is configured with GitHub Actions as its source rather than deploying from
+a branch, so there is no `gh-pages` branch holding built output. The deployment
+uses GitHub's own `configure-pages`, `upload-pages-artifact` and `deploy-pages`
+actions, which is also why the workflow needs the `pages` and `id-token`
+permissions.
+
+`configure-pages` reports the URL Pages serves the site from, and the build
+passes that to Hugo as `--baseURL`, so the value never has to be reconstructed
+from the repository owner and branch. The `baseURL` in `config.toml` is a
+fallback used for local builds only.
 
 Netlify and Docker configurations were previously committed alongside this
 workflow without either being wired up to anything. Both have been removed:

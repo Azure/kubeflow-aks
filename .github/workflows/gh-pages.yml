@@ -13,15 +13,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
-defaults:
-  run:
-    working-directory: docs-site
+# Let a running deployment finish rather than cancelling it part way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-site
     steps:
       - uses: actions/checkout@v7
         with:
@@ -43,18 +49,27 @@ jobs:
           cache: npm
           cache-dependency-path: docs-site/package-lock.json
 
+      - id: pages
+        uses: actions/configure-pages@v6
+
       - run: npm ci
 
       - name: Build the site
-        # The site publishes under a per-branch directory, so the baseURL is
-        # passed on the command line rather than patched into config.toml.
-        run: |
-          npm run build -- \
-            --baseURL "https://${GITHUB_REPOSITORY_OWNER,,}.github.io/kubeflow-aks/${GITHUB_REF_NAME}/"
+        # configure-pages reports the URL Pages actually serves this site from,
+        # so the baseURL never has to be reconstructed by hand.
+        run: npm run build -- --baseURL "${{ steps.pages.outputs.base_url }}/"
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs-site/public
-          destination_dir: ${{ github.ref_name }}
+          # Relative to the workspace root, not the working-directory default.
+          path: docs-site/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
