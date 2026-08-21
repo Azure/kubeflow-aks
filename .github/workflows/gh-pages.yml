@@ -1,10 +1,11 @@
-name: hugo-build-push-folder
+name: Publish docs-site to GitHub Pages
 
 on:
-  # Trigger the workflow on git push to a branch where this workflow file exists 
+  # Trigger the workflow on git push to a branch where this workflow file exists
   push:
     paths:
       - docs-site/**
+      - .github/workflows/gh-pages.yml
     branches:
       - main
 
@@ -13,40 +14,46 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+
+defaults:
+  run:
+    working-directory: docs-site
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
-          submodules: recursive
-          persist-credentials: true
-      
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+          # enableGitInfo needs full history to date each page accurately.
+          fetch-depth: 0
+
+      # Hugo resolves the Docsy theme as a Hugo module, which needs the Go
+      # toolchain. Hugo itself is pinned as an npm devDependency, so there is
+      # no separate Hugo install step.
+      - uses: actions/setup-go@v7
         with:
-          hugo-version: '0.93.0'
-          extended: true
+          go-version: stable
+          cache: false
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch 
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: docs-site/.nvmrc
+          cache: npm
+          cache-dependency-path: docs-site/package-lock.json
 
-      - name: Run a multi-line scripts
+      - run: npm ci
+
+      - name: Build the site
+        # The site publishes under a per-branch directory, so the baseURL is
+        # passed on the command line rather than patched into config.toml.
         run: |
-          cd $GITHUB_WORKSPACE/docs-site
-          npm install postcss-cli@8.3.0
-          base_url="baseURL = \"https://$GITHUB_REPOSITORY_OWNER.github.io/kubeflow-aks/$(git branch --show-current)\""
-          sed -i "1s#.*#$base_url#" config.toml
-          hugo
+          npm run build -- \
+            --baseURL "https://${GITHUB_REPOSITORY_OWNER,,}.github.io/kubeflow-aks/${GITHUB_REF_NAME}/"
+
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-site/public
-          destination_dir: ${{ steps.extract_branch.outputs.branch }}
-          # keep_files: true
+          destination_dir: ${{ github.ref_name }}

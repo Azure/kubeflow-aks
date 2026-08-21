@@ -1,24 +1,36 @@
 {
-  "name": "tech-doc-hugo",
-  "version": "0.0.1",
-  "description": "Hugo theme for technical documentation.",
-  "main": "none.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "kubeflow-aks-docs-site",
+  "description": "Documentation site for Kubeflow on AKS.",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://azure.github.io/kubeflow-aks/main/",
+  "bugs": "https://github.com/Azure/kubeflow-aks/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google/docsy-example.git"
+    "url": "git+https://github.com/Azure/kubeflow-aks.git",
+    "directory": "docs-site"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/google/docsy-example/issues"
+  "engines": {
+    "node": ">=22"
   },
-  "homepage": "https://github.com/google/docsy-example#readme",
+  "scripts": {
+    "prebuild": "hugo mod npm pack",
+    "build": "hugo --minify --cleanDestinationDir",
+    "preserve": "hugo mod npm pack",
+    "serve": "hugo server --disableFastRender",
+    "clean": "rm -rf public resources packages .hugo_build.lock",
+    "update:docsy": "hugo mod get -u github.com/google/docsy/theme && hugo mod tidy && hugo mod npm pack && npm install"
+  },
   "devDependencies": {
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.3.7",
-    "postcss-cli": "^9.0.2"
-  }
+    "autoprefixer": "10.5.4",
+    "hugo-extended": "0.164.0",
+    "postcss-cli": "11.0.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "6.7.2",
+    "bootstrap": "5.3.8"
+  },
+  "workspaces": [
+    "packages/hugoautogen"
+  ]
 }
