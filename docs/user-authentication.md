@@ -1,18 +1,13 @@
 ---
-categories: ["getstarted"]
-tags: ["test", "sample", "docs"]
-title: "Authenticate Kubeflow users with a custom password"
-linkTitle: "Authenticate Kubeflow users"
-date: 2025-08-23
-weight: 3
-description: >
-  Changing the Dex password and adding users on AKS
-aliases: ["/main/docs/deployment-options/authn-users-entra/"]
+title: "Manage Kubeflow users"
+aliases:
+  - "/main/docs/deployment-options/authn-users-entra/"
+  - "/docs/deployment-options/authn-users-entra/"
 ---
 
 ## Background
 
-Change the Dex password for the [Kubeflow vanilla installation](../vanilla-installation) and add more static users. Integrating Dex with Microsoft Entra ID is not covered here.
+Change the Dex password and add more static users. Integrating Dex with Microsoft Entra ID is not covered here.
 
 ## Change the Dex password
 
@@ -24,7 +19,8 @@ just configure-dex
 
 That generates a 32-character password and its cost-12 bcrypt hash, validates the hash, replaces the `dex-passwords` Secret, restarts Dex, refreshes the Istio `RequestAuthentication` JWKS URI, and prints the password once. To generate a password and hash without touching the cluster, run `just password`.
 
-{{< alert color="warning" >}}⚠️ Do not paste a password into an online bcrypt generator. `just password` produces the hash locally from a cryptographically secure source.{{< /alert >}}
+> [!WARNING]
+> Do not paste a password into an online bcrypt generator. `just password` produces the hash locally from a cryptographically secure source.
 
 To add more users, edit `overlay/patches/dex-config.yaml.in`, which patches Dex's ConfigMap when the overlay is rendered. Keep using `hashFromEnv` so no hash is committed:
 

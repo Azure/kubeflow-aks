@@ -1,5 +1,6 @@
 baseURL = "https://azure.github.io/kubeflow-aks/"
 title = "Kubeflow on AKS"
+disableKinds = ["taxonomy", "term"]
 
 # Language settings
 contentDir = "content/en"
@@ -27,25 +28,6 @@ enableRobotsTXT = true
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
-
-# Comment out to enable taxonomies in Docsy
-# disableKinds = ["taxonomy", "taxonomyTerm"]
-
-# You can add your own taxonomies
-[taxonomies]
-tag = "tags"
-category = "categories"
-
-[params.taxonomy]
-# set taxonomyCloud = [] to hide taxonomy clouds
-taxonomyCloud = ["tags", "categories"]
-
-# If used, must have same length as taxonomyCloud
-taxonomyCloudTitle = ["Tag Cloud", "Categories"]
-
-# set taxonomyPageHeader = [] to hide taxonomies on the page headers
-taxonomyPageHeader = ["tags", "categories"]
-
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -127,8 +109,8 @@ github_repo = "https://github.com/Azure/kubeflow-aks"
 # No github_project_repo: the product code lives in this same repository, so a
 # separate "create project issue" link would send Kubeflow-on-AKS issues elsewhere.
 
-# The Hugo project root is docs-site/, not the repository root.
-github_subdir = "docs-site"
+# Documentation content is maintained in docs/ at the repository root.
+github_subdir = "docs"
 
 # Uncomment this if your GitHub repo does not have "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
@@ -178,6 +160,23 @@ enable = false
 # hugo module configuration
 
 [module]
+  # The documentation is authored once, in docs/ at the repository root, so the
+  # file read on GitHub and the page published here are the same file. Each is
+  # mounted by name: README.md becomes the section index because GitHub renders
+  # it when browsing to docs/, while Hugo wants _index.md. A new page under
+  # docs/ needs a mount entry here.
+  [[module.mounts]]
+    source = "../docs/README.md"
+    target = "content/docs/_index.md"
+  [[module.mounts]]
+    source = "../docs/custom-role.md"
+    target = "content/docs/custom-role.md"
+  [[module.mounts]]
+    source = "../docs/user-authentication.md"
+    target = "content/docs/user-authentication.md"
+  [[module.mounts]]
+    source = "content/en"
+    target = "content"
   [module.hugoVersion]
     extended = true
     min = "0.160.1"
