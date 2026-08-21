@@ -33,32 +33,34 @@ Kubeflow is installed from a pinned community distribution release on a hostname
 
 ## Prerequisites
 
-You will need the following:
-
 - An **Azure Subscription** (e.g. [Free](https://aka.ms/azure-free-account) or [Student](https://aka.ms/azure-student-account) account)
-- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - A [GitHub Account](https://github.com)
-- Bash shell (e.g. macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), or [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart))
-- The following installed in your Bash shell
-    - [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) v5.8.1 exactly. The deployment checks this because later versions can remove Kustomize APIs used by the pinned Kubeflow release.
-      - Install Kustomize
-      ```bash
-      go install sigs.k8s.io/kustomize/kustomize/v5@v5.8.1
-      ```
-      Verify the installation:
-      ```bash
-      kustomize version
-      ```
-    - [Kubelogin](https://github.com/Azure/kubelogin), the exec plugin that signs you in to the cluster. The Azure CLI ships and updates `kubectl` and `kubelogin` for you; install them explicitly only if you are not using it:
-        ```bash
-        az aks install-cli
-        ```
-    - git
-    - [just](https://just.systems/man/en/packages.html), which runs every deployment step in this repository
-    - [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) `0.46.1`, the version pinned in `versions.env`
-    - [Kubectl](https://kubernetes.io/docs/tasks/tools/) `v1.35`, `v1.36` or `v1.37`, which is within one minor version of the `1.36` API server this deployment creates
-    - [Go](https://go.dev/doc/install) 1.26.6 or greater
-    - [sed](https://gnuwin32.sourceforge.net/packages/sed.htm), used to render the Dex configuration
+- A Bash shell: macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), or [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart)
+
+Install the following into that shell:
+
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [just](https://just.systems/man/en/packages.html), which runs every deployment step in this repository
+- [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) `0.46.1`, the version pinned in `versions.env`
+- [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) `v5.8.1` exactly, because later versions can remove Kustomize APIs used by the pinned Kubeflow release
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/) `v1.35`, `v1.36` or `v1.37`, within one minor version of the `1.36` API server this deployment creates
+- [Kubelogin](https://github.com/Azure/kubelogin), the exec plugin that signs you in to the cluster
+- [Go](https://go.dev/doc/install) 1.26.6 or greater
+- `git`
+- [sed](https://gnuwin32.sourceforge.net/packages/sed.htm), used to render the Dex configuration
+
+The deployment checks the Kustomize version and refuses to run on a mismatch, so install it with Go rather than a package manager:
+
+```bash
+go install sigs.k8s.io/kustomize/kustomize/v5@v5.8.1
+kustomize version
+```
+
+The Azure CLI ships and updates `kubectl` and `kubelogin` for you. Install them explicitly only if you are not using it:
+
+```bash
+az aks install-cli
+```
 
 For a deployment identity with only the permissions this deployment needs, see the [least-privilege custom role](custom-role.md).
 
