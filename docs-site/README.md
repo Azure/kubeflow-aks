@@ -36,8 +36,8 @@ npm run build    # writes ./public
 
 ## Pinned versions
 
-Everything is pinned to an exact version so that a clean checkout builds the
-same site every time:
+Everything that affects the rendered output is pinned to an exact version, so a
+clean checkout builds the same site every time:
 
 | Component | Pinned in | Version |
 | --- | --- | --- |
@@ -47,6 +47,13 @@ same site every time:
 | Bootstrap | `package.json` | 5.3.8 |
 | Font Awesome | `package.json` | 6.7.2 |
 | PostCSS CLI, autoprefixer | `package.json` | 11.0.1, 10.5.4 |
+
+The runner image, the Go toolchain and the Node patch release are deliberately
+not pinned to an exact version. Go only resolves the theme as a Hugo module, and
+`go.sum` verifies that by checksum, so the Go release cannot change the output.
+Node only runs npm and the pinned `hugo-extended` binary. Pinning these further
+would buy reproducibility the build does not depend on, at the cost of routine
+version bumps.
 
 Docsy v0.16.0 mounts Bootstrap and Font Awesome from `node_modules` rather than
 shipping them as Hugo modules, which is why they are npm dependencies here.

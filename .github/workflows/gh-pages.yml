@@ -33,7 +33,8 @@ jobs:
       # no separate Hugo install step.
       - uses: actions/setup-go@v7
         with:
-          go-version: stable
+          # Matches the go directive in docs-site/go.mod.
+          go-version: "1.23"
           cache: false
 
       - uses: actions/setup-node@v7
