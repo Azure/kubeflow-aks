@@ -6,6 +6,7 @@ linkTitle: "Deployment Options"
 date: 2023-03-07
 description: >
   Deploy Kubeflow into AKS
+aliases: ["/main/docs/deployment-options/"]
 ---
 
 Start by checking out the [prerequisites]({{< ref "/docs/Deployment Options/prerequisites" >}}) page

@@ -4,6 +4,7 @@ linkTitle: "Overview"
 weight: 1
 description: >
   Overview of Kubeflow on Azure Kubernetes Service
+aliases: ["/main/docs/overview/"]
 ---
 
 Azure Kubernetes Service(AKS) is a managed Kubernetes platform on Azure. It provides various features that makes it easy to get up and running on production grade Kubernetes Clusters. For more information about AKS, check out [Introduction to Azure Kubernetes Service](https://learn.microsoft.com/azure/aks/intro-kubernetes).

@@ -7,6 +7,7 @@ date: 2025-08-23
 weight: 3
 description: >
   Deploying Kubeflow on AKS with Custom Password and TLS
+aliases: ["/main/docs/deployment-options/custom-password-tls/"]
 ---
 
 ## Background

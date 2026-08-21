@@ -7,6 +7,7 @@ date: 2025-08-23
 weight: 3
 description: >
   Changing the Dex password and adding users on AKS
+aliases: ["/main/docs/deployment-options/authn-users-entra/"]
 ---
 
 ## Background

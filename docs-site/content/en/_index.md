@@ -1,6 +1,7 @@
 ---
 title: Kubeflow on AKS
 linkTitle: AKS Kubeflow
+aliases: ["/main/"]
 ---
 
 {{< blocks/cover title="Kubeflow on AKS" image_anchor="top" height="min" color="orange" >}}

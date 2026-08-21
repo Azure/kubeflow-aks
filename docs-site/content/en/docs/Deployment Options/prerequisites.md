@@ -7,6 +7,7 @@ date: 2025-08-19
 weight: 1
 description: >
   Set up your environment for deploying Kubeflow for AKS
+aliases: ["/main/docs/deployment-options/prerequisites/"]
 ---
 
 # Kubeflow on AKS Prerequisites

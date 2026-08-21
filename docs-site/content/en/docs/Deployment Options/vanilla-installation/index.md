@@ -7,6 +7,7 @@ date: 2025-08-19
 weight: 2
 description: >
   Deploy kubeflow into an AKS cluster using default settings.
+aliases: ["/main/docs/deployment-options/vanilla-installation/"]
 ---
 
 ## Background
