@@ -4,6 +4,9 @@ on:
   # Trigger the workflow on git push to a branch where this workflow file exists
   push:
     paths:
+      # The documentation itself lives in docs/ and is mounted into the site,
+      # so a change there has to rebuild too.
+      - docs/**
       - docs-site/**
       - .github/workflows/gh-pages.yml
     branches:
