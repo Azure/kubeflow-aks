@@ -64,8 +64,10 @@ match the new theme's `package.json`, and update `module.hugoVersion.min` in
 `config.toml` to the floor the new theme declares.
 
 `packages/hugoautogen/` is where Hugo records the npm dependencies contributed
-by Hugo modules. Its checksum is specific to the checkout it was generated in,
-so it is not committed; the `build` and `serve` scripts regenerate it first.
+by Hugo modules. `package.json` there is committed, because `package-lock.json`
+declares it as a workspace. Its sibling `hugo_packagemeta.json` holds a checksum
+specific to the checkout it was generated in, so that one is not committed; the
+`build` and `serve` scripts regenerate it first.
 
 ## Layout
 
