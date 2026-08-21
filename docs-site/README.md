@@ -60,6 +60,15 @@ shipping them as Hugo modules, which is why they are npm dependencies here.
 Their versions have to match the ones in the theme's own `package.json` at the
 pinned Docsy version.
 
+The `overrides` entry pinning `adm-zip` to 0.6.0 exists because `hugo-extended`
+depends on an older release that carries GHSA-xcpc-8h2w-3j85. The advisory is
+build-time only, since `adm-zip` is used to unpack the Hugo archive at install
+time, but `npm audit` reports it as high. The fix npm proposes is to downgrade
+`hugo-extended` to 0.152.2, which is below the 0.160.1 floor Docsy v0.16.0
+requires and would break the build. Overriding the transitive dependency instead
+clears the advisory and keeps Hugo current. Drop the override once
+`hugo-extended` ships a release that depends on adm-zip 0.6.0 or later.
+
 To move to a newer Docsy release:
 
 ```bash
