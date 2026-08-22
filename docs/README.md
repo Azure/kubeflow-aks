@@ -68,7 +68,7 @@ For a deployment identity with only the permissions this deployment needs, see t
 
 Deploy the cluster with the `main.bicep` template in this repository.
 
-The cluster uses Microsoft Entra ID with Azure RBAC for Kubernetes authorization, so access is granted by role assignment rather than by a local admin credential.
+The cluster uses Microsoft Entra ID with Azure RBAC for Kubernetes authorization, so `kubectl` access follows from a role assignment rather than from a shared credential. AKS still issues a cluster-local admin credential to callers holding `listClusterAdminCredential`, which bypasses Entra entirely; the [least-privilege custom role](custom-role.md) deliberately withholds it.
 
 Login to the Azure CLI.
 ```bash
@@ -143,6 +143,18 @@ the resource group, the cluster name and the location.
 > [!WARNING]
 > Save the password `just deploy-kubeflow` prints. It is shown once and is never
 > written to a file.
+
+Wait for the deployment to settle, then check it:
+
+```bash
+just wait-ready
+just e2e
+```
+
+`just wait-ready` waits for every pod, for the TLS certificate to be issued, and
+for Dex and OAuth2 Proxy to roll out. `just e2e` then checks the endpoint
+independently: it requires an unauthenticated request to redirect to Dex over
+HTTPS with normal certificate verification.
 
 Open the printed `https://` URL and sign in as `user@example.com`.
 
