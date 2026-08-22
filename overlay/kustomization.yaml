@@ -19,6 +19,11 @@ patches:
   - path: patches/dex-config.yaml
   - path: patches/dex-oidc-client.yaml
   - path: patches/dex-passwords.yaml
+    target:
+      version: v1
+      kind: Secret
+      name: dex-passwords
+      namespace: auth
   - path: patches/istio-gateway.yaml
   - path: patches/istio-service.yaml
   - path: patches/oauth2-proxy-deployment.yaml
