@@ -41,15 +41,18 @@ Install the following into that shell:
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [just](https://just.systems/man/en/packages.html), which runs every deployment step in this repository
-- [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install). `versions.env` records `0.46.1` as the version this deployment is built against, though nothing checks it at runtime
-- [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) `v5.8.1` exactly, because later versions can remove Kustomize APIs used by the pinned Kubeflow release. This is the one version the deployment checks
+- [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) `0.46.1` exactly, the version `versions.env` records and `just validate-static` checks
+- [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) `v5.8.1` exactly, because later versions can remove Kustomize APIs used by the pinned Kubeflow release
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/) `v1.35`, `v1.36` or `v1.37`, within one minor version of the `1.36` API server this deployment creates
 - [Kubelogin](https://github.com/Azure/kubelogin), the exec plugin that signs you in to the cluster
 - [Go](https://go.dev/doc/install) 1.26.0 or greater. `tools/password/go.mod` requests the `go1.26.6` toolchain, which Go downloads on demand; install 1.26.6 itself if `GOTOOLCHAIN` is set to `local`
 - [git](https://git-scm.com/downloads)
+- [Python](https://www.python.org/downloads/) 3.11 or later, with `venv` and `pip`. `just e2e` builds a virtual environment under `.cache/` and runs the release gate in it. On Debian and Ubuntu `venv` is a separate `python3-venv` package
+- [jq](https://jqlang.github.io/jq/download/), used to find pods that started before Istio could give them a sidecar
+- [OpenSSL](https://openssl-library.org/source/), used to read the serving certificate's serial number
 - [sed](https://gnuwin32.sourceforge.net/packages/sed.htm), used to render the Dex configuration
 - `curl`, `tar`, `sha256sum`, `base64`, `tr`, `grep` and `awk`, used to fetch and verify the Kubeflow release and to render its secrets
-- Network access to `codeload.github.com` and the Go module proxy
+- Network access to `codeload.github.com`, the Go module proxy, and PyPI
 
 The deployment checks the Kustomize version and refuses to run on a mismatch, so install it with Go rather than a package manager:
 
@@ -114,7 +117,7 @@ Create the resource group
 az group create -n $RESOURCE_GROUP -l $LOCATION
 ```
 
-Create the cluster. `just validate` previews the same deployment without changing anything.
+Create the cluster. `just validate` previews the same deployment without changing anything, after running `just validate-static`, which needs neither an Azure account nor a cluster and checks the pinned tool versions, the Go password tool, the release gate, and the rendered manifests.
 
 ```bash
 just deploy-aks
@@ -165,9 +168,32 @@ just e2e
 ```
 
 `just wait-ready` waits for every pod, for the TLS certificate to be issued, and
-for Dex and OAuth2 Proxy to roll out. `just e2e` then checks the endpoint
-independently: it requires an unauthenticated request to redirect to Dex over
-HTTPS with normal certificate verification.
+for Dex and OAuth2 Proxy to roll out. It also fails a pod that is Ready but has
+no Istio sidecar, which readiness alone cannot detect and which leaves large
+parts of the platform returning 503 through the ingress.
+
+`just e2e` then exercises the deployment the way a user does. It reads the
+hostname from the certificate rather than taking one from the environment, signs
+in to Dex over publicly trusted HTTPS, loads the dashboard, creates a Notebook,
+waits for it to become ready, lists it through the Jupyter Web App API, opens
+JupyterLab, and deletes it again. It prints one `PASS` line per check and
+verifies certificates normally throughout, with no way to turn that off. It asks
+for the Dex password, or reads it from `DEX_PASSWORD`:
+
+```bash
+DEX_PASSWORD='the password just deploy-kubeflow printed' just e2e
+```
+
+It then forces the certificate to be reissued, to prove that ACME renewal still
+reaches the cluster through Istio. Nothing else can prove that: a renewal that
+has quietly stopped working looks identical to one that works until the
+certificate expires.
+
+> [!WARNING]
+> The reissuance deletes the TLS secret, so the site serves no certificate for
+> the minute or two the new one takes to issue. Let's Encrypt also issues at most
+> five duplicate certificates per week, and each run uses one. Set
+> `E2E_SKIP_REISSUANCE=1` to run only the functional checks.
 
 > [!NOTE]
 > `just wait-ready` allows fifteen minutes for the certificate. If it gives up
