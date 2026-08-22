@@ -35,19 +35,21 @@ Kubeflow is installed from a pinned community distribution release on a hostname
 
 - An **Azure Subscription** (e.g. [Free](https://aka.ms/azure-free-account) or [Student](https://aka.ms/azure-student-account) account)
 - A [GitHub Account](https://github.com)
-- A Bash shell: macOS, Linux, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), or [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart)
+- Bash 4 or later, on Linux, macOS, [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about), [Multipass](https://multipass.run/), or [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/quickstart). The deployment uses `mapfile`, so the Bash 3.2 that macOS ships is too old; install a newer one with Homebrew
 
 Install the following into that shell:
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [just](https://just.systems/man/en/packages.html), which runs every deployment step in this repository
-- [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) `0.46.1`, the version pinned in `versions.env`
-- [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) `v5.8.1` exactly, because later versions can remove Kustomize APIs used by the pinned Kubeflow release
+- [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install). `versions.env` records `0.46.1` as the version this deployment is built against, though nothing checks it at runtime
+- [Kustomize](https://github.com/kubernetes-sigs/kustomize/releases) `v5.8.1` exactly, because later versions can remove Kustomize APIs used by the pinned Kubeflow release. This is the one version the deployment checks
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/) `v1.35`, `v1.36` or `v1.37`, within one minor version of the `1.36` API server this deployment creates
 - [Kubelogin](https://github.com/Azure/kubelogin), the exec plugin that signs you in to the cluster
-- [Go](https://go.dev/doc/install) 1.26.6 or greater
+- [Go](https://go.dev/doc/install) 1.26.0 or greater. `tools/password/go.mod` requests the `go1.26.6` toolchain, which Go downloads on demand; install 1.26.6 itself if `GOTOOLCHAIN` is set to `local`
 - [git](https://git-scm.com/downloads)
 - [sed](https://gnuwin32.sourceforge.net/packages/sed.htm), used to render the Dex configuration
+- `curl`, `tar`, `sha256sum`, `base64`, `tr`, `grep` and `awk`, used to fetch and verify the Kubeflow release and to render its secrets
+- Network access to `codeload.github.com` and the Go module proxy
 
 The deployment checks the Kustomize version and refuses to run on a mismatch, so install it with Go rather than a package manager:
 
@@ -96,6 +98,16 @@ export SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
 
 `SIGNEDINUSER` is the object ID of the signed-in user. The deployment grants it the `Azure Kubernetes Service RBAC Cluster Admin` role on the cluster, which `kubectl` needs because the cluster authenticates with Microsoft Entra ID.
 
+`LOCATION` selects the region for the resource group created below. The cluster inherits the region from the resource group, so a group that already exists keeps its own region regardless of this value.
+
+> [!NOTE]
+> `az ad signed-in-user show` works only for an interactive user sign-in. Signed in as a service principal it fails with `/me request is only valid with delegated authentication flow`. Use the principal's object ID instead, and say so, because the deployment otherwise records the role assignment against the wrong principal type:
+> ```bash
+> export SIGNEDINUSER=$(az ad sp show --id "$AZURE_CLIENT_ID" --query id --out tsv)
+> export SIGNEDINUSER_TYPE=ServicePrincipal
+> ```
+> `SIGNEDINUSER_TYPE` accepts `User`, `Group` or `ServicePrincipal` and defaults to `User`.
+
 Create the resource group
 
 ```bash
@@ -109,7 +121,7 @@ just deploy-aks
 ```
 
 > [!NOTE]
-> `just deploy-aks` creates the cluster on the [Free pricing tier](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers), so cluster management costs nothing and you pay as you go for the nodes and other resources the cluster consumes. The Free tier carries no financially backed uptime SLA. The system node pool has two nodes, which you can size with the `nodeCount` and `vmSize` template parameters. Its Kubernetes version comes from `versions.env`. The cluster must not enforce Azure Policy or the AKS managed admission policies, which reject this workload.
+> `just deploy-aks` creates the cluster on the [Free pricing tier](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers), so cluster management costs nothing and you pay as you go for the nodes and other resources the cluster consumes. The Free tier carries no financially backed uptime SLA. The system node pool has two nodes, which you can size with the `nodeCount` and `vmSize` template parameters. Its Kubernetes version comes from `versions.env`. The cluster must not enforce Azure Policy or the AKS managed admission policies, which reject this workload. AKS also creates a second resource group of its own, named `MC_<resource group>_<cluster>_<region>`, which holds the nodes and their supporting resources.
 
 ### Connect to the cluster
 After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures `kubectl` to use them.
@@ -129,9 +141,10 @@ kubectl get nodes
 
 ## Install Kubeflow
 
-Run the deployment from the repository root. Nothing needs to be set first: the
-Bicep deployment generated a hostname, and Kubeflow is served on it over
-publicly trusted HTTPS.
+Run the deployment from the repository root, with the same environment
+variables exported above still set. No hostname needs choosing: the Bicep
+deployment generated one, and Kubeflow is served on it over publicly trusted
+HTTPS.
 
 ```bash
 just deploy-kubeflow
