@@ -587,6 +587,23 @@ e2e:
 password:
     @cd tools/password && go run .
 
+# Empty the resource group while preserving it and its scoped access.
+group-empty:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    : "${RESOURCE_GROUP:?Set RESOURCE_GROUP to an existing resource group}"
+    temp_dir="$(mktemp -d)"
+    empty_bicep="$temp_dir/empty.bicep"
+    trap 'rm -f "$empty_bicep"; rmdir "$temp_dir"' EXIT
+    : > "$empty_bicep"
+
+    printf 'Emptying RESOURCE_GROUP %s in 10 seconds.\n' "$RESOURCE_GROUP"
+    sleep 10
+    az deployment group create \
+        --resource-group "$RESOURCE_GROUP" \
+        --template-file "$empty_bicep" \
+        --mode Complete
+
 # Remove the downloaded and extracted Kubeflow release.
 clean-cache:
     rm -rf -- .cache

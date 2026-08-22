@@ -2,21 +2,24 @@
 ![current development version](https://img.shields.io/badge/Kubeflow-26.03.1-green)
 [![License](https://img.shields.io/github/license/azure/kubeflow-aks)](./LICENSE)
 
-This is not an officially supported Microsoft product. This project is actively being maintained.
-
 # Kubeflow on Azure Kubernetes Service
+
+Read the deployment quickstart either on the [published documentation site](https://azure.github.io/kubeflow-aks/docs/) or as [`docs/README.md`](./docs/README.md) in this repository. Both links show the same document.
+
+> [!NOTE]
+> This is not an officially supported Microsoft product. This project is actively being maintained.
 
 The Kubeflow project is dedicated to making deployments of machine learning (ML) workflows on Kubernetes simple, portable and scalable. Our goal is not to recreate other services, but to provide a straightforward way to deploy best-of-breed open-source systems for ML on Azure Kubernetes Services.
 
 ## Getting Started
 
-There are a number of deployment options for running Kubeflow on AKS. To get started with deploying Kubeflow on [Azure Kubernetes Service](https://learn.microsoft.com/en-us/azure/aks/intro-kubernetes), see the [deployment options section](https://azure.github.io/kubeflow-aks/main/docs/deployment-options/) on the [Kubeflow on AKS](https://azure.github.io/kubeflow-aks/main) website.
+To deploy Kubeflow on [Azure Kubernetes Service](https://learn.microsoft.com/en-us/azure/aks/intro-kubernetes), follow the [quickstart](./docs/README.md).
 
 ## Help & Feedback
 
 For help, please consider the following venues (in order):
 
-* [Documentation](https://azure.github.io/kubeflow-aks/main/docs)
+* [Documentation](https://azure.github.io/kubeflow-aks/docs/)
 * [Search open issues](https://github.com/Azure/kubeflow-aks/issues)
 * [File an issue](https://github.com/Azure/kubeflow-aks/issues/new)
 
@@ -36,4 +39,3 @@ See [SECURITY](./SECURITY.md) for more information.
 ## License
 
 This project is [licensed](./LICENSE) under the  MIT License.
-

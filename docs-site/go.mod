@@ -1,9 +1,5 @@
-module github.com/google/docsy-example
+module github.com/Azure/kubeflow-aks/docs-site
 
-go 1.12
+go 1.23
 
-require (
-	github.com/FortAwesome/Font-Awesome v0.0.0-20220831210243-d3a7818c253f // indirect
-	github.com/google/docsy v0.5.1 // indirect
-	github.com/twbs/bootstrap v4.6.2+incompatible // indirect
-)
+require github.com/google/docsy/theme v0.16.0 // indirect

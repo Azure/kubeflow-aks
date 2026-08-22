@@ -1,5 +1,6 @@
-baseURL = "https://mosabami.github.io/kubeflow-aks"
+baseURL = "https://azure.github.io/kubeflow-aks/"
 title = "Kubeflow on AKS"
+disableKinds = ["taxonomy", "term"]
 
 # Language settings
 contentDir = "content/en"
@@ -13,39 +14,20 @@ enableMissingTranslationPlaceholders = true
 ###############################################################################
 [menu]
   [[menu.main]]
-    name = "Documentation" 
+    name = "Documentation"
     weight = -101
-    pre = "<i class='fas fa-book pr-2'></i>"
+    pre = "<i class='fas fa-book pe-2'></i>"
     url = "./docs/"
   [[menu.main]]
     name = "GitHub"
     weight = -99
-    pre = "<i class='fab fa-github pr-2'></i>"
-    url = "https://github.com/azure/kubeflow-aks"
+    pre = "<i class='fab fa-github pe-2'></i>"
+    url = "https://github.com/Azure/kubeflow-aks"
 
 enableRobotsTXT = true
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
-
-# Comment out to enable taxonomies in Docsy
-# disableKinds = ["taxonomy", "taxonomyTerm"]
-
-# You can add your own taxonomies
-[taxonomies]
-tag = "tags"
-category = "categories"
-
-[params.taxonomy]
-# set taxonomyCloud = [] to hide taxonomy clouds
-taxonomyCloud = ["tags", "categories"] 
-
-# If used, must have same length as taxonomyCloud
-taxonomyCloudTitle = ["Tag Cloud", "Categories"] 
-
-# set taxonomyPageHeader = [] to hide taxonomies on the page headers
-taxonomyPageHeader = ["tags", "categories"] 
-
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -74,10 +56,11 @@ anchor = "smart"
 [languages]
 [languages.en]
 title = "Kubeflow on AKS"
-description = "Docs for Kubeflow on AKS and Azure"
-languageName ="English"
+label = "English"
 # Weight used for sorting.
 weight = 1
+[languages.en.params]
+description = "Docs for deploying Kubeflow on Azure Kubernetes Service"
 
 
 [markup]
@@ -107,38 +90,35 @@ copyright = "Kubeflow on AKS Authors"
 # This menu appears only if you have at least one [params.versions] set.
 version_menu = "Releases"
 
-# Flag used in the "version-banner" partial to decide whether to display a 
+# Flag used in the "version-banner" partial to decide whether to display a
 # banner on every page indicating that this is an archived version of the docs.
 # Set this flag to "true" if you want to display the banner.
 archived_version = false
 
 # The version number for the version of the docs represented in this doc set.
-# Used in the "version-banner" partial to display a version number for the 
+# Used in the "version-banner" partial to display a version number for the
 # current doc set.
 version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://example.com"
+url_latest_version = "https://azure.github.io/kubeflow-aks/"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
-github_repo = "https://github.com/google/docsy-example"
-# An optional link to a related project repo. For example, the sibling repository where your product code lives.
-github_project_repo = "https://github.com/google/docsy"
+github_repo = "https://github.com/Azure/kubeflow-aks"
+# No github_project_repo: the product code lives in this same repository, so a
+# separate "create project issue" link would send Kubeflow-on-AKS issues elsewhere.
 
-# Specify a value here if your content directory is not in your repo's root directory
-# github_subdir = ""
+# Documentation content is maintained in docs/ at the repository root.
+github_subdir = "docs"
 
 # Uncomment this if your GitHub repo does not have "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
-github_branch= "master"
+github_branch = "main"
 
-
-# Enable Algolia DocSearch
-algolia_docsearch = true
 
 # Enable Lunr.js offline search
-offlineSearch = false
+offlineSearch = true
 
 # Enable syntax highlighting and copy buttons on code blocks with Prism
 prism_syntax_highlighting = false
@@ -147,8 +127,8 @@ prism_syntax_highlighting = false
 [params.ui]
 #  Set to true to disable breadcrumb navigation.
 breadcrumb_disable = false
-# Set to true to disable the About link in the site footer
-footer_about_disable = false
+# Set to false to hide the About link in the site footer
+footer_about_enable = true
 # Set to false if you don't want to display a logo (/assets/icons/logo.svg) in the top navbar
 navbar_logo = true
 # Set to true if you don't want the top navbar to be translucent when over a `block/cover`, like on the homepage.
@@ -165,11 +145,11 @@ sidebar_search_disable = false
 [params.ui.feedback]
 enable = true
 # The responses that the user sees after clicking "yes" (the page was helpful) or "no" (the page was not helpful).
-yes = 'Glad to hear it! Please <a href="https://github.com/USERNAME/REPOSITORY/issues/new">tell us how we can improve</a>.'
-no = 'Sorry to hear that. Please <a href="https://github.com/USERNAME/REPOSITORY/issues/new">tell us how we can improve</a>.'
+yes = 'Glad to hear it! Please <a href="https://github.com/Azure/kubeflow-aks/issues/new">tell us how we can improve</a>.'
+no = 'Sorry to hear that. Please <a href="https://github.com/Azure/kubeflow-aks/issues/new">tell us how we can improve</a>.'
 
 # Adds a reading time to the top of each doc.
-# If you want this feature, but occasionally need to remove the Reading time from a single page, 
+# If you want this feature, but occasionally need to remove the Reading time from a single page,
 # add "hide_readingtime: true" to the page's front matter
 [params.ui.readingtime]
 enable = false
@@ -180,14 +160,26 @@ enable = false
 # hugo module configuration
 
 [module]
-  # uncomment line below for temporary local development of module
-  # replacements = "github.com/google/docsy -> ../../docsy"
+  # The documentation is authored once, in docs/ at the repository root, so the
+  # file read on GitHub and the page published here are the same file. Each is
+  # mounted by name: README.md becomes the section index because GitHub renders
+  # it when browsing to docs/, while Hugo wants _index.md. A new page under
+  # docs/ needs a mount entry here.
+  [[module.mounts]]
+    source = "../docs/README.md"
+    target = "content/docs/_index.md"
+  [[module.mounts]]
+    source = "../docs/custom-role.md"
+    target = "content/docs/custom-role.md"
+  [[module.mounts]]
+    source = "../docs/user-authentication.md"
+    target = "content/docs/user-authentication.md"
+  [[module.mounts]]
+    source = "content/en"
+    target = "content"
   [module.hugoVersion]
     extended = true
-    min = "0.75.0"
+    min = "0.160.1"
   [[module.imports]]
-    path = "github.com/google/docsy"
+    path = "github.com/google/docsy/theme"
     disable = false
-  [[module.imports]]
-    path = "github.com/google/docsy/dependencies"
-    disable = false    

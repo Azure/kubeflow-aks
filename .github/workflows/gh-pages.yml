@@ -1,10 +1,14 @@
-name: hugo-build-push-folder
+name: Publish docs-site to GitHub Pages
 
 on:
-  # Trigger the workflow on git push to a branch where this workflow file exists 
+  # Trigger the workflow on git push to a branch where this workflow file exists
   push:
     paths:
+      # The documentation itself lives in docs/ and is mounted into the site,
+      # so a change there has to rebuild too.
+      - docs/**
       - docs-site/**
+      - .github/workflows/gh-pages.yml
     branches:
       - main
 
@@ -12,41 +16,63 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+
+# Let a running deployment finish rather than cancelling it part way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-site
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
-          submodules: recursive
-          persist-credentials: true
-      
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: '0.93.0'
-          extended: true
+          # enableGitInfo needs full history to date each page accurately.
+          fetch-depth: 0
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch 
-
-      - name: Run a multi-line scripts
-        run: |
-          cd $GITHUB_WORKSPACE/docs-site
-          npm install postcss-cli@8.3.0
-          base_url="baseURL = \"https://$GITHUB_REPOSITORY_OWNER.github.io/kubeflow-aks/$(git branch --show-current)\""
-          sed -i "1s#.*#$base_url#" config.toml
-          hugo
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      # Hugo resolves the Docsy theme as a Hugo module, which needs the Go
+      # toolchain. Hugo itself is pinned as an npm devDependency, so there is
+      # no separate Hugo install step.
+      - uses: actions/setup-go@v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs-site/public
-          destination_dir: ${{ steps.extract_branch.outputs.branch }}
-          # keep_files: true
+          # Matches the go directive in docs-site/go.mod.
+          go-version: "1.23"
+          cache: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: docs-site/.nvmrc
+          cache: npm
+          cache-dependency-path: docs-site/package-lock.json
+
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      - run: npm ci
+
+      - name: Build the site
+        # configure-pages reports the URL Pages actually serves this site from,
+        # so the baseURL never has to be reconstructed by hand.
+        run: npm run build -- --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          # Relative to the workspace root, not the working-directory default.
+          path: docs-site/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
