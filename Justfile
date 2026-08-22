@@ -108,7 +108,10 @@ validate-static:
     # list endpoint subscripts that field, so listing it returns 500.
     grep -Fq 'volumeMounts:' tests/notebook.yaml
     grep -Fq 'namespace: kubeflow-user-example-com' tests/notebook.yaml
-    grep -Fq 'name: test' tests/notebook.yaml
+    # Anchored to metadata.name, because the container is also called test and
+    # an unanchored match is satisfied by that alone. e2e.py hard-codes this
+    # name to poll the Notebook and to find it in the Jupyter Web App listing.
+    grep -Eq '^  name: test$' tests/notebook.yaml
 
     just --quiet fetch-kubeflow
 
@@ -172,11 +175,30 @@ validate-static:
     # published default while deploy-kubeflow prints a password that does not
     # work. The overlay removes the field for that reason; this is the check
     # that keeps it removed.
-    if grep -qE '12341234|\$2y\$12\$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72|pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok' \
-        "$rendered"; then
+    #
+    # Each default is searched for in both forms it can reach the render in:
+    # plaintext, as a stringData field or a literal carries it, and base64, as
+    # a secretGenerator writes it. The Dex password is the only one upstream
+    # ships in plaintext, so a plaintext-only search would leave the OIDC
+    # client secret and the oauth2-proxy cookie secret uncovered.
+    upstream_defaults=(
+        '$2y$12$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72'
+        'pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok'
+        '7d16fee92f8d11b8940b081b3f8b8acb'
+        '12341234'
+    )
+    default_credential_patterns=()
+    for upstream_default in "${upstream_defaults[@]}"; do
+        default_credential_patterns+=(
+            "$upstream_default"
+            "$(printf %s "$upstream_default" | base64 | tr -d '\n')"
+        )
+    done
+    if default_credentials="$(
+        grep -Fnf <(printf '%s\n' "${default_credential_patterns[@]}") "$rendered"
+    )"; then
         printf 'Rendered manifests contain an upstream default credential.\n' >&2
-        grep -nE '12341234|\$2y\$12\$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72|pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok' \
-            "$rendered" | head -5 >&2
+        printf '%s\n' "$default_credentials" | head -5 >&2
         exit 1
     fi
 
