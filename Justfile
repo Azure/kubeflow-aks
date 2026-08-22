@@ -18,8 +18,244 @@ export DOMAIN := domain
 export DNS_LABEL := dns_label
 export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT := "1"
 
+# Run local source, manifest, and test checks. Needs no Azure account.
+validate-static:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source versions.env
+
+    require_equal() {
+        if [[ "$3" != "$2" ]]; then
+            printf '%s: expected %s, got %s\n' "$1" "$2" "$3" >&2
+            exit 1
+        fi
+    }
+
+    require_kubectl_skew() {
+        local cluster_version="$1"
+        local kubectl_version="$2"
+
+        if [[ ! "$cluster_version" =~ ^v?([0-9]+)\.([0-9]+)$ ]]; then
+            printf 'AKS Kubernetes version is not a major.minor version: %s\n' \
+                "$cluster_version" >&2
+            exit 1
+        fi
+        local cluster_major=$((10#${BASH_REMATCH[1]}))
+        local cluster_minor=$((10#${BASH_REMATCH[2]}))
+
+        if [[ ! "$kubectl_version" =~ ^v?([0-9]+)\.([0-9]+)\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            printf 'kubectl returned an invalid semantic version: %s\n' \
+                "${kubectl_version:-<empty>}" >&2
+            exit 1
+        fi
+        local kubectl_major=$((10#${BASH_REMATCH[1]}))
+        local kubectl_minor=$((10#${BASH_REMATCH[2]}))
+
+        if (( kubectl_major != cluster_major ||
+              kubectl_minor < cluster_minor - 1 ||
+              kubectl_minor > cluster_minor + 1 )); then
+            printf 'kubectl version: expected v%d.%d.x through v%d.%d.x for AKS Kubernetes %s, got %s\n' \
+                "$cluster_major" "$((cluster_minor - 1))" \
+                "$cluster_major" "$((cluster_minor + 1))" \
+                "$cluster_version" "$kubectl_version" >&2
+            exit 1
+        fi
+    }
+
+    # Everything versions.env pins, checked against what is installed. The
+    # deployment recipes assume these versions rather than assert them, so
+    # without this a skewed toolchain is only discovered against a live
+    # cluster. fetch-kubeflow checks Kustomize itself, so it is not repeated.
+    require_equal "Bicep CLI version" "$BICEP_CLI_VERSION" \
+        "$(az bicep version | awk '{print $4}')"
+    az bicep build --file main.bicep --stdout > /dev/null
+
+    kubectl_version="$(
+        kubectl version --client --output=json |
+            sed -n 's/^[[:space:]]*"gitVersion": "\([^"]*\)",*$/\1/p'
+    )"
+    require_kubectl_skew "$AKS_KUBERNETES_VERSION" "$kubectl_version"
+
+    go_version="$(cd tools/password && go version | awk '{print $3}')"
+    require_equal "Go toolchain" "$GO_TOOLCHAIN" "$go_version"
+    go_mod_version="$(awk '$1 == "go" { print $2 }' tools/password/go.mod)"
+    go_mod_toolchain="$(awk '$1 == "toolchain" { print $2 }' tools/password/go.mod)"
+    require_equal "go.mod language version" "$GO_VERSION" "$go_mod_version"
+    require_equal "go.mod toolchain" "$GO_TOOLCHAIN" "$go_mod_toolchain"
+    (cd tools/password && go test ./... && go vet ./...)
+
+    require_equal "pinned test dependency" "requests==2.32.5" \
+        "$(grep -Ev '^[[:space:]]*(#|$)' tests/requirements.txt)"
+    python3 -m py_compile tests/e2e.py tests/e2e_selftest.py
+    python3 tests/e2e_selftest.py
+
+    # The gate proves publicly trusted TLS, so it must own no way to turn
+    # verification off, and it must reach stdout only through the scrubbing
+    # helpers that redact the password and session cookies.
+    if grep -Eq 'verify[[:space:]]*=[[:space:]]*False|skip_tls_verify|disable_warnings' \
+        tests/e2e.py; then
+        printf 'tests/e2e.py must not weaken TLS verification.\n' >&2
+        exit 1
+    fi
+    require_equal "unscrubbed print calls in tests/e2e.py" "2" \
+        "$(grep -Ec '^[[:space:]]*print\(' tests/e2e.py)"
+    grep -Fq 'register_secret(dex_password)' tests/e2e.py
+    for marker in trusted-tls dex-login dashboard notebook-controller notebook-api jupyterlab; do
+        grep -Fq "\"PASS $marker\"" tests/e2e.py
+    done
+
+    # Upstream's Notebook fixture has no volumeMounts, and the Jupyter Web App
+    # list endpoint subscripts that field, so listing it returns 500.
+    grep -Fq 'volumeMounts:' tests/notebook.yaml
+    grep -Fq 'namespace: kubeflow-user-example-com' tests/notebook.yaml
+    # Anchored to metadata.name, because the container is also called test and
+    # an unanchored match is satisfied by that alone. e2e.py hard-codes this
+    # name to poll the Notebook and to find it in the Jupyter Web App listing.
+    grep -Eq '^  name: test$' tests/notebook.yaml
+
+    just --quiet fetch-kubeflow
+
+    # deploy-kubeflow writes params.env from the live deployment outputs, so
+    # seed a throwaway one here. These values are only ever rendered, never
+    # applied; the hostname is a fixed placeholder so the render is stable.
+    overlay_dir=".cache/community-distribution-${KUBEFLOW_VERSION}/aks-overlay"
+    static_host='kubeflow-static-validation.eastus.cloudapp.azure.com'
+    printf '%s\n' \
+        "DNS_LABEL=kubeflow-static-validation" \
+        "KUBEFLOW_HOST=${static_host}" \
+        "DEX_ISSUER=https://${static_host}/dex" \
+        "DEX_LOGIN_URL=https://${static_host}/dex/auth" \
+        "OAUTH2_REDIRECT_URI=https://${static_host}/oauth2/callback" \
+        > "$overlay_dir/params.env"
+    sed \
+        -e "s|@@DEX_ISSUER@@|https://${static_host}/dex|g" \
+        -e "s|@@OAUTH2_REDIRECT_URI@@|https://${static_host}/oauth2/callback|g" \
+        "$overlay_dir/patches/dex-config.yaml.in" \
+        > "$overlay_dir/patches/dex-config.yaml"
+
+    rendered="$(mktemp)"
+    trap 'rm -f "$rendered"' EXIT
+    kustomize build "$overlay_dir" > "$rendered"
+    test -s "$rendered"
+
+    # The pinned versions reach the cluster as image tags and labels, so a
+    # version bumped in versions.env but not in the release it selects is only
+    # visible in the render.
+    grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
+    grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
+
+    # The TLS path: an Istio-served solver Ingress, a Gateway that reads the
+    # certificate cert-manager writes, and the production ACME endpoint.
+    grep -Fq 'controller: istio.io/ingress-controller' "$rendered"
+    grep -Fq 'credentialName: kubeflow-tls' "$rendered"
+    grep -Fq 'https://acme-v02.api.letsencrypt.org/directory' "$rendered"
+    grep -Fq 'name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON' "$rendered"
+
+    # Both ingress AuthorizationPolicies must exempt the HTTP-01 challenge
+    # path, or renewal cannot complete and the certificate expires silently.
+    # This is the static half of what e2e proves on the wire by forcing a
+    # reissuance.
+    require_equal "ACME authentication exclusions" "2" \
+        "$(grep -Fc -- '- /.well-known/acme-challenge/*' "$rendered")"
+
+    # Upstream selects the trainer webhook NetworkPolicy on an Istio-injected
+    # label, so where NetworkPolicy is enforced and no sidecar was injected it
+    # selects nothing and the admission webhook fails closed.
+    if ! grep -A20 '^  name: trainer-webhook$' "$rendered" |
+        grep -Fq 'app.kubernetes.io/name: trainer'; then
+        printf 'trainer-webhook NetworkPolicy does not select a Deployment-owned label.\n' >&2
+        exit 1
+    fi
+    require_equal "Istio-injected trainer selectors" "0" \
+        "$(grep -Fc 'service.istio.io/canonical-name: trainer' "$rendered" || true)"
+
+    # No upstream default credential may survive into the render. Upstream
+    # ships the Dex password Secret with stringData, which Kubernetes merges
+    # over data on write, so an overlay that sets data alone loses to the
+    # published default while deploy-kubeflow prints a password that does not
+    # work. The overlay removes the field for that reason; this is the check
+    # that keeps it removed.
+    #
+    # Each default is searched for in both forms it can reach the render in:
+    # plaintext, as a stringData field or a literal carries it, and base64, as
+    # a secretGenerator writes it. The Dex password is the only one upstream
+    # ships in plaintext, so a plaintext-only search would leave the OIDC
+    # client secret and the oauth2-proxy cookie secret uncovered.
+    upstream_defaults=(
+        '$2y$12$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72'
+        'pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok'
+        '7d16fee92f8d11b8940b081b3f8b8acb'
+        '12341234'
+    )
+    default_credential_patterns=()
+    for upstream_default in "${upstream_defaults[@]}"; do
+        default_credential_patterns+=(
+            "$upstream_default"
+            "$(printf %s "$upstream_default" | base64 | tr -d '\n')"
+        )
+    done
+    if default_credentials="$(
+        grep -Fnf <(printf '%s\n' "${default_credential_patterns[@]}") "$rendered"
+    )"; then
+        printf 'Rendered manifests contain an upstream default credential.\n' >&2
+        printf '%s\n' "$default_credentials" | head -5 >&2
+        exit 1
+    fi
+
+    # Every hostname in the overlay is a seed that a kustomize replacement
+    # overwrites from params.env, so a replacement that stops matching leaves
+    # the seed behind. deploy-kubeflow refuses to apply such a render; this
+    # catches it without an Azure account.
+    require_equal "unresolved hostname seeds" "0" \
+        "$(grep -Fc 'replaced-by-kustomize' "$rendered" || true)"
+
+    # The three credential placeholders deploy-kubeflow substitutes in memory
+    # are the only ones allowed to survive kustomize, and each has to appear
+    # exactly where its consumer reads it: the Dex password Secret, the Dex
+    # OIDC client Secret and the oauth2-proxy Secret that reads both the
+    # client secret and the cookie secret.
+    require_equal "Dex password placeholders" "1" \
+        "$(grep -Fc '@@DEX_PASSWORD_HASH_B64@@' "$rendered" || true)"
+    require_equal "OIDC client secret placeholders" "2" \
+        "$(grep -Fc '@@OIDC_CLIENT_SECRET_B64@@' "$rendered" || true)"
+    require_equal "oauth2-proxy cookie secret placeholders" "1" \
+        "$(grep -Fc '@@OAUTH2_COOKIE_SECRET_B64@@' "$rendered" || true)"
+    require_equal "unexpected placeholders" "4" \
+        "$(grep -Fc '@@' "$rendered" || true)"
+
+    # One hostname, reaching every place that has to agree on it. Dex and the
+    # Istio RequestAuthentication must name the same issuer or the JWT the
+    # ingress requires never validates.
+    mapfile -t rendered_hosts < <(
+        grep -Eo '[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.cloudapp\.azure\.com' "$rendered" |
+            sort -u
+    )
+    if (( ${#rendered_hosts[@]} != 1 )); then
+        printf 'Rendered manifests contain inconsistent Azure hostnames: %s\n' \
+            "${rendered_hosts[*]}" >&2
+        exit 1
+    fi
+    require_equal "rendered hostname" "$static_host" "${rendered_hosts[0]}"
+    require_equal "Dex and JWT issuer count" "2" \
+        "$(grep -Fc "issuer: https://${static_host}/dex" "$rendered")"
+    require_equal "Dex redirect count" "1" \
+        "$(grep -Fc "redirectURIs: [\"https://${static_host}/oauth2/callback\"]" "$rendered")"
+    require_equal "oauth2-proxy issuer count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/dex$" "$rendered")"
+    require_equal "oauth2-proxy login count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/dex/auth$" "$rendered")"
+    require_equal "oauth2-proxy redirect count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/oauth2/callback$" "$rendered")"
+    require_equal "Certificate and Gateway hostname count" "2" \
+        "$(grep -Ec "^[[:space:]]+- ${static_host}$" "$rendered")"
+
+    # The quickstart names these recipes in this order. A rename that the
+    # documentation does not follow is a broken instruction, not a refactor.
+    expected_recipes='default validate-static validate deploy-aks credentials fetch-kubeflow deploy-kubeflow configure-dex wait-ready e2e password group-empty clean-cache'
+    require_equal "public recipe list" "$expected_recipes" "$(just --summary --unsorted)"
+
 # Preview the AKS deployment without changing anything.
-validate:
+validate: validate-static
     #!/usr/bin/env bash
     set -euo pipefail
     source versions.env
@@ -248,6 +484,7 @@ deploy-kubeflow: fetch-kubeflow
         ((attempt += 1))
     done
 
+    just --quiet _restart-sidecarless
     just --quiet _restart-auth
 
     ingress_ip=""
@@ -276,6 +513,56 @@ deploy-kubeflow: fetch-kubeflow
         printf 'Create this unproxied DNS record before running just wait-ready:\n'
         printf '%s CNAME %s\n' "$DOMAIN" "$azure_host"
         printf 'Alternatively: %s A %s\n' "$DOMAIN" "$ingress_ip"
+    fi
+
+# Restart workloads that started before Istio could inject a sidecar.
+[private]
+_restart-sidecarless:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Rendering the release produces one manifest stream, so applying it
+    # creates workloads in the same pass that creates the Istio control plane.
+    # Anything created before istiod is serving never gets a proxy, and there
+    # is no admission error to notice because at that moment there is no
+    # webhook to fail. Those pods stay Ready while every route to them through
+    # an ISTIO_MUTUAL DestinationRule times out and returns 503.
+    kubectl rollout status deployment/istiod --namespace istio-system --timeout=10m >&2
+
+    restarted=0
+    mapfile -t injected_namespaces < <(
+        kubectl get namespaces --selector=istio-injection=enabled \
+            --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'
+    )
+    for namespace in "${injected_namespaces[@]}"; do
+        [[ -n "$namespace" ]] || continue
+        mapfile -t owners < <(
+            kubectl get pods --namespace "$namespace" --output=json |
+                jq -r '.items[]
+                    | select((([.spec.initContainers[]?.name]
+                             + [.spec.containers[].name]) | index("istio-proxy")) | not)
+                    | select((.metadata.labels["sidecar.istio.io/inject"] // "") != "false")
+                    | select((.metadata.annotations["sidecar.istio.io/inject"] // "") != "false")
+                    | .metadata.ownerReferences[0]? // empty
+                    | if .kind == "ReplicaSet"
+                      then "deployment/" + (.name | sub("-[a-z0-9]+$"; ""))
+                      elif .kind == "StatefulSet" then "statefulset/" + .name
+                      else empty end' |
+                sort -u
+        )
+        for owner in "${owners[@]}"; do
+            [[ -n "$owner" ]] || continue
+            kubectl rollout restart "$owner" --namespace "$namespace" >&2
+            restarted=$((restarted + 1))
+        done
+    done
+
+    if (( restarted > 0 )); then
+        printf 'Restarted %d workloads that missed sidecar injection.\n' "$restarted" >&2
+        for namespace in "${injected_namespaces[@]}"; do
+            [[ -n "$namespace" ]] || continue
+            kubectl rollout status deployment,statefulset --namespace "$namespace" \
+                --timeout=15m >&2 || true
+        done
     fi
 
 # Restart Dex and OAuth2 Proxy after changing their runtime secrets.
@@ -343,26 +630,121 @@ wait-ready:
     kubectl rollout status deployment/dex --namespace auth --timeout=5m
     kubectl rollout status deployment/oauth2-proxy --namespace oauth2-proxy --timeout=5m
 
-# Check the public HTTPS endpoint with trusted TLS.
+    # A pod can be Ready and still have missed sidecar injection, which leaves
+    # every ISTIO_MUTUAL route returning 503 through the ingress. Readiness
+    # cannot detect that, so assert it, or a deployment where a large part of
+    # the platform is unreachable reports healthy.
+    uninjected=""
+    for namespace in $(
+        kubectl get namespaces --selector=istio-injection=enabled \
+            --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'
+    ); do
+        # Command substitution strips the trailing newline, so append one or
+        # the last pod of one namespace runs into the first of the next.
+        uninjected+="$(
+            kubectl get pods --namespace "$namespace" --output=json |
+                jq -r --arg ns "$namespace" '.items[]
+                    | select((([.spec.initContainers[]?.name]
+                             + [.spec.containers[].name]) | index("istio-proxy")) | not)
+                    | select((.metadata.labels["sidecar.istio.io/inject"] // "") != "false")
+                    | select((.metadata.annotations["sidecar.istio.io/inject"] // "") != "false")
+                    | "\($ns)/\(.metadata.name)"'
+        )"$'\n'
+    done
+    uninjected="$(printf '%s' "$uninjected" | grep -v '^$' || true)"
+    if [[ -n "$uninjected" ]]; then
+        printf 'Ready pods with no Istio sidecar that did not opt out:\n%s\n' \
+            "$uninjected" >&2
+        printf 'Rerun just deploy-kubeflow; it restarts workloads that missed injection.\n' >&2
+        exit 1
+    fi
+
+# Run the authenticated end-to-end release gate against the live deployment.
 e2e:
     #!/usr/bin/env bash
     set -euo pipefail
+    notebook_manifest="tests/notebook.yaml"
+    if [[ ! -f "$notebook_manifest" ]]; then
+        printf 'Missing %s.\n' "$notebook_manifest" >&2
+        exit 1
+    fi
+
     host="$(
         kubectl get certificate kubeflow-tls \
             --namespace istio-system \
             --output=jsonpath='{.spec.dnsNames[0]}'
     )"
-    result="$(
-        curl --silent --show-error --output /dev/null \
-            --write-out '%{http_code} %{ssl_verify_result} %{redirect_url}' \
-            "https://${host}/"
-    )"
-    read -r status ssl_verify_result redirect_url <<< "$result"
-    test "$ssl_verify_result" = "0"
-    test "$status" = "302"
-    [[ "$redirect_url" == "https://${host}/dex/auth?"* ]]
-    printf 'HTTPS endpoint: https://%s/ redirects to Dex (%s, TLS verification %s)\n' \
-        "$host" "$status" "$ssl_verify_result"
+    : "${host:?Certificate/kubeflow-tls has no dnsNames[0]}"
+    endpoint="https://${host}"
+
+    # The endpoint is derived from the cluster, never supplied. An explicit
+    # KUBEFLOW_ENDPOINT is honoured only as an assertion that the caller agrees
+    # with the certificate, so a stale shell cannot silently test another host.
+    if [[ -n "${KUBEFLOW_ENDPOINT:-}" && "$KUBEFLOW_ENDPOINT" != "$endpoint" ]]; then
+        printf 'KUBEFLOW_ENDPOINT is %s but Certificate/kubeflow-tls selects %s.\n' \
+            "$KUBEFLOW_ENDPOINT" "$endpoint" >&2
+        exit 1
+    fi
+
+    dex_username="${DEX_USERNAME:-user@example.com}"
+    dex_password="${DEX_PASSWORD:-}"
+    if [[ -z "$dex_password" ]]; then
+        if [[ ! -t 0 ]]; then
+            printf 'DEX_PASSWORD is unset and stdin is not a terminal.\n' >&2
+            exit 1
+        fi
+        read -r -s -p "Dex password for ${dex_username}: " dex_password
+        printf '\n'
+        : "${dex_password:?DEX_PASSWORD must not be empty}"
+    fi
+
+    venv_dir=".cache/e2e-venv"
+    if [[ ! -x "$venv_dir/bin/python" ]]; then
+        python3 -m venv "$venv_dir"
+    fi
+    "$venv_dir/bin/python" -m pip install --quiet --disable-pip-version-check \
+        --requirement tests/requirements.txt
+
+    KUBEFLOW_ENDPOINT="$endpoint" \
+    DEX_USERNAME="$dex_username" \
+    DEX_PASSWORD="$dex_password" \
+    NOTEBOOK_MANIFEST="$notebook_manifest" \
+        "$venv_dir/bin/python" tests/e2e.py
+
+    if [[ -n "${E2E_SKIP_REISSUANCE:-}" ]]; then
+        printf 'Skipping forced reissuance because E2E_SKIP_REISSUANCE is set.\n'
+        exit 0
+    fi
+
+    # Prove ACME HTTP-01 renewal traverses Istio. Static rendering cannot show
+    # this: only a changed serial on the wire does. Let's Encrypt allows five
+    # duplicate certificates per week, so five forced reissuances per week is
+    # the ceiling; set E2E_SKIP_REISSUANCE to run only the functional half.
+    serial_on_the_wire() {
+        openssl s_client -connect "${host}:443" -servername "$host" </dev/null 2>/dev/null |
+            openssl x509 -noout -serial || true
+    }
+    old_serial="$(serial_on_the_wire)"
+    : "${old_serial:?Could not read the serving certificate serial}"
+
+    kubectl delete secret kubeflow-tls --namespace istio-system
+    kubectl wait --for=condition=Ready certificate/kubeflow-tls \
+        --namespace istio-system --timeout=15m
+
+    new_serial=""
+    for attempt in {1..90}; do
+        new_serial="$(serial_on_the_wire)"
+        if [[ -n "$new_serial" && "$new_serial" != "$old_serial" ]]; then
+            break
+        fi
+        sleep 10
+    done
+    if [[ -z "$new_serial" || "$new_serial" == "$old_serial" ]]; then
+        printf 'Certificate serial did not change after forced reissuance.\n' >&2
+        exit 1
+    fi
+    curl --fail --silent --show-error --output /dev/null "https://${host}/"
+    printf 'PASS reissuance (%s -> %s)\n' "$old_serial" "$new_serial"
 
 # Generate a 32-character password and its cost-12 bcrypt hash.
 password:
