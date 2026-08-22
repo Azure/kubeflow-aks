@@ -171,7 +171,7 @@ deploy-kubeflow: fetch-kubeflow
         printf 'Password tool returned incomplete deployment output; refusing to render authentication secrets.\n' >&2
         exit 1
     fi
-    ******
+    password="${deployment_credentials[0]}"
     hash="${deployment_credentials[1]}"
     oidc_client_secret="${deployment_credentials[2]}"
     oauth2_cookie_secret="${deployment_credentials[3]}"
@@ -249,9 +249,6 @@ deploy-kubeflow: fetch-kubeflow
     done
 
     just --quiet _restart-auth
-    credentials="$(printf 'Password: %s\n' "$password")"
-    password="${credentials#Password: }"
-    password="${password%%$'\n'*}"
 
     ingress_ip=""
     for attempt in {1..60}; do
