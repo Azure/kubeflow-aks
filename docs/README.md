@@ -212,17 +212,24 @@ This generates a new password and cost-12 bcrypt hash, validates the hash before
 
 ## Clean up
 
-If you created the resource group yourself, deleting it removes the cluster and
-everything the deployment created:
+Remove everything the deployment created, keeping the resource group and the
+role assignments scoped to it:
 
 ```bash
-az group delete -n $RESOURCE_GROUP --yes
+just group-empty
 ```
 
+This deploys an empty template in Complete mode, which deletes every resource in
+the group. It prints the group it is about to empty and waits ten seconds first.
+
 > [!WARNING]
-> Check `RESOURCE_GROUP` before running this. Deleting the group also deletes
-> every role assignment scoped to it. If an administrator created the group and
-> granted you the [least-privilege custom role](custom-role.md), do not delete
-> it: that role deliberately excludes resource-group deletion, and deleting the
-> group would destroy the access you were granted. Empty the group instead, and
-> leave removing it to whoever created it.
+> Check `RESOURCE_GROUP` before running this. It empties whichever group that
+> variable names, and the resources are not recoverable.
+
+Deleting the resource group itself also works, if you created it. It is worth
+knowing what that costs: deleting a group removes every role assignment scoped
+to it along with the resources. Where an administrator created the group and
+granted access to it, including through the
+[least-privilege custom role](custom-role.md), deleting the group destroys that
+grant. The custom role deliberately excludes resource-group deletion for this
+reason, so empty the group instead and leave removing it to whoever created it.
