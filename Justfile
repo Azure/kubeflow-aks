@@ -31,6 +31,59 @@ validate-static:
         fi
     }
 
+    require_kubectl_skew() {
+        local cluster_version="$1"
+        local kubectl_version="$2"
+
+        if [[ ! "$cluster_version" =~ ^v?([0-9]+)\.([0-9]+)$ ]]; then
+            printf 'AKS Kubernetes version is not a major.minor version: %s\n' \
+                "$cluster_version" >&2
+            exit 1
+        fi
+        local cluster_major=$((10#${BASH_REMATCH[1]}))
+        local cluster_minor=$((10#${BASH_REMATCH[2]}))
+
+        if [[ ! "$kubectl_version" =~ ^v?([0-9]+)\.([0-9]+)\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            printf 'kubectl returned an invalid semantic version: %s\n' \
+                "${kubectl_version:-<empty>}" >&2
+            exit 1
+        fi
+        local kubectl_major=$((10#${BASH_REMATCH[1]}))
+        local kubectl_minor=$((10#${BASH_REMATCH[2]}))
+
+        if (( kubectl_major != cluster_major ||
+              kubectl_minor < cluster_minor - 1 ||
+              kubectl_minor > cluster_minor + 1 )); then
+            printf 'kubectl version: expected v%d.%d.x through v%d.%d.x for AKS Kubernetes %s, got %s\n' \
+                "$cluster_major" "$((cluster_minor - 1))" \
+                "$cluster_major" "$((cluster_minor + 1))" \
+                "$cluster_version" "$kubectl_version" >&2
+            exit 1
+        fi
+    }
+
+    # Everything versions.env pins, checked against what is installed. The
+    # deployment recipes assume these versions rather than assert them, so
+    # without this a skewed toolchain is only discovered against a live
+    # cluster. fetch-kubeflow checks Kustomize itself, so it is not repeated.
+    require_equal "Bicep CLI version" "$BICEP_CLI_VERSION" \
+        "$(az bicep version | awk '{print $4}')"
+    az bicep build --file main.bicep --stdout > /dev/null
+
+    kubectl_version="$(
+        kubectl version --client --output=json |
+            sed -n 's/^[[:space:]]*"gitVersion": "\([^"]*\)",*$/\1/p'
+    )"
+    require_kubectl_skew "$AKS_KUBERNETES_VERSION" "$kubectl_version"
+
+    go_version="$(cd tools/password && go version | awk '{print $3}')"
+    require_equal "Go toolchain" "$GO_TOOLCHAIN" "$go_version"
+    go_mod_version="$(awk '$1 == "go" { print $2 }' tools/password/go.mod)"
+    go_mod_toolchain="$(awk '$1 == "toolchain" { print $2 }' tools/password/go.mod)"
+    require_equal "go.mod language version" "$GO_VERSION" "$go_mod_version"
+    require_equal "go.mod toolchain" "$GO_TOOLCHAIN" "$go_mod_toolchain"
+    (cd tools/password && go test ./... && go vet ./...)
+
     require_equal "pinned test dependency" "requests==2.32.5" \
         "$(grep -Ev '^[[:space:]]*(#|$)' tests/requirements.txt)"
     python3 -m py_compile tests/e2e.py tests/e2e_selftest.py
@@ -55,6 +108,7 @@ validate-static:
     # list endpoint subscripts that field, so listing it returns 500.
     grep -Fq 'volumeMounts:' tests/notebook.yaml
     grep -Fq 'namespace: kubeflow-user-example-com' tests/notebook.yaml
+    grep -Fq 'name: test' tests/notebook.yaml
 
     just --quiet fetch-kubeflow
 
@@ -78,9 +132,28 @@ validate-static:
 
     rendered="$(mktemp)"
     trap 'rm -f "$rendered"' EXIT
-    kustomize build ".cache/community-distribution-${KUBEFLOW_VERSION}/aks-overlay" \
-        > "$rendered"
+    kustomize build "$overlay_dir" > "$rendered"
     test -s "$rendered"
+
+    # The pinned versions reach the cluster as image tags and labels, so a
+    # version bumped in versions.env but not in the release it selects is only
+    # visible in the render.
+    grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
+    grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
+
+    # The TLS path: an Istio-served solver Ingress, a Gateway that reads the
+    # certificate cert-manager writes, and the production ACME endpoint.
+    grep -Fq 'controller: istio.io/ingress-controller' "$rendered"
+    grep -Fq 'credentialName: kubeflow-tls' "$rendered"
+    grep -Fq 'https://acme-v02.api.letsencrypt.org/directory' "$rendered"
+    grep -Fq 'name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON' "$rendered"
+
+    # Both ingress AuthorizationPolicies must exempt the HTTP-01 challenge
+    # path, or renewal cannot complete and the certificate expires silently.
+    # This is the static half of what e2e proves on the wire by forcing a
+    # reissuance.
+    require_equal "ACME authentication exclusions" "2" \
+        "$(grep -Fc -- '- /.well-known/acme-challenge/*' "$rendered")"
 
     # Upstream selects the trainer webhook NetworkPolicy on an Istio-injected
     # label, so where NetworkPolicy is enforced and no sidecar was injected it
@@ -92,6 +165,72 @@ validate-static:
     fi
     require_equal "Istio-injected trainer selectors" "0" \
         "$(grep -Fc 'service.istio.io/canonical-name: trainer' "$rendered" || true)"
+
+    # No upstream default credential may survive into the render. Upstream
+    # ships the Dex password Secret with stringData, which Kubernetes merges
+    # over data on write, so an overlay that sets data alone loses to the
+    # published default while deploy-kubeflow prints a password that does not
+    # work. The overlay removes the field for that reason; this is the check
+    # that keeps it removed.
+    if grep -qE '12341234|\$2y\$12\$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72|pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok' \
+        "$rendered"; then
+        printf 'Rendered manifests contain an upstream default credential.\n' >&2
+        grep -nE '12341234|\$2y\$12\$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72|pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok' \
+            "$rendered" | head -5 >&2
+        exit 1
+    fi
+
+    # Every hostname in the overlay is a seed that a kustomize replacement
+    # overwrites from params.env, so a replacement that stops matching leaves
+    # the seed behind. deploy-kubeflow refuses to apply such a render; this
+    # catches it without an Azure account.
+    require_equal "unresolved hostname seeds" "0" \
+        "$(grep -Fc 'replaced-by-kustomize' "$rendered" || true)"
+
+    # The three credential placeholders deploy-kubeflow substitutes in memory
+    # are the only ones allowed to survive kustomize, and each has to appear
+    # exactly where its consumer reads it: the Dex password Secret, the Dex
+    # OIDC client Secret and the oauth2-proxy Secret that reads both the
+    # client secret and the cookie secret.
+    require_equal "Dex password placeholders" "1" \
+        "$(grep -Fc '@@DEX_PASSWORD_HASH_B64@@' "$rendered" || true)"
+    require_equal "OIDC client secret placeholders" "2" \
+        "$(grep -Fc '@@OIDC_CLIENT_SECRET_B64@@' "$rendered" || true)"
+    require_equal "oauth2-proxy cookie secret placeholders" "1" \
+        "$(grep -Fc '@@OAUTH2_COOKIE_SECRET_B64@@' "$rendered" || true)"
+    require_equal "unexpected placeholders" "4" \
+        "$(grep -Fc '@@' "$rendered" || true)"
+
+    # One hostname, reaching every place that has to agree on it. Dex and the
+    # Istio RequestAuthentication must name the same issuer or the JWT the
+    # ingress requires never validates.
+    mapfile -t rendered_hosts < <(
+        grep -Eo '[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.cloudapp\.azure\.com' "$rendered" |
+            sort -u
+    )
+    if (( ${#rendered_hosts[@]} != 1 )); then
+        printf 'Rendered manifests contain inconsistent Azure hostnames: %s\n' \
+            "${rendered_hosts[*]}" >&2
+        exit 1
+    fi
+    require_equal "rendered hostname" "$static_host" "${rendered_hosts[0]}"
+    require_equal "Dex and JWT issuer count" "2" \
+        "$(grep -Fc "issuer: https://${static_host}/dex" "$rendered")"
+    require_equal "Dex redirect count" "1" \
+        "$(grep -Fc "redirectURIs: [\"https://${static_host}/oauth2/callback\"]" "$rendered")"
+    require_equal "oauth2-proxy issuer count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/dex$" "$rendered")"
+    require_equal "oauth2-proxy login count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/dex/auth$" "$rendered")"
+    require_equal "oauth2-proxy redirect count" "1" \
+        "$(grep -Ec "^[[:space:]]+value: https://${static_host}/oauth2/callback$" "$rendered")"
+    require_equal "Certificate and Gateway hostname count" "2" \
+        "$(grep -Ec "^[[:space:]]+- ${static_host}$" "$rendered")"
+
+    # The quickstart names these recipes in this order. A rename that the
+    # documentation does not follow is a broken instruction, not a refactor.
+    expected_recipes='default validate-static validate deploy-aks credentials fetch-kubeflow deploy-kubeflow configure-dex wait-ready e2e password group-empty clean-cache'
+    require_equal "public recipe list" "$expected_recipes" "$(just --summary --unsorted)"
 
 # Preview the AKS deployment without changing anything.
 validate: validate-static
@@ -478,6 +617,8 @@ wait-ready:
         kubectl get namespaces --selector=istio-injection=enabled \
             --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'
     ); do
+        # Command substitution strips the trailing newline, so append one or
+        # the last pod of one namespace runs into the first of the next.
         uninjected+="$(
             kubectl get pods --namespace "$namespace" --output=json |
                 jq -r --arg ns "$namespace" '.items[]
@@ -486,7 +627,7 @@ wait-ready:
                     | select((.metadata.labels["sidecar.istio.io/inject"] // "") != "false")
                     | select((.metadata.annotations["sidecar.istio.io/inject"] // "") != "false")
                     | "\($ns)/\(.metadata.name)"'
-        )"
+        )"$'\n'
     done
     uninjected="$(printf '%s' "$uninjected" | grep -v '^$' || true)"
     if [[ -n "$uninjected" ]]; then
