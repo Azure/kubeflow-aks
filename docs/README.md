@@ -169,6 +169,25 @@ for Dex and OAuth2 Proxy to roll out. `just e2e` then checks the endpoint
 independently: it requires an unauthenticated request to redirect to Dex over
 HTTPS with normal certificate verification.
 
+> [!NOTE]
+> `just wait-ready` allows fifteen minutes for the certificate. If it gives up
+> there, look at the ACME challenge:
+>
+> ```bash
+> kubectl get challenge --namespace istio-system
+> ```
+>
+> A challenge still `pending` while the challenge URL answers from outside the
+> cluster means cert-manager has stopped making progress rather than that
+> anything is unreachable. Restarting its controller recovers it:
+>
+> ```bash
+> kubectl delete pod --namespace cert-manager \
+>     --selector app.kubernetes.io/component=controller
+> ```
+>
+> The certificate usually issues within a minute. Re-run `just wait-ready`.
+
 Open the printed `https://` URL and sign in as `user@example.com`.
 
 ### Choosing the Azure hostname
