@@ -109,7 +109,7 @@ just deploy-aks
 ```
 
 > [!NOTE]
-> `just deploy-aks` creates the cluster on the [Free pricing tier](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers), so cluster management costs nothing and you pay as you go for the nodes and other resources the cluster consumes. The Free tier carries no financially backed uptime SLA. The system node pool has two nodes, which you can size with the `nodeCount` and `vmSize` template parameters. Its Kubernetes version comes from `versions.env`, because Kubeflow `26.03.1` requires Kubernetes 1.34 or later. The cluster must not enforce Azure Policy or the AKS managed admission policies, which reject this workload.
+> `just deploy-aks` creates the cluster on the [Free pricing tier](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers), so cluster management costs nothing and you pay as you go for the nodes and other resources the cluster consumes. The Free tier carries no financially backed uptime SLA. The system node pool has two nodes, which you can size with the `nodeCount` and `vmSize` template parameters. Its Kubernetes version comes from `versions.env`, which pins `1.36`, the version Kubeflow `26.03.1` is continuously tested against. The cluster must not enforce Azure Policy or the AKS managed admission policies, which reject this workload.
 
 ### Connect to the cluster
 After the cluster is created, you can connect to it using the Azure CLI. The following command retrieves the credentials for your AKS cluster and configures `kubectl` to use them.
