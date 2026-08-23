@@ -112,6 +112,15 @@ github_repo = "https://github.com/Azure/kubeflow-aks"
 # Documentation content is maintained in docs/ at the repository root.
 github_subdir = "docs"
 
+# docs/ is mounted from outside the Hugo root (see [module] below), and for such
+# content Hugo reports an absolute path on the build machine rather than a
+# repository-relative one. Left alone, Docsy concatenates that onto
+# github_subdir and the "Edit this page" link becomes
+# .../edit/main/docs/home/runner/work/kubeflow-aks/kubeflow-aks/docs/README.md.
+# Strip everything up to and including the mounted directory so github_subdir
+# puts back the one repository-relative prefix that belongs there.
+path_base_for_github_subdir = { from = "^.*/docs/", to = "" }
+
 # Uncomment this if your GitHub repo does not have "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
 github_branch = "main"
