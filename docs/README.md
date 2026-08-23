@@ -61,7 +61,7 @@ go install sigs.k8s.io/kustomize/kustomize/v5@v5.8.1
 kustomize version
 ```
 
-The Azure CLI ships and updates `kubectl` and `kubelogin` for you. Install them explicitly only if you are not using it:
+The Azure CLI ships and updates `kubectl` and `kubelogin` for you. If either is missing, install or update both with:
 
 ```bash
 az aks install-cli
@@ -75,7 +75,9 @@ Deploy the cluster with the `main.bicep` template in this repository.
 
 The cluster uses Microsoft Entra ID with Azure RBAC for Kubernetes authorization, so `kubectl` access follows from a role assignment rather than from a shared credential. AKS still issues a cluster-local admin credential to callers holding `listClusterAdminCredential`, which bypasses Entra entirely; the [least-privilege custom role](custom-role.md) deliberately withholds it.
 
-Login to the Azure CLI.
+Sign in to the Azure CLI, if you are not signed in already. An existing
+non-interactive session, such as a service principal in a pipeline, is fine and
+needs nothing here.
 ```bash
 az login
 ```
@@ -106,12 +108,16 @@ export SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv)
 > [!NOTE]
 > `az ad signed-in-user show` works only for an interactive user sign-in. Signed in as a service principal it fails with `/me request is only valid with delegated authentication flow`. Use the principal's object ID instead, and say so, because the deployment otherwise records the role assignment against the wrong principal type:
 > ```bash
-> export SIGNEDINUSER=$(az ad sp show --id "$AZURE_CLIENT_ID" --query id --out tsv)
+> export SIGNEDINUSER=$(az ad sp show --id "$(az account show --query user.name --out tsv)" --query id --out tsv)
 > export SIGNEDINUSER_TYPE=ServicePrincipal
 > ```
+> For a service-principal session, `az account show --query user.name` returns the
+> application ID the principal signed in with, which is what `az ad sp show`
+> resolves to its object ID.
 > `SIGNEDINUSER_TYPE` accepts `User`, `Group` or `ServicePrincipal` and defaults to `User`.
 
-Create the resource group
+Create the resource group, if it does not exist already. Against a group that
+exists this is a no-op that returns it.
 
 ```bash
 az group create -n $RESOURCE_GROUP -l $LOCATION
@@ -155,6 +161,16 @@ just deploy-kubeflow
 
 The hostname is `kubeflow-<unique>.<location>.cloudapp.azure.com`, derived from
 the resource group, the cluster name and the location.
+
+> [!NOTE]
+> Errors like `failed calling webhook
+> "clusterservingruntime.kserve-webhook-server.validator": no endpoints available
+> for service "kserve-webhook-server-service"` can appear while the deployment
+> runs. They mean a controller is not serving its admission webhook yet. The
+> recipe prints `Retrying to apply resources`, waits twenty seconds and applies
+> the manifests again until they stick, so a healthy install prints several of
+> these. What tells you the deployment failed is `just deploy-kubeflow` exiting
+> non-zero, not errors in its output.
 
 > [!WARNING]
 > Save the password `just deploy-kubeflow` prints. It is shown once and is never
