@@ -1,0 +1,95 @@
+name: Static validation
+
+# just validate-static is the half of the release gate that can run here. It
+# needs no Azure account and no cluster: it checks the pinned tool versions
+# against what is installed, runs the Go password tool's tests, runs the
+# release gate's own self-test, and renders the Kubeflow overlay and asserts
+# what the deployment depends on being in it.
+#
+# just e2e, the other half, cannot run here and is not expected to. It needs a
+# live cluster on a real hostname, and issuing its certificate needs an ACME
+# HTTP-01 challenge answered from the public internet, which for a hostname the
+# deployment does not own means a DNS record created by hand partway through.
+# Nothing in this workflow can supply that.
+
+on:
+  push:
+    branches:
+      - main
+      - modernization
+      - e2e-harness
+    paths:
+      - Justfile
+      - main.bicep
+      - versions.env
+      - overlay/**
+      - tests/**
+      - tools/**
+      - .github/workflows/validate-static.yml
+  pull_request:
+    paths:
+      - Justfile
+      - main.bicep
+      - versions.env
+      - overlay/**
+      - tests/**
+      - tools/**
+      - .github/workflows/validate-static.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # versions.env is the single source of the pinned versions, so the
+      # workflow installs what it names rather than repeating any of them.
+      - name: Read versions.env
+        run: cat versions.env >> "$GITHUB_ENV"
+
+      # go.mod names both the language version and the toolchain, and
+      # validate-static checks both against versions.env, so read it from
+      # there rather than restating it.
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: tools/password/go.mod
+          cache-dependency-path: tools/password/go.sum
+
+      # Kustomize has to be the exact pinned version, which is why the
+      # quickstart installs it with Go rather than a package manager.
+      - name: Install Kustomize
+        run: go install sigs.k8s.io/kustomize/kustomize/v5@${{ env.KUSTOMIZE_VERSION }}
+
+      # Reinstalling over an existing Bicep exits non-zero on some Azure CLI
+      # versions. validate-static asserts the version that results, so let the
+      # assertion be the gate rather than this step.
+      - name: Install Bicep
+        run: az bicep install --version "v${BICEP_CLI_VERSION}" || true
+
+      # validate-static requires kubectl within one minor version of the API
+      # server the deployment creates, so install that minor rather than
+      # whichever one the runner image happens to carry.
+      - name: Install kubectl
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          version="$(curl -fsSL "https://dl.k8s.io/release/stable-${AKS_KUBERNETES_VERSION}.txt")"
+          curl -fsSL -o "$HOME/.local/bin/kubectl" \
+            "https://dl.k8s.io/release/${version}/bin/linux/amd64/kubectl"
+          chmod +x "$HOME/.local/bin/kubectl"
+
+      # just is the one tool versions.env does not pin, because the deployment
+      # does not depend on a version of it. Pin it here anyway, so a release
+      # cannot change what this workflow means.
+      - name: Install just
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl -fsSL https://just.systems/install.sh |
+            bash -s -- --tag 1.58.0 --to "$HOME/.local/bin"
+
+      - run: just validate-static
