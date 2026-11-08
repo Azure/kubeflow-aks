@@ -144,6 +144,22 @@ validate-static:
     grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
     grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
 
+    # Existing installations require a one-time strategy normalization before
+    # adopting the 26.10 ml-pipeline-ui Deployment, so keep the migration below
+    # aligned with the strategy in the pinned release.
+    if ! awk '
+        /^kind: Deployment$/ { block=$0 ORS; inblock=1; next }
+        inblock { block=block $0 ORS }
+        /^---$/ && inblock {
+            if (block ~ /name: ml-pipeline-ui/) print block
+            block=""
+            inblock=0
+        }
+    ' "$rendered" | grep -A3 -F 'strategy:' | grep -Fq 'type: Recreate'; then
+        printf 'ml-pipeline-ui does not use the expected Recreate strategy.\n' >&2
+        exit 1
+    fi
+
     # The TLS path: an Istio-served solver Ingress, a Gateway that reads the
     # certificate cert-manager writes, and the production ACME endpoint.
     grep -Fq 'controller: istio.io/ingress-controller' "$rendered"
@@ -467,6 +483,20 @@ deploy-kubeflow: fetch-kubeflow
         printf 'Rendered manifests still contain a placeholder, so a kustomize replacement did not match. Refusing to apply.\n' >&2
         grep -nE 'replaced-by-kustomize|@@' <<<"$rendered" | head -5 >&2
         exit 1
+    fi
+
+    # Kubeflow 26.10 changes ml-pipeline-ui from Kubernetes' default
+    # RollingUpdate strategy to Recreate. Existing Deployments retain the
+    # rollingUpdate parameters, which server-side apply does not remove and
+    # Kubernetes rejects when type is Recreate. Make upgrades idempotent by
+    # clearing those parameters before applying the new manifests.
+    if kubectl get deployment/ml-pipeline-ui \
+        --namespace kubeflow >/dev/null 2>&1; then
+        kubectl patch deployment/ml-pipeline-ui \
+            --namespace kubeflow \
+            --type=merge \
+            --patch \
+            '{"spec":{"strategy":{"type":"Recreate","rollingUpdate":null}}}'
     fi
 
     attempt=1
