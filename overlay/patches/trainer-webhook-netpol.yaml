@@ -1,4 +1,4 @@
-# Upstream 26.03.1 selects this NetworkPolicy on
+# Community Distribution 26.10.0 still selects this NetworkPolicy on
 # `service.istio.io/canonical-name: trainer`, a label the Istio sidecar
 # injector contributes rather than one the Deployment sets. Where NetworkPolicy
 # is enforced and no sidecar was injected, the policy selects nothing, the

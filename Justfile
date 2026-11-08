@@ -312,8 +312,10 @@ fetch-kubeflow:
 
     archive=".cache/community-distribution-${KUBEFLOW_VERSION}.tar.gz"
     release_dir=".cache/community-distribution-${KUBEFLOW_VERSION}"
+    jobset_manifest=".cache/jobset-${JOBSET_VERSION}-manifests.yaml"
     temp_archive="${archive}.tmp"
-    trap 'rm -f "$temp_archive"' EXIT
+    temp_jobset_manifest="${jobset_manifest}.tmp"
+    trap 'rm -f "$temp_archive" "$temp_jobset_manifest"' EXIT
     mkdir -p .cache
 
     curl --fail --location --silent --show-error \
@@ -322,9 +324,40 @@ fetch-kubeflow:
     mv "$temp_archive" "$archive"
     echo "$KUBEFLOW_ARCHIVE_SHA256  $archive" | sha256sum --check --strict
 
+    curl --fail --location --silent --show-error \
+        "https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml" \
+        --output "$temp_jobset_manifest"
+    echo "$JOBSET_MANIFEST_SHA256  $temp_jobset_manifest" | \
+        sha256sum --check --strict
+    mv "$temp_jobset_manifest" "$jobset_manifest"
+
     rm -rf -- "$release_dir"
     mkdir -p "$release_dir"
     tar -xzf "$archive" --strip-components=1 -C "$release_dir"
+
+    # Trainer 2.4.0 references the JobSet release asset directly from its
+    # Kustomization. Kustomize's handling of that GitHub release URL varies
+    # across host environments, so resolve it once here, verify its digest,
+    # and make the extracted release consume the verified local copy.
+    jobset_dir="$release_dir/applications/trainer/upstream/third-party/jobset"
+    jobset_kustomization="$jobset_dir/kustomization.yaml"
+    jobset_remote="https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml"
+
+    jobset_remote_count="$(
+        grep -Fc "$jobset_remote" "$jobset_kustomization" || true
+    )"
+    if [[ "$jobset_remote_count" != "1" ]]; then
+        printf 'Expected exactly one JobSet remote resource reference, found %s.\n' \
+            "$jobset_remote_count" >&2
+        exit 1
+    fi
+
+    cp "$jobset_manifest" "$jobset_dir/manifests.yaml"
+
+    python3 -c \
+        'from pathlib import Path; import sys; p=Path(sys.argv[1]); s=p.read_text(); old=sys.argv[2]; assert s.count(old) == 1; p.write_text(s.replace(old, "manifests.yaml"))' \
+        "$jobset_kustomization" "$jobset_remote"
+
     cp -R overlay "$release_dir/aks-overlay"
 
 # Install pinned Kubeflow and configure its runtime Dex credentials.
