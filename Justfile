@@ -100,18 +100,22 @@ validate-static:
     require_equal "unscrubbed print calls in tests/e2e.py" "2" \
         "$(grep -Ec '^[[:space:]]*print\(' tests/e2e.py)"
     grep -Fq 'register_secret(dex_password)' tests/e2e.py
-    for marker in trusted-tls dex-login dashboard notebook-controller notebook-api jupyterlab; do
+    for marker in trusted-tls dex-login dashboard workspaces-controller workspaces-api jupyterlab; do
         grep -Fq "\"PASS $marker\"" tests/e2e.py
     done
 
-    # Upstream's Notebook fixture has no volumeMounts, and the Jupyter Web App
-    # list endpoint subscripts that field, so listing it returns 500.
-    grep -Fq 'volumeMounts:' tests/notebook.yaml
-    grep -Fq 'namespace: kubeflow-user-example-com' tests/notebook.yaml
-    # Anchored to metadata.name, because the container is also called test and
-    # an unanchored match is satisfied by that alone. e2e.py hard-codes this
-    # name to poll the Notebook and to find it in the Jupyter Web App listing.
-    grep -Eq '^  name: test$' tests/notebook.yaml
+    # The 26.10 release gate uses an isolated WorkspaceKind plus a Workspace
+    # in the example Profile. Keep these names aligned with tests/e2e.py so the
+    # gate cannot accidentally operate on an administrator-managed environment.
+    grep -Fq 'name: aks-e2e-jupyterlab' tests/workspacekind.yaml
+    grep -Fq 'id: "jupyterlab"' tests/workspacekind.yaml
+    grep -Fq 'image: "ghcr.io/kubeflow/kubeflow/notebook-servers/jupyter-scipy:v1.10.0"' \
+        tests/workspacekind.yaml
+
+    grep -Fq 'namespace: kubeflow-user-example-com' tests/workspace.yaml
+    grep -Fq 'name: aks-e2e-workspace' tests/workspace.yaml
+    grep -Fq 'name: aks-e2e-workspace-home' tests/workspace.yaml
+    grep -Fq 'kind: aks-e2e-jupyterlab' tests/workspace.yaml
 
     just --quiet fetch-kubeflow
 
@@ -726,11 +730,14 @@ wait-ready:
 e2e:
     #!/usr/bin/env bash
     set -euo pipefail
-    notebook_manifest="tests/notebook.yaml"
-    if [[ ! -f "$notebook_manifest" ]]; then
-        printf 'Missing %s.\n' "$notebook_manifest" >&2
-        exit 1
-    fi
+    workspacekind_manifest="tests/workspacekind.yaml"
+    workspace_manifest="tests/workspace.yaml"
+    for manifest in "$workspacekind_manifest" "$workspace_manifest"; do
+        if [[ ! -f "$manifest" ]]; then
+            printf 'Missing %s.\n' "$manifest" >&2
+            exit 1
+        fi
+    done
 
     host="$(
         kubectl get certificate kubeflow-tls \
@@ -771,7 +778,8 @@ e2e:
     KUBEFLOW_ENDPOINT="$endpoint" \
     DEX_USERNAME="$dex_username" \
     DEX_PASSWORD="$dex_password" \
-    NOTEBOOK_MANIFEST="$notebook_manifest" \
+    WORKSPACEKIND_MANIFEST="$workspacekind_manifest" \
+    WORKSPACE_MANIFEST="$workspace_manifest" \
         "$venv_dir/bin/python" tests/e2e.py
 
     if [[ -n "${E2E_SKIP_REISSUANCE:-}" ]]; then
