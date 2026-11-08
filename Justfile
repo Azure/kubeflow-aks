@@ -84,7 +84,7 @@ validate-static:
     require_equal "go.mod toolchain" "$GO_TOOLCHAIN" "$go_mod_toolchain"
     (cd tools/password && go test ./... && go vet ./...)
 
-    require_equal "pinned test dependency" "requests==2.32.5" \
+    require_equal "pinned test dependency" "requests==2.33.0" \
         "$(grep -Ev '^[[:space:]]*(#|$)' tests/requirements.txt)"
     python3 -m py_compile tests/e2e.py tests/e2e_selftest.py
     python3 tests/e2e_selftest.py
