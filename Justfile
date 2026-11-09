@@ -76,6 +76,14 @@ validate-static:
     )"
     require_kubectl_skew "$AKS_KUBERNETES_VERSION" "$kubectl_version"
 
+    # Entra-enabled AKS kubeconfigs use kubelogin as a client-go exec plugin.
+    # Fail before creating a cluster rather than after `just credentials`.
+    if ! command -v kubelogin >/dev/null 2>&1; then
+        printf 'kubelogin is required for Microsoft Entra-enabled AKS access.\n' >&2
+        exit 1
+    fi
+    kubelogin --version >/dev/null
+
     go_version="$(cd tools/password && go version | awk '{print $3}')"
     require_equal "Go toolchain" "$GO_TOOLCHAIN" "$go_version"
     go_mod_version="$(awk '$1 == "go" { print $2 }' tools/password/go.mod)"
@@ -86,6 +94,24 @@ validate-static:
 
     require_equal "pinned test dependency" "requests==2.33.0" \
         "$(grep -Ev '^[[:space:]]*(#|$)' tests/requirements.txt)"
+
+    # `just e2e` creates a virtual environment, so validate both the documented
+    # Python floor and ensurepip/venv support during the static prerequisite gate.
+    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else f"Python 3.11 or later is required, got {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")'
+
+    venv_check_dir="$(mktemp -d)"
+    if ! python3 -m venv "$venv_check_dir/venv"; then
+        rm -rf "$venv_check_dir"
+        printf 'python3 venv support is required; on Debian/Ubuntu install python3-venv.\n' >&2
+        exit 1
+    fi
+    if ! "$venv_check_dir/venv/bin/python" -m pip --version >/dev/null; then
+        rm -rf "$venv_check_dir"
+        printf 'pip must be available inside Python virtual environments.\n' >&2
+        exit 1
+    fi
+    rm -rf "$venv_check_dir"
+
     python3 -m py_compile tests/e2e.py tests/e2e_selftest.py
     python3 tests/e2e_selftest.py
 
