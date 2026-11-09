@@ -184,6 +184,15 @@ enable = false
     source = "../docs/user-authentication.md"
     target = "content/docs/user-authentication.md"
   [[module.mounts]]
+    source = "../docs/workspaces.md"
+    target = "content/docs/workspaces.md"
+  [[module.mounts]]
+    source = "../docs/images"
+    target = "static/docs/images"
+  [[module.mounts]]
+    source = "../docs/images"
+    target = "static/docs/workspaces/images"
+  [[module.mounts]]
     source = "content/en"
     target = "content"
   [module.hugoVersion]

@@ -190,11 +190,12 @@ parts of the platform returning 503 through the ingress.
 
 `just e2e` then exercises the deployment the way a user does. It reads the
 hostname from the certificate rather than taking one from the environment, signs
-in to Dex over publicly trusted HTTPS, loads the dashboard, creates a Notebook,
-waits for it to become ready, lists it through the Jupyter Web App API, opens
-JupyterLab, and deletes it again. It prints one `PASS` line per check and
-verifies certificates normally throughout, with no way to turn that off. It asks
-for the Dex password, or reads it from `DEX_PASSWORD`:
+in to Dex over publicly trusted HTTPS, loads the dashboard, creates an isolated
+WorkspaceKind and Workspace in the example Profile, waits for the Workspace to
+reach `Running`, discovers its JupyterLab service through the Workspaces API,
+opens JupyterLab, and deletes the test resources again. It prints one `PASS`
+line per check and verifies certificates normally throughout, with no way to
+turn that off. It asks for the Dex password, or reads it from `DEX_PASSWORD`:
 
 ```bash
 DEX_PASSWORD='the password just deploy-kubeflow printed' just e2e
@@ -212,25 +213,40 @@ certificate expires.
 > `E2E_SKIP_REISSUANCE=1` to run only the functional checks.
 
 > [!NOTE]
-> `just wait-ready` allows fifteen minutes for the certificate. If it gives up
-> there, look at the ACME challenge:
+> `just wait-ready` allows fifteen minutes for the certificate. The Azure
+> Load Balancer path used by the public hostname cannot be relied on for an
+> in-cluster HTTP-01 self-check from the same AKS cluster. The Azure overlay
+> therefore configures the cert-manager solver with
+> `waitInsteadOfSelfCheck: 30s`. cert-manager presents the challenge, waits
+> briefly instead of requiring that in-cluster HTTP self-check, and then asks
+> the ACME server to validate the publicly reachable challenge.
+>
+> If certificate issuance still times out, inspect the challenge:
 >
 > ```bash
 > kubectl get challenge --namespace istio-system
 > ```
 >
-> A challenge still `pending` while the challenge URL answers from outside the
-> cluster means cert-manager has stopped making progress rather than that
-> anything is unreachable. Restarting its controller recovers it:
->
-> ```bash
-> kubectl delete pod --namespace cert-manager \
->     --selector app.kubernetes.io/component=controller
-> ```
->
-> The certificate usually issues within a minute. Re-run `just wait-ready`.
+> Test the exact challenge URL from outside the cluster. A public `200`
+> confirms that DNS, the Azure Load Balancer, Istio and the solver route are
+> reachable. If the public request fails, troubleshoot that path before
+> retrying issuance.
 
 Open the printed `https://` URL and sign in as `user@example.com`.
+
+### Kubeflow Community Distribution 26.10.0
+
+This deployment uses Kubeflow Community Distribution 26.10.0 and was verified
+end to end on AKS, including trusted HTTPS, authentication, the central
+dashboard, Kubeflow Workspaces 2.0.0, JupyterLab access, and certificate
+reissuance.
+
+![Kubeflow Central Dashboard running Community Distribution 26.10.0 on AKS.](./images/kubeflow-community-distribution-dashboard.png)
+
+Community Distribution 26.10.0 enables Kubeflow Workspaces 2.0.0
+(Notebooks v2) by default. See [Kubeflow Workspaces on AKS](workspaces.md) for
+the administrator-controlled environment catalog, guided ML-user workflow, and
+lifecycle capabilities.
 
 ### Choosing the Azure hostname
 
