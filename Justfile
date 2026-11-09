@@ -344,12 +344,26 @@ fetch-kubeflow:
     mv "$temp_archive" "$archive"
     echo "$KUBEFLOW_ARCHIVE_SHA256  $archive" | sha256sum --check --strict
 
-    curl --fail --location --silent --show-error \
-        "https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml" \
-        --output "$temp_jobset_manifest"
-    echo "$JOBSET_MANIFEST_SHA256  $temp_jobset_manifest" | \
-        sha256sum --check --strict
-    mv "$temp_jobset_manifest" "$jobset_manifest"
+    # Reuse a cached JobSet asset only when it still matches the pinned digest.
+    # This keeps deployments deterministic while avoiding unnecessary reliance
+    # on GitHub release-asset availability after the artifact is verified.
+    if [[ -f "$jobset_manifest" ]] && \
+        echo "$JOBSET_MANIFEST_SHA256  $jobset_manifest" | \
+            sha256sum --check --strict >/dev/null 2>&1; then
+        echo "$JOBSET_MANIFEST_SHA256  $jobset_manifest" | \
+            sha256sum --check --strict
+    else
+        rm -f "$jobset_manifest"
+        curl --fail --location --silent --show-error \
+            --retry 5 \
+            --retry-delay 3 \
+            --retry-all-errors \
+            "https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml" \
+            --output "$temp_jobset_manifest"
+        echo "$JOBSET_MANIFEST_SHA256  $temp_jobset_manifest" | \
+            sha256sum --check --strict
+        mv "$temp_jobset_manifest" "$jobset_manifest"
+    fi
 
     rm -rf -- "$release_dir"
     mkdir -p "$release_dir"
