@@ -148,6 +148,27 @@ validate-static:
     grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
     grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
 
+    # Community Distribution 26.10.0 currently carries stale 26.03.1
+    # Application metadata (kubeflow/community-distribution#3677). Keep the
+    # AKS-rendered release metadata and repository badge aligned with the
+    # distribution version we actually deploy.
+    awk -v expected="$KUBEFLOW_VERSION" '
+        /^kind: Application$/ { block=$0 ORS; inblock=1; next }
+        inblock { block=block $0 ORS }
+        inblock && /^---$/ {
+            if (block ~ /name: kubeflow/ &&
+                block ~ /namespace: kubeflow/ &&
+                block ~ ("version: " expected "([[:space:]]|$)")) {
+                found=1
+            }
+            inblock=0
+        }
+        END { exit found ? 0 : 1 }
+    ' "$rendered"
+    grep -Fq \
+        "![current development version](https://img.shields.io/badge/Kubeflow-${KUBEFLOW_VERSION}-green)" \
+        README.md
+
     # Existing installations require a one-time strategy normalization before
     # adopting the 26.10 ml-pipeline-ui Deployment, so keep the migration below
     # aligned with the strategy in the pinned release.

@@ -43,6 +43,13 @@ patches:
       version: v1
       kind: NetworkPolicy
       name: trainer-webhook
+  - path: patches/kubeflow-application-version.yaml
+    target:
+      group: app.k8s.io
+      version: v1beta1
+      kind: Application
+      name: kubeflow
+      namespace: kubeflow
 
 replacements:
   - source:
