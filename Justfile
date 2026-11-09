@@ -169,6 +169,7 @@ validate-static:
     grep -Fq 'controller: istio.io/ingress-controller' "$rendered"
     grep -Fq 'credentialName: kubeflow-tls' "$rendered"
     grep -Fq 'https://acme-v02.api.letsencrypt.org/directory' "$rendered"
+    grep -Fq 'waitInsteadOfSelfCheck: 30s' "$rendered"
     grep -Fq 'name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON' "$rendered"
 
     # Both ingress AuthorizationPolicies must exempt the HTTP-01 challenge
