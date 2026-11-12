@@ -1,0 +1,119 @@
+# Test WorkspaceKind used by the AKS release gate.
+#
+# This is intentionally limited to the JupyterLab environment required by the
+# gate. It follows the WorkspaceKind shipped and tested with Kubeflow Community
+# Distribution 26.10.0 without granting unrelated pipeline permissions.
+apiVersion: kubeflow.org/v1beta1
+kind: WorkspaceKind
+metadata:
+  name: aks-e2e-jupyterlab
+spec:
+  spawner:
+    displayName: "JupyterLab Notebook"
+    description: "A Workspace which runs JupyterLab in a Pod"
+    hidden: false
+    deprecated: false
+    icon:
+      url: "https://jupyter.org/assets/favicons/apple-touch-icon-152x152.png"
+    logo:
+      url: "https://upload.wikimedia.org/wikipedia/commons/3/38/Jupyter_logo.svg"
+
+  podTemplate:
+    podMetadata:
+      labels: {}
+      annotations: {}
+
+    serviceAccount:
+      clusterRoles: []
+
+    activityProbe:
+      minProbeIntervalSeconds: 300
+      probeIntervalSeconds: 3600
+      podExec:
+        timeoutSeconds: 60
+        script: |-
+          #!/usr/bin/env bash
+          echo '{"has_activity": true}' > "$OUTPUT_JSON_PATH"
+          exit 0
+
+    volumeMountPaths:
+      home: "/home/jovyan"
+
+    ports:
+      - id: "jupyterlab"
+        defaultDisplayName: "JupyterLab"
+        protocol: "HTTP"
+        httpProxy:
+          removePathPrefix: false
+          requestHeaders: {}
+
+    podSpec:
+      securityContext:
+        fsGroup: 100
+        seccompProfile:
+          type: RuntimeDefault
+
+      extraVolumes:
+        - name: "dshm"
+          emptyDir:
+            medium: "Memory"
+
+      mainContainer:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+
+        extraEnv:
+          - name: "NB_PREFIX"
+            value: |-
+              {{ httpPathPrefix "jupyterlab" }}
+
+        extraVolumeMounts:
+          - name: "dshm"
+            mountPath: "/dev/shm"
+
+    options:
+      imageConfig:
+        spawner:
+          default: "jupyter-scipy:v1.10.0"
+        values:
+          - id: "jupyter-scipy:v1.10.0"
+            spawner:
+              displayName: "jupyter-scipy:v1.10.0"
+              description: "JupyterLab, with SciPy Packages"
+              labels:
+                - key: "python_version"
+                  value: "3.11.11"
+            spec:
+              image: "ghcr.io/kubeflow/kubeflow/notebook-servers/jupyter-scipy:v1.10.0"
+              imagePullPolicy: "IfNotPresent"
+              ports:
+                - id: "jupyterlab"
+                  port: 8888
+
+      podConfig:
+        spawner:
+          default: "tiny_cpu"
+        values:
+          - id: "tiny_cpu"
+            spawner:
+              displayName: "Tiny CPU"
+              description: "Pod with 0.1 CPU, 128 MiB RAM"
+              labels:
+                - key: "cpu"
+                  value: "100m"
+                - key: "memory"
+                  value: "128Mi"
+            spec:
+              affinity: {}
+              nodeSelector: {}
+              tolerations: []
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi

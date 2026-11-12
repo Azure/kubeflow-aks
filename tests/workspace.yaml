@@ -1,0 +1,27 @@
+# Workspace and persistent home volume created by the AKS release gate.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aks-e2e-workspace-home
+  namespace: kubeflow-user-example-com
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: kubeflow.org/v1beta1
+kind: Workspace
+metadata:
+  name: aks-e2e-workspace
+  namespace: kubeflow-user-example-com
+spec:
+  paused: false
+  kind: aks-e2e-jupyterlab
+  podTemplate:
+    volumes:
+      home: aks-e2e-workspace-home
+    options:
+      imageConfig: jupyter-scipy:v1.10.0
+      podConfig: tiny_cpu

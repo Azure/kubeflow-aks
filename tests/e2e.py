@@ -28,14 +28,15 @@ REQUEST_TIMEOUT_SECONDS = 30
 KUBECTL_TIMEOUT_SECONDS = 120
 KUBECTL_REQUEST_TIMEOUT = "30s"
 
-NOTEBOOK_NAME = "test"
-NOTEBOOK_NAMESPACE = "kubeflow-user-example-com"
-NOTEBOOK_READY_TIMEOUT_SECONDS = 600
-NOTEBOOK_POLL_INTERVAL_SECONDS = 10
-NOTEBOOK_DELETE_TIMEOUT_SECONDS = 180
+WORKSPACE_NAME = "aks-e2e-workspace"
+WORKSPACE_KIND_NAME = "aks-e2e-jupyterlab"
+WORKSPACE_HOME_PVC = "aks-e2e-workspace-home"
+WORKSPACE_NAMESPACE = "kubeflow-user-example-com"
+WORKSPACE_READY_TIMEOUT_SECONDS = 600
+WORKSPACE_POLL_INTERVAL_SECONDS = 10
+WORKSPACE_DELETE_TIMEOUT_SECONDS = 180
 
-NOTEBOOK_API_PATH = f"/jupyter/api/namespaces/{NOTEBOOK_NAMESPACE}/notebooks"
-JUPYTERLAB_PATH = f"/notebook/{NOTEBOOK_NAMESPACE}/{NOTEBOOK_NAME}/lab"
+WORKSPACES_API_PATH = f"/workspaces/api/v1/workspaces/{WORKSPACE_NAMESPACE}"
 
 # Any one of these in the response body identifies the page. They are kept as
 # alternatives because the marker a single-page application serves is a
@@ -315,111 +316,271 @@ def check_dashboard(manager: DexSessionManager, endpoint_url: str) -> None:
     emit("PASS dashboard")
 
 
-def apply_test_notebook(notebook_manifest_path: str) -> None:
-    if not os.path.isfile(notebook_manifest_path):
-        raise GateError(f"Notebook manifest not found: {notebook_manifest_path}")
-    run_kubectl(["apply", "--filename", notebook_manifest_path])
+def apply_test_workspace(
+    workspacekind_manifest_path: str,
+    workspace_manifest_path: str,
+) -> None:
+    for manifest_path, description in (
+        (workspacekind_manifest_path, "WorkspaceKind"),
+        (workspace_manifest_path, "Workspace"),
+    ):
+        if not os.path.isfile(manifest_path):
+            raise GateError(f"{description} manifest not found: {manifest_path}")
+
+    run_kubectl(["apply", "--filename", workspacekind_manifest_path])
+    run_kubectl(["apply", "--filename", workspace_manifest_path])
 
 
-def wait_for_notebook_ready() -> None:
-    deadline = time.monotonic() + NOTEBOOK_READY_TIMEOUT_SECONDS
+def wait_for_workspace_ready() -> None:
+    deadline = time.monotonic() + WORKSPACE_READY_TIMEOUT_SECONDS
     last_observed = "<none>"
+    last_message = ""
+
     while time.monotonic() < deadline:
         command_result = run_kubectl(
             [
-                "get", "notebook", NOTEBOOK_NAME,
-                "--namespace", NOTEBOOK_NAMESPACE,
-                "--output", "jsonpath={.status.readyReplicas}",
+                "get",
+                "workspace",
+                WORKSPACE_NAME,
+                "--namespace",
+                WORKSPACE_NAMESPACE,
+                "--output",
+                "json",
             ],
             check=False,
         )
+
         if command_result.returncode == 0:
-            last_observed = command_result.stdout.strip() or "0"
-            if last_observed == "1":
-                emit("PASS notebook-controller")
-                return
-        time.sleep(NOTEBOOK_POLL_INTERVAL_SECONDS)
+            try:
+                payload = json.loads(command_result.stdout)
+            except ValueError:
+                payload = {}
+
+            status = payload.get("status", {})
+            if isinstance(status, dict):
+                state = status.get("state")
+                message = status.get("stateMessage")
+
+                if isinstance(state, str) and state:
+                    last_observed = state
+                if isinstance(message, str):
+                    last_message = message
+
+                if state == "Running":
+                    emit("PASS workspaces-controller")
+                    return
+
+        time.sleep(WORKSPACE_POLL_INTERVAL_SECONDS)
+
+    detail = f"state={last_observed}"
+    if last_message:
+        detail += f", message={last_message}"
+
     raise GateError(
-        f"Notebook {NOTEBOOK_NAME} did not report readyReplicas=1 within "
-        f"{NOTEBOOK_READY_TIMEOUT_SECONDS}s (last observed: {last_observed})"
+        f"Workspace {WORKSPACE_NAME} did not reach state=Running within "
+        f"{WORKSPACE_READY_TIMEOUT_SECONDS}s ({detail})"
     )
 
 
-def check_notebook_api(manager: DexSessionManager, endpoint_url: str) -> None:
+def check_workspaces_api(
+    manager: DexSessionManager,
+    endpoint_url: str,
+) -> str:
     response = manager.session.get(
-        f"{endpoint_url}{NOTEBOOK_API_PATH}",
+        f"{endpoint_url}{WORKSPACES_API_PATH}",
         allow_redirects=True,
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
+
     if response.status_code != 200:
-        raise GateError(f"HTTP {response.status_code} for {NOTEBOOK_API_PATH}")
+        raise GateError(f"HTTP {response.status_code} for {WORKSPACES_API_PATH}")
+
     if not same_endpoint_host(response, endpoint_url):
-        raise GateError(f"Notebook API served from an unexpected URL: {response.url}")
+        raise GateError(f"Workspaces API served from an unexpected URL: {response.url}")
+
     try:
         payload = response.json()
     except ValueError as value_error:
         raise GateError(
-            f"The notebook API did not return JSON: {value_error}"
+            f"The Workspaces API did not return JSON: {value_error}"
         ) from value_error
-    notebook_names = [
-        notebook.get("name")
-        for notebook in payload.get("notebooks", [])
-        if isinstance(notebook, dict)
-    ]
-    if NOTEBOOK_NAME not in notebook_names:
+
+    if not isinstance(payload, dict):
         raise GateError(
-            f"The notebook API did not list '{NOTEBOOK_NAME}'; it returned: "
-            f"{notebook_names}"
+            f"The Workspaces API returned {type(payload).__name__}, expected an object"
         )
-    emit("PASS notebook-api")
+
+    workspaces = payload.get("data")
+    if not isinstance(workspaces, list):
+        raise GateError("The Workspaces API response has no data array")
+
+    workspace = next(
+        (
+            item
+            for item in workspaces
+            if isinstance(item, dict)
+            and item.get("name") == WORKSPACE_NAME
+            and item.get("namespace") == WORKSPACE_NAMESPACE
+        ),
+        None,
+    )
+
+    if workspace is None:
+        names = [
+            item.get("name")
+            for item in workspaces
+            if isinstance(item, dict)
+        ]
+        raise GateError(
+            f"The Workspaces API did not list '{WORKSPACE_NAME}'; "
+            f"it returned: {names}"
+        )
+
+    state = workspace.get("state")
+    if state != "Running":
+        raise GateError(
+            f"The Workspaces API reported state={state!r} for "
+            f"'{WORKSPACE_NAME}', expected 'Running'"
+        )
+
+    services = workspace.get("services")
+    if not isinstance(services, list):
+        raise GateError(
+            f"The Workspaces API returned no services for '{WORKSPACE_NAME}'"
+        )
+
+    http_path = None
+    for service in services:
+        if not isinstance(service, dict):
+            continue
+
+        http_service = service.get("httpService")
+        if not isinstance(http_service, dict):
+            continue
+
+        candidate = http_service.get("httpPath")
+        if (
+            http_service.get("displayName") == "JupyterLab"
+            and isinstance(candidate, str)
+        ):
+            http_path = candidate
+            break
+
+    if not http_path:
+        raise GateError(
+            f"The Workspaces API returned no JupyterLab HTTP service for "
+            f"'{WORKSPACE_NAME}'"
+        )
+
+    expected_prefix = (
+        f"/workspace/connect/{WORKSPACE_NAMESPACE}/{WORKSPACE_NAME}/"
+    )
+    if not http_path.startswith(expected_prefix):
+        raise GateError(
+            f"The Workspaces API returned an unexpected service path: {http_path}"
+        )
+
+    if not http_path.endswith("/jupyterlab/"):
+        raise GateError(
+            f"The JupyterLab service path does not end in /jupyterlab/: {http_path}"
+        )
+
+    emit("PASS workspaces-api")
+    return http_path
 
 
-def check_jupyterlab(manager: DexSessionManager, endpoint_url: str) -> None:
+def check_jupyterlab(
+    manager: DexSessionManager,
+    endpoint_url: str,
+    http_path: str,
+) -> None:
+    jupyterlab_path = f"{http_path.rstrip('/')}/lab"
+
     response = manager.session.get(
-        f"{endpoint_url}{JUPYTERLAB_PATH}",
+        f"{endpoint_url}{jupyterlab_path}",
         allow_redirects=True,
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
+
     if response.status_code != 200:
-        raise GateError(f"HTTP {response.status_code} for {JUPYTERLAB_PATH}")
+        raise GateError(f"HTTP {response.status_code} for {jupyterlab_path}")
+
     if not same_endpoint_host(response, endpoint_url):
         raise GateError(f"JupyterLab served from an unexpected URL: {response.url}")
+
     if not marker_in_body(response.text, JUPYTERLAB_MARKERS):
         raise GateError(
             "The JupyterLab response carried no JupyterLab marker "
             f"(looked for: {', '.join(JUPYTERLAB_MARKERS)})"
         )
+
     emit("PASS jupyterlab")
 
 
-def delete_test_notebook() -> None:
-    """Delete the test Notebook and wait for its pod to disappear."""
+def delete_test_workspace() -> None:
+    """Delete the gate Workspace and the resources created specifically for it."""
+
     run_kubectl(
         [
-            "delete", "notebook", NOTEBOOK_NAME,
-            "--namespace", NOTEBOOK_NAMESPACE,
+            "delete",
+            "workspace",
+            WORKSPACE_NAME,
+            "--namespace",
+            WORKSPACE_NAMESPACE,
             "--ignore-not-found",
-            f"--timeout={NOTEBOOK_DELETE_TIMEOUT_SECONDS}s",
+            f"--timeout={WORKSPACE_DELETE_TIMEOUT_SECONDS}s",
         ],
         check=False,
     )
-    deadline = time.monotonic() + NOTEBOOK_DELETE_TIMEOUT_SECONDS
+
+    deadline = time.monotonic() + WORKSPACE_DELETE_TIMEOUT_SECONDS
     while time.monotonic() < deadline:
         command_result = run_kubectl(
             [
-                "get", "pods",
-                "--namespace", NOTEBOOK_NAMESPACE,
-                "--selector", f"notebook-name={NOTEBOOK_NAME}",
-                "--output", "jsonpath={.items[*].metadata.name}",
+                "get",
+                "pods",
+                "--namespace",
+                WORKSPACE_NAMESPACE,
+                "--selector",
+                f"workspaces.kubeflow.org/workspace-name={WORKSPACE_NAME}",
+                "--output",
+                "jsonpath={.items[*].metadata.name}",
             ],
             check=False,
         )
+
         if command_result.returncode == 0 and not command_result.stdout.strip():
-            return
-        time.sleep(NOTEBOOK_POLL_INTERVAL_SECONDS)
-    emit_error(
-        f"Warning: the pod for notebook {NOTEBOOK_NAME} was still present after "
-        f"{NOTEBOOK_DELETE_TIMEOUT_SECONDS}s."
+            break
+
+        time.sleep(WORKSPACE_POLL_INTERVAL_SECONDS)
+    else:
+        emit_error(
+            f"Warning: pods for Workspace {WORKSPACE_NAME} were still present "
+            f"after {WORKSPACE_DELETE_TIMEOUT_SECONDS}s."
+        )
+
+    run_kubectl(
+        [
+            "delete",
+            "pvc",
+            WORKSPACE_HOME_PVC,
+            "--namespace",
+            WORKSPACE_NAMESPACE,
+            "--ignore-not-found",
+            f"--timeout={WORKSPACE_DELETE_TIMEOUT_SECONDS}s",
+        ],
+        check=False,
+    )
+
+    run_kubectl(
+        [
+            "delete",
+            "workspacekind",
+            WORKSPACE_KIND_NAME,
+            "--ignore-not-found",
+            f"--timeout={WORKSPACE_DELETE_TIMEOUT_SECONDS}s",
+        ],
+        check=False,
     )
 
 
@@ -427,7 +588,8 @@ def main() -> None:
     endpoint_url = require_https_endpoint(require_environment("KUBEFLOW_ENDPOINT"))
     dex_username = require_environment("DEX_USERNAME", "user@example.com")
     dex_password = require_environment("DEX_PASSWORD")
-    notebook_manifest_path = require_environment("NOTEBOOK_MANIFEST")
+    workspacekind_manifest_path = require_environment("WORKSPACEKIND_MANIFEST")
+    workspace_manifest_path = require_environment("WORKSPACE_MANIFEST")
     register_secret(dex_password)
 
     check_trusted_tls(endpoint_url)
@@ -437,12 +599,15 @@ def main() -> None:
     check_dashboard(manager, endpoint_url)
 
     try:
-        apply_test_notebook(notebook_manifest_path)
-        wait_for_notebook_ready()
-        check_notebook_api(manager, endpoint_url)
-        check_jupyterlab(manager, endpoint_url)
+        apply_test_workspace(
+            workspacekind_manifest_path,
+            workspace_manifest_path,
+        )
+        wait_for_workspace_ready()
+        http_path = check_workspaces_api(manager, endpoint_url)
+        check_jupyterlab(manager, endpoint_url, http_path)
     finally:
-        delete_test_notebook()
+        delete_test_workspace()
 
 
 if __name__ == "__main__":

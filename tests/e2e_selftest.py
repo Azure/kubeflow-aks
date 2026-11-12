@@ -143,21 +143,70 @@ class MarkerTest(unittest.TestCase):
                                             e2e.DASHBOARD_MARKERS))
 
 
-class RoutesTest(unittest.TestCase):
-    def test_routes_are_namespaced_to_the_example_user(self):
-        self.assertEqual(
-            e2e.NOTEBOOK_API_PATH,
-            "/jupyter/api/namespaces/kubeflow-user-example-com/notebooks",
-        )
-        self.assertEqual(
-            e2e.JUPYTERLAB_PATH,
-            "/notebook/kubeflow-user-example-com/test/lab",
+class WorkspacesApiTest(unittest.TestCase):
+    def test_running_workspace_returns_jupyterlab_service_path(self):
+        http_path = (
+            f"/workspace/connect/{e2e.WORKSPACE_NAMESPACE}/"
+            f"{e2e.WORKSPACE_NAME}/jupyterlab/"
         )
 
-    def test_paths_are_relative_so_they_bind_to_the_verified_endpoint(self):
-        for path in (e2e.NOTEBOOK_API_PATH, e2e.JUPYTERLAB_PATH):
-            self.assertEqual(urlsplit(path).netloc, "")
-            self.assertTrue(path.startswith("/"))
+        payload = {
+            "data": [
+                {
+                    "name": e2e.WORKSPACE_NAME,
+                    "namespace": e2e.WORKSPACE_NAMESPACE,
+                    "state": "Running",
+                    "services": [
+                        {
+                            "httpService": {
+                                "displayName": "JupyterLab",
+                                "httpPath": http_path,
+                            }
+                        }
+                    ],
+                }
+            ]
+        }
+
+        class Response:
+            status_code = 200
+            url = (
+                "https://kubeflow.example.com"
+                f"{e2e.WORKSPACES_API_PATH}"
+            )
+
+            @staticmethod
+            def json():
+                return payload
+
+        class Session:
+            @staticmethod
+            def get(*_args, **_kwargs):
+                return Response()
+
+        class Manager:
+            session = Session()
+
+        observed = e2e.check_workspaces_api(
+            Manager(),
+            "https://kubeflow.example.com",
+        )
+
+        self.assertEqual(observed, http_path)
+
+
+class RoutesTest(unittest.TestCase):
+    def test_workspace_api_route_is_namespaced_to_the_example_user(self):
+        self.assertEqual(
+            e2e.WORKSPACES_API_PATH,
+            "/workspaces/api/v1/workspaces/kubeflow-user-example-com",
+        )
+
+    def test_workspace_api_route_is_relative_so_it_binds_to_the_verified_endpoint(
+        self,
+    ):
+        self.assertEqual(urlsplit(e2e.WORKSPACES_API_PATH).netloc, "")
+        self.assertTrue(e2e.WORKSPACES_API_PATH.startswith("/"))
 
 
 if __name__ == "__main__":

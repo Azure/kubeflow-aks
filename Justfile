@@ -76,6 +76,14 @@ validate-static:
     )"
     require_kubectl_skew "$AKS_KUBERNETES_VERSION" "$kubectl_version"
 
+    # Entra-enabled AKS kubeconfigs use kubelogin as a client-go exec plugin.
+    # Fail before creating a cluster rather than after `just credentials`.
+    if ! command -v kubelogin >/dev/null 2>&1; then
+        printf 'kubelogin is required for Microsoft Entra-enabled AKS access.\n' >&2
+        exit 1
+    fi
+    kubelogin --version >/dev/null
+
     go_version="$(cd tools/password && go version | awk '{print $3}')"
     require_equal "Go toolchain" "$GO_TOOLCHAIN" "$go_version"
     go_mod_version="$(awk '$1 == "go" { print $2 }' tools/password/go.mod)"
@@ -84,8 +92,26 @@ validate-static:
     require_equal "go.mod toolchain" "$GO_TOOLCHAIN" "$go_mod_toolchain"
     (cd tools/password && go test ./... && go vet ./...)
 
-    require_equal "pinned test dependency" "requests==2.32.5" \
+    require_equal "pinned test dependency" "requests==2.33.0" \
         "$(grep -Ev '^[[:space:]]*(#|$)' tests/requirements.txt)"
+
+    # `just e2e` creates a virtual environment, so validate both the documented
+    # Python floor and ensurepip/venv support during the static prerequisite gate.
+    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else f"Python 3.11 or later is required, got {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")'
+
+    venv_check_dir="$(mktemp -d)"
+    if ! python3 -m venv "$venv_check_dir/venv"; then
+        rm -rf "$venv_check_dir"
+        printf 'python3 venv support is required; on Debian/Ubuntu install python3-venv.\n' >&2
+        exit 1
+    fi
+    if ! "$venv_check_dir/venv/bin/python" -m pip --version >/dev/null; then
+        rm -rf "$venv_check_dir"
+        printf 'pip must be available inside Python virtual environments.\n' >&2
+        exit 1
+    fi
+    rm -rf "$venv_check_dir"
+
     python3 -m py_compile tests/e2e.py tests/e2e_selftest.py
     python3 tests/e2e_selftest.py
 
@@ -100,18 +126,22 @@ validate-static:
     require_equal "unscrubbed print calls in tests/e2e.py" "2" \
         "$(grep -Ec '^[[:space:]]*print\(' tests/e2e.py)"
     grep -Fq 'register_secret(dex_password)' tests/e2e.py
-    for marker in trusted-tls dex-login dashboard notebook-controller notebook-api jupyterlab; do
+    for marker in trusted-tls dex-login dashboard workspaces-controller workspaces-api jupyterlab; do
         grep -Fq "\"PASS $marker\"" tests/e2e.py
     done
 
-    # Upstream's Notebook fixture has no volumeMounts, and the Jupyter Web App
-    # list endpoint subscripts that field, so listing it returns 500.
-    grep -Fq 'volumeMounts:' tests/notebook.yaml
-    grep -Fq 'namespace: kubeflow-user-example-com' tests/notebook.yaml
-    # Anchored to metadata.name, because the container is also called test and
-    # an unanchored match is satisfied by that alone. e2e.py hard-codes this
-    # name to poll the Notebook and to find it in the Jupyter Web App listing.
-    grep -Eq '^  name: test$' tests/notebook.yaml
+    # The 26.10 release gate uses an isolated WorkspaceKind plus a Workspace
+    # in the example Profile. Keep these names aligned with tests/e2e.py so the
+    # gate cannot accidentally operate on an administrator-managed environment.
+    grep -Fq 'name: aks-e2e-jupyterlab' tests/workspacekind.yaml
+    grep -Fq 'id: "jupyterlab"' tests/workspacekind.yaml
+    grep -Fq 'image: "ghcr.io/kubeflow/kubeflow/notebook-servers/jupyter-scipy:v1.10.0"' \
+        tests/workspacekind.yaml
+
+    grep -Fq 'namespace: kubeflow-user-example-com' tests/workspace.yaml
+    grep -Fq 'name: aks-e2e-workspace' tests/workspace.yaml
+    grep -Fq 'name: aks-e2e-workspace-home' tests/workspace.yaml
+    grep -Fq 'kind: aks-e2e-jupyterlab' tests/workspace.yaml
 
     just --quiet fetch-kubeflow
 
@@ -144,11 +174,50 @@ validate-static:
     grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
     grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
 
+    # The immutable Community Distribution 26.10.0 release carries stale
+    # 26.03.1 Application metadata. This was fixed upstream after the release
+    # by kubeflow/community-distribution#3678, but the pinned 26.10.0 tag
+    # remains unchanged. Keep the AKS-rendered release metadata and repository
+    # badge aligned with the distribution version we actually deploy.
+    awk -v expected="$KUBEFLOW_VERSION" '
+        /^kind: Application$/ { block=$0 ORS; inblock=1; next }
+        inblock { block=block $0 ORS }
+        inblock && /^---$/ {
+            if (block ~ /name: kubeflow/ &&
+                block ~ /namespace: kubeflow/ &&
+                block ~ ("version: " expected "([[:space:]]|$)")) {
+                found=1
+            }
+            inblock=0
+        }
+        END { exit found ? 0 : 1 }
+    ' "$rendered"
+    grep -Fq \
+        "![current development version](https://img.shields.io/badge/Kubeflow-${KUBEFLOW_VERSION}-green)" \
+        README.md
+
+    # Existing installations require a one-time strategy normalization before
+    # adopting the 26.10 ml-pipeline-ui Deployment, so keep the migration below
+    # aligned with the strategy in the pinned release.
+    if ! awk '
+        /^kind: Deployment$/ { block=$0 ORS; inblock=1; next }
+        inblock { block=block $0 ORS }
+        /^---$/ && inblock {
+            if (block ~ /name: ml-pipeline-ui/) print block
+            block=""
+            inblock=0
+        }
+    ' "$rendered" | grep -A3 -F 'strategy:' | grep -Fq 'type: Recreate'; then
+        printf 'ml-pipeline-ui does not use the expected Recreate strategy.\n' >&2
+        exit 1
+    fi
+
     # The TLS path: an Istio-served solver Ingress, a Gateway that reads the
     # certificate cert-manager writes, and the production ACME endpoint.
     grep -Fq 'controller: istio.io/ingress-controller' "$rendered"
     grep -Fq 'credentialName: kubeflow-tls' "$rendered"
     grep -Fq 'https://acme-v02.api.letsencrypt.org/directory' "$rendered"
+    grep -Fq 'waitInsteadOfSelfCheck: 30s' "$rendered"
     grep -Fq 'name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON' "$rendered"
 
     # Both ingress AuthorizationPolicies must exempt the HTTP-01 challenge
@@ -312,8 +381,10 @@ fetch-kubeflow:
 
     archive=".cache/community-distribution-${KUBEFLOW_VERSION}.tar.gz"
     release_dir=".cache/community-distribution-${KUBEFLOW_VERSION}"
+    jobset_manifest=".cache/jobset-${JOBSET_VERSION}-manifests.yaml"
     temp_archive="${archive}.tmp"
-    trap 'rm -f "$temp_archive"' EXIT
+    temp_jobset_manifest="${jobset_manifest}.tmp"
+    trap 'rm -f "$temp_archive" "$temp_jobset_manifest"' EXIT
     mkdir -p .cache
 
     curl --fail --location --silent --show-error \
@@ -322,9 +393,54 @@ fetch-kubeflow:
     mv "$temp_archive" "$archive"
     echo "$KUBEFLOW_ARCHIVE_SHA256  $archive" | sha256sum --check --strict
 
+    # Reuse a cached JobSet asset only when it still matches the pinned digest.
+    # This keeps deployments deterministic while avoiding unnecessary reliance
+    # on GitHub release-asset availability after the artifact is verified.
+    if [[ -f "$jobset_manifest" ]] && \
+        echo "$JOBSET_MANIFEST_SHA256  $jobset_manifest" | \
+            sha256sum --check --strict >/dev/null 2>&1; then
+        echo "$JOBSET_MANIFEST_SHA256  $jobset_manifest" | \
+            sha256sum --check --strict
+    else
+        rm -f "$jobset_manifest"
+        curl --fail --location --silent --show-error \
+            --retry 5 \
+            --retry-delay 3 \
+            --retry-all-errors \
+            "https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml" \
+            --output "$temp_jobset_manifest"
+        echo "$JOBSET_MANIFEST_SHA256  $temp_jobset_manifest" | \
+            sha256sum --check --strict
+        mv "$temp_jobset_manifest" "$jobset_manifest"
+    fi
+
     rm -rf -- "$release_dir"
     mkdir -p "$release_dir"
     tar -xzf "$archive" --strip-components=1 -C "$release_dir"
+
+    # Trainer 2.4.0 references the JobSet release asset directly from its
+    # Kustomization. Kustomize's handling of that GitHub release URL varies
+    # across host environments, so resolve it once here, verify its digest,
+    # and make the extracted release consume the verified local copy.
+    jobset_dir="$release_dir/applications/trainer/upstream/third-party/jobset"
+    jobset_kustomization="$jobset_dir/kustomization.yaml"
+    jobset_remote="https://github.com/kubernetes-sigs/jobset/releases/download/${JOBSET_VERSION}/manifests.yaml"
+
+    jobset_remote_count="$(
+        grep -Fc "$jobset_remote" "$jobset_kustomization" || true
+    )"
+    if [[ "$jobset_remote_count" != "1" ]]; then
+        printf 'Expected exactly one JobSet remote resource reference, found %s.\n' \
+            "$jobset_remote_count" >&2
+        exit 1
+    fi
+
+    cp "$jobset_manifest" "$jobset_dir/manifests.yaml"
+
+    python3 -c \
+        'from pathlib import Path; import sys; p=Path(sys.argv[1]); s=p.read_text(); old=sys.argv[2]; assert s.count(old) == 1; p.write_text(s.replace(old, "manifests.yaml"))' \
+        "$jobset_kustomization" "$jobset_remote"
+
     cp -R overlay "$release_dir/aks-overlay"
 
 # Install pinned Kubeflow and configure its runtime Dex credentials.
@@ -434,6 +550,20 @@ deploy-kubeflow: fetch-kubeflow
         printf 'Rendered manifests still contain a placeholder, so a kustomize replacement did not match. Refusing to apply.\n' >&2
         grep -nE 'replaced-by-kustomize|@@' <<<"$rendered" | head -5 >&2
         exit 1
+    fi
+
+    # Kubeflow 26.10 changes ml-pipeline-ui from Kubernetes' default
+    # RollingUpdate strategy to Recreate. Existing Deployments retain the
+    # rollingUpdate parameters, which server-side apply does not remove and
+    # Kubernetes rejects when type is Recreate. Make upgrades idempotent by
+    # clearing those parameters before applying the new manifests.
+    if kubectl get deployment/ml-pipeline-ui \
+        --namespace kubeflow >/dev/null 2>&1; then
+        kubectl patch deployment/ml-pipeline-ui \
+            --namespace kubeflow \
+            --type=merge \
+            --patch \
+            '{"spec":{"strategy":{"type":"Recreate","rollingUpdate":null}}}'
     fi
 
     attempt=1
@@ -663,11 +793,14 @@ wait-ready:
 e2e:
     #!/usr/bin/env bash
     set -euo pipefail
-    notebook_manifest="tests/notebook.yaml"
-    if [[ ! -f "$notebook_manifest" ]]; then
-        printf 'Missing %s.\n' "$notebook_manifest" >&2
-        exit 1
-    fi
+    workspacekind_manifest="tests/workspacekind.yaml"
+    workspace_manifest="tests/workspace.yaml"
+    for manifest in "$workspacekind_manifest" "$workspace_manifest"; do
+        if [[ ! -f "$manifest" ]]; then
+            printf 'Missing %s.\n' "$manifest" >&2
+            exit 1
+        fi
+    done
 
     host="$(
         kubectl get certificate kubeflow-tls \
@@ -708,7 +841,8 @@ e2e:
     KUBEFLOW_ENDPOINT="$endpoint" \
     DEX_USERNAME="$dex_username" \
     DEX_PASSWORD="$dex_password" \
-    NOTEBOOK_MANIFEST="$notebook_manifest" \
+    WORKSPACEKIND_MANIFEST="$workspacekind_manifest" \
+    WORKSPACE_MANIFEST="$workspace_manifest" \
         "$venv_dir/bin/python" tests/e2e.py
 
     if [[ -n "${E2E_SKIP_REISSUANCE:-}" ]]; then

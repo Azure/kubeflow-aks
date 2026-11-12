@@ -1,5 +1,5 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](./CONTRIBUTING.md)
-![current development version](https://img.shields.io/badge/Kubeflow-26.03.1-green)
+![current development version](https://img.shields.io/badge/Kubeflow-26.10.0-green)
 [![License](https://img.shields.io/github/license/azure/kubeflow-aks)](./LICENSE)
 
 # Kubeflow on Azure Kubernetes Service

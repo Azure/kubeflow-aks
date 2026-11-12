@@ -11,3 +11,4 @@ spec:
       - http01:
           ingress:
             ingressClassName: istio
+        waitInsteadOfSelfCheck: 30s
