@@ -174,10 +174,11 @@ validate-static:
     grep -Fq "app.kubernetes.io/version: v${CERT_MANAGER_VERSION}" "$rendered"
     grep -Fq "app.kubernetes.io/version: ${ISTIO_VERSION}" "$rendered"
 
-    # Community Distribution 26.10.0 currently carries stale 26.03.1
-    # Application metadata (kubeflow/community-distribution#3677). Keep the
-    # AKS-rendered release metadata and repository badge aligned with the
-    # distribution version we actually deploy.
+    # The immutable Community Distribution 26.10.0 release carries stale
+    # 26.03.1 Application metadata. This was fixed upstream after the release
+    # by kubeflow/community-distribution#3678, but the pinned 26.10.0 tag
+    # remains unchanged. Keep the AKS-rendered release metadata and repository
+    # badge aligned with the distribution version we actually deploy.
     awk -v expected="$KUBEFLOW_VERSION" '
         /^kind: Application$/ { block=$0 ORS; inblock=1; next }
         inblock { block=block $0 ORS }
